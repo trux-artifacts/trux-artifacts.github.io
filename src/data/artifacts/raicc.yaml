@@ -14,6 +14,7 @@ paper:
   title: "RAICC: Revealing Atypical Inter-Component Communication in Android Apps"
   venue: ICSE
   year: 2021
+  doi: 10.1109/ICSE43902.2021.00126
 links:
   github: https://github.com/JordanSamhi/RAICC
 tags:
@@ -21,9 +22,13 @@ tags:
   - icc
   - taint-analysis
 bibtex: |
-  @inproceedings{samhi2021raicc,
+  @inproceedings{9402043,
+    author    = {Samhi, Jordan and Bartel, Alexandre and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
     title     = {RAICC: Revealing Atypical Inter-Component Communication in Android Apps},
-    author    = {Samhi, Jordan and Bartel, Alexandre and Bissyand{\'e}, Tegawend{\'e} F. and Klein, Jacques},
-    booktitle = {Proceedings of the 43rd International Conference on Software Engineering (ICSE)},
-    year      = {2021}
+    booktitle = {2021 IEEE/ACM 43rd International Conference on Software Engineering (ICSE)},
+    year      = {2021},
+    pages     = {1398--1409},
+    publisher = {IEEE},
+    doi       = {10.1109/ICSE43902.2021.00126},
+    url       = {https://doi.org/10.1109/ICSE43902.2021.00126}
   }

@@ -13,6 +13,7 @@ paper:
   title: "TBar: Revisiting Template-Based Automated Program Repair"
   venue: ISSTA
   year: 2019
+  doi: 10.1145/3293882.3330577
 links:
   github: https://github.com/TruX-DTF/TBar
 tags:
@@ -20,9 +21,14 @@ tags:
   - java
   - fix-patterns
 bibtex: |
-  @inproceedings{liu2019tbar,
+  @inproceedings{10.1145/3293882.3330577,
+    author    = {Liu, Kui and Koyuncu, Anil and Kim, Dongsun and Bissyand\'{e}, Tegawend\'{e} F.},
     title     = {TBar: Revisiting Template-Based Automated Program Repair},
-    author    = {Liu, Kui and Koyuncu, Anil and Kim, Dongsun and Bissyand{\'e}, Tegawend{\'e} F.},
-    booktitle = {Proceedings of the 28th ACM SIGSOFT International Symposium on Software Testing and Analysis (ISSTA)},
-    year      = {2019}
+    booktitle = {Proceedings of the 28th ACM SIGSOFT International Symposium on Software Testing and Analysis},
+    year      = {2019},
+    pages     = {31--42},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    doi       = {10.1145/3293882.3330577},
+    url       = {https://doi.org/10.1145/3293882.3330577}
   }

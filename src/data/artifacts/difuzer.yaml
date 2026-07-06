@@ -13,6 +13,7 @@ paper:
   title: "Difuzer: Uncovering Suspicious Hidden Sensitive Operations in Android Apps"
   venue: ICSE
   year: 2022
+  doi: 10.1145/3510003.3510135
 links:
   github: https://github.com/JordanSamhi/Difuzer
 tags:
@@ -20,9 +21,14 @@ tags:
   - hidden-behavior
   - anomaly-detection
 bibtex: |
-  @inproceedings{samhi2022difuzer,
+  @inproceedings{10.1145/3510003.3510135,
+    author    = {Samhi, Jordan and Li, Li and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
     title     = {Difuzer: Uncovering Suspicious Hidden Sensitive Operations in Android Apps},
-    author    = {Samhi, Jordan and Li, Li and Bissyand{\'e}, Tegawend{\'e} F. and Klein, Jacques},
-    booktitle = {Proceedings of the 44th International Conference on Software Engineering (ICSE)},
-    year      = {2022}
+    booktitle = {Proceedings of the 44th International Conference on Software Engineering},
+    year      = {2022},
+    pages     = {723--735},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    doi       = {10.1145/3510003.3510135},
+    url       = {https://doi.org/10.1145/3510003.3510135}
   }

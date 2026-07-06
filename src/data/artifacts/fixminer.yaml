@@ -16,6 +16,7 @@ paper:
   title: "FixMiner: Mining Relevant Fix Patterns for Automated Program Repair"
   venue: EMSE
   year: 2020
+  doi: 10.1007/s10664-019-09780-z
 links:
   github: https://github.com/TruX-DTF/FixMiner
 tags:
@@ -23,9 +24,15 @@ tags:
   - fix-patterns
   - mining
 bibtex: |
-  @article{koyuncu2020fixminer,
+  @article{Koyuncu2020,
+    author  = {Koyuncu, Anil and Liu, Kui and Bissyand\'{e}, Tegawend\'{e} F. and Kim, Dongsun and Klein, Jacques and Monperrus, Martin and Le Traon, Yves},
     title   = {FixMiner: Mining Relevant Fix Patterns for Automated Program Repair},
-    author  = {Koyuncu, Anil and Liu, Kui and Bissyand{\'e}, Tegawend{\'e} F. and Kim, Dongsun and Klein, Jacques and Monperrus, Martin and Le Traon, Yves},
     journal = {Empirical Software Engineering},
-    year    = {2020}
+    year    = {2020},
+    volume  = {25},
+    number  = {3},
+    pages   = {1980--2024},
+    publisher = {Springer},
+    doi     = {10.1007/s10664-019-09780-z},
+    url     = {https://doi.org/10.1007/s10664-019-09780-z}
   }

@@ -19,7 +19,7 @@ paper:
   title: "JuCify: A Step Towards Android Code Unification for Enhanced Static Analysis"
   venue: ICSE
   year: 2022
-  url: https://orbilu.uni.lu/handle/10993/49267
+  doi: 10.1145/3510003.3512766
 links:
   github: https://github.com/JordanSamhi/JuCify
 tags:
@@ -28,9 +28,14 @@ tags:
   - static-analysis
   - call-graph
 bibtex: |
-  @inproceedings{samhi2022jucify,
+  @inproceedings{10.1145/3510003.3512766,
+    author    = {Samhi, Jordan and Gao, Jun and Daoudi, Nadia and Graux, Pierre and Hoyez, Henri and Sun, Xiaoyu and Allix, Kevin and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
     title     = {JuCify: A Step Towards Android Code Unification for Enhanced Static Analysis},
-    author    = {Samhi, Jordan and Gao, Jun and Daoudi, Nadia and Graux, Pierre and Hoyez, Henri and Sun, Xiaoyu and Allix, Kevin and Bissyand{\'e}, Tegawend{\'e} F. and Klein, Jacques},
-    booktitle = {Proceedings of the 44th International Conference on Software Engineering (ICSE)},
-    year      = {2022}
+    booktitle = {Proceedings of the 44th International Conference on Software Engineering},
+    year      = {2022},
+    pages     = {1232--1244},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    doi       = {10.1145/3510003.3512766},
+    url       = {https://doi.org/10.1145/3510003.3512766}
   }

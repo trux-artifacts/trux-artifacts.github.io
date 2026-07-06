@@ -11,6 +11,7 @@ paper:
   title: "On the (In)Effectiveness of Static Logic Bomb Detection for Android Apps"
   venue: IEEE TDSC
   year: 2022
+  doi: 10.1109/TDSC.2021.3108057
 links:
   github: https://github.com/JordanSamhi/TSOpen
 tags:
@@ -19,9 +20,15 @@ tags:
   - malware
   - static-analysis
 bibtex: |
-  @article{samhi2022tsopen,
-    title   = {On the (In)Effectiveness of Static Logic Bomb Detection for Android Apps},
+  @article{9528927,
     author  = {Samhi, Jordan and Bartel, Alexandre},
+    title   = {On The (In)Effectiveness of Static Logic Bomb Detection for Android Apps},
     journal = {IEEE Transactions on Dependable and Secure Computing},
-    year    = {2022}
+    year    = {2022},
+    volume  = {19},
+    number  = {6},
+    pages   = {3822--3836},
+    publisher = {IEEE},
+    doi     = {10.1109/TDSC.2021.3108057},
+    url     = {https://doi.org/10.1109/TDSC.2021.3108057}
   }

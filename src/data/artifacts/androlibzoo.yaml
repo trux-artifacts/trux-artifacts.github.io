@@ -21,9 +21,14 @@ tags:
   - libraries
   - static-analysis
 bibtex: |
-  @inproceedings{samhi2024androlibzoo,
+  @inproceedings{10.1145/3643991.3644866,
+    author    = {Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
     title     = {AndroLibZoo: A Reliable Dataset of Libraries Based on Software Dependency Analysis},
-    author    = {Samhi, Jordan and Bissyand{\'e}, Tegawend{\'e} F. and Klein, Jacques},
-    booktitle = {Proceedings of the 21st International Conference on Mining Software Repositories (MSR)},
-    year      = {2024}
+    booktitle = {Proceedings of the 21st International Conference on Mining Software Repositories},
+    year      = {2024},
+    pages     = {32--36},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    doi       = {10.1145/3643991.3644866},
+    url       = {https://doi.org/10.1145/3643991.3644866}
   }

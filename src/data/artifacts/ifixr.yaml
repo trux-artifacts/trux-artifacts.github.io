@@ -17,6 +17,7 @@ paper:
   title: "iFixR: Bug Report Driven Program Repair"
   venue: ESEC/FSE
   year: 2019
+  doi: 10.1145/3338906.3338935
 links:
   github: https://github.com/TruX-DTF/iFixR
 tags:
@@ -24,9 +25,14 @@ tags:
   - bug-reports
   - java
 bibtex: |
-  @inproceedings{koyuncu2019ifixr,
+  @inproceedings{10.1145/3338906.3338935,
+    author    = {Koyuncu, Anil and Liu, Kui and Bissyand\'{e}, Tegawend\'{e} F. and Kim, Dongsun and Monperrus, Martin and Klein, Jacques and Le Traon, Yves},
     title     = {iFixR: Bug Report Driven Program Repair},
-    author    = {Koyuncu, Anil and Liu, Kui and Bissyand{\'e}, Tegawend{\'e} F. and Kim, Dongsun and Monperrus, Martin and Klein, Jacques and Le Traon, Yves},
-    booktitle = {Proceedings of the 27th ACM Joint Meeting on European Software Engineering Conference and Symposium on the Foundations of Software Engineering (ESEC/FSE)},
-    year      = {2019}
+    booktitle = {Proceedings of the 2019 27th ACM Joint Meeting on European Software Engineering Conference and Symposium on the Foundations of Software Engineering},
+    year      = {2019},
+    pages     = {314--325},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    doi       = {10.1145/3338906.3338935},
+    url       = {https://doi.org/10.1145/3338906.3338935}
   }

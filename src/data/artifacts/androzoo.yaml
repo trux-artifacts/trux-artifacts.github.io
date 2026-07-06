@@ -23,10 +23,14 @@ tags:
   - malware
   - large-scale
 bibtex: |
-  @inproceedings{allix2016androzoo,
+  @inproceedings{10.1145/2901739.2903508,
+    author    = {Allix, Kevin and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques and Le Traon, Yves},
     title     = {AndroZoo: Collecting Millions of Android Apps for the Research Community},
-    author    = {Allix, Kevin and Bissyand{\'e}, Tegawend{\'e} F. and Klein, Jacques and Le Traon, Yves},
-    booktitle = {Proceedings of the 13th International Conference on Mining Software Repositories (MSR)},
+    booktitle = {Proceedings of the 13th International Conference on Mining Software Repositories},
     year      = {2016},
-    pages     = {468--471}
+    pages     = {468--471},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    doi       = {10.1145/2901739.2903508},
+    url       = {https://doi.org/10.1145/2901739.2903508}
   }
