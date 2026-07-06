@@ -1,0 +1,28 @@
+name: Difuzer
+type: tool
+description: >-
+  Uncovers suspicious hidden sensitive operations in Android apps by combining
+  static taint analysis with anomaly detection on inter-procedural triggers.
+authors:
+  - Jordan Samhi
+  - Li Li
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+status: stable
+paper:
+  title: "Difuzer: Uncovering Suspicious Hidden Sensitive Operations in Android Apps"
+  venue: ICSE
+  year: 2022
+links:
+  github: https://github.com/JordanSamhi/Difuzer
+tags:
+  - android
+  - hidden-behavior
+  - anomaly-detection
+bibtex: |
+  @inproceedings{samhi2022difuzer,
+    title     = {Difuzer: Uncovering Suspicious Hidden Sensitive Operations in Android Apps},
+    author    = {Samhi, Jordan and Li, Li and Bissyand{\'e}, Tegawend{\'e} F. and Klein, Jacques},
+    booktitle = {Proceedings of the 44th International Conference on Software Engineering (ICSE)},
+    year      = {2022}
+  }

@@ -1,0 +1,27 @@
+name: TSOpen
+type: tool
+description: >-
+  Open-source implementation of trigger-based behavior detection (logic bombs)
+  in Android apps, built on top of Soot and FlowDroid.
+authors:
+  - Jordan Samhi
+  - Alexandre Bartel
+status: stable
+paper:
+  title: "On the (In)Effectiveness of Static Logic Bomb Detection for Android Apps"
+  venue: IEEE TDSC
+  year: 2022
+links:
+  github: https://github.com/JordanSamhi/TSOpen
+tags:
+  - android
+  - logic-bombs
+  - malware
+  - static-analysis
+bibtex: |
+  @article{samhi2022tsopen,
+    title   = {On the (In)Effectiveness of Static Logic Bomb Detection for Android Apps},
+    author  = {Samhi, Jordan and Bartel, Alexandre},
+    journal = {IEEE Transactions on Dependable and Secure Computing},
+    year    = {2022}
+  }

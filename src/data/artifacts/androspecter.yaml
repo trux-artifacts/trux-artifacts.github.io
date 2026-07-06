@@ -1,0 +1,16 @@
+name: AndroSpecter
+type: library
+description: >-
+  A Java library that streamlines the static analysis of Java programs and
+  Android apps — utilities for Soot/FlowDroid setup, APK handling, and common
+  analysis tasks.
+authors:
+  - Jordan Samhi
+status: maintained
+links:
+  github: https://github.com/JordanSamhi/AndroSpecter
+tags:
+  - android
+  - java
+  - static-analysis
+  - soot

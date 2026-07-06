@@ -1,0 +1,102 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const artifacts = await getCollection('artifacts');
+  return artifacts.map((artifact) => ({
+    params: { slug: artifact.id },
+    props: { artifact },
+  }));
+}
+
+interface Props {
+  artifact: CollectionEntry<'artifacts'>;
+}
+
+const { artifact } = Astro.props;
+const { name, type, description, authors, status, paper, links, badges, tags, license, bibtex } =
+  artifact.data;
+
+function toEmbed(url: string): string | null {
+  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+  return yt ? `https://www.youtube-nocookie.com/embed/${yt[1]}` : null;
+}
+const embed = links.video ? toEmbed(links.video) : null;
+---
+
+<Base title={`${name} — TruX Artifacts`} description={description}>
+  <div class="container">
+  <div class="detail">
+    <div class="type-row">
+      <span class={`badge ${type}`}>{type}</span>
+      <span class={`status ${status}`}>{status}</span>
+      {badges.map((b) => <span class="award">{b}</span>)}
+    </div>
+    <h1>{name}</h1>
+    <p class="lead">{description}</p>
+    <p class="authors">{authors.join(', ')}{license && ` · ${license} license`}</p>
+
+    <div class="btn-row">
+      {links.github && <a class="btn primary" href={links.github}>View on GitHub</a>}
+      {links.website && <a class="btn" href={links.website}>Website</a>}
+      {links.download && <a class="btn" href={links.download}>Download</a>}
+      {links.video && !embed && <a class="btn" href={links.video}>Watch demo</a>}
+      {bibtex && <button class="btn" id="copy-bibtex">Copy BibTeX</button>}
+    </div>
+
+    {embed && (
+      <div class="section">
+        <h2>Demonstration</h2>
+        <div class="video-wrap">
+          <iframe src={embed} title={`${name} demonstration video`} allowfullscreen />
+        </div>
+      </div>
+    )}
+
+    {paper && (
+      <div class="section">
+        <h2>Paper</h2>
+        <div class="paper-box">
+          {paper.doi ? (
+            <a href={`https://doi.org/${paper.doi}`}>{paper.title}</a>
+          ) : paper.url ? (
+            <a href={paper.url}>{paper.title}</a>
+          ) : (
+            paper.title
+          )}
+          <div class="venue">{paper.venue} {paper.year}{paper.doi && ` · DOI: ${paper.doi}`}</div>
+        </div>
+      </div>
+    )}
+
+    {bibtex && (
+      <div class="section">
+        <h2>Cite this artifact</h2>
+        <pre class="bibtex" id="bibtex">{bibtex.trim()}</pre>
+      </div>
+    )}
+
+    {tags.length > 0 && (
+      <div class="section">
+        <h2>Topics</h2>
+        <div class="tag-row">
+          {tags.map((t) => <span class="tag">{t}</span>)}
+        </div>
+      </div>
+    )}
+
+    <a href="/">← All artifacts</a>
+  </div>
+  </div>
+
+  <script>
+    const btn = document.getElementById('copy-bibtex');
+    const bib = document.getElementById('bibtex');
+    btn?.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(bib?.textContent ?? '');
+      btn.textContent = 'Copied';
+      setTimeout(() => (btn.textContent = 'Copy BibTeX'), 1500);
+    });
+  </script>
+</Base>

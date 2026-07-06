@@ -1,0 +1,29 @@
+name: AndroLibZoo
+type: dataset
+description: >-
+  A reliable, evolving dataset of 34,813 third-party Android libraries built
+  through software dependency analysis, for use in static analysis and
+  library-filtering pipelines.
+authors:
+  - Jordan Samhi
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+status: maintained
+paper:
+  title: "AndroLibZoo: A Reliable Dataset of Libraries Based on Software Dependency Analysis"
+  venue: MSR
+  year: 2024
+  doi: 10.1145/3643991.3644866
+links:
+  github: https://github.com/JordanSamhi/AndroLibZoo
+tags:
+  - android
+  - libraries
+  - static-analysis
+bibtex: |
+  @inproceedings{samhi2024androlibzoo,
+    title     = {AndroLibZoo: A Reliable Dataset of Libraries Based on Software Dependency Analysis},
+    author    = {Samhi, Jordan and Bissyand{\'e}, Tegawend{\'e} F. and Klein, Jacques},
+    booktitle = {Proceedings of the 21st International Conference on Mining Software Repositories (MSR)},
+    year      = {2024}
+  }

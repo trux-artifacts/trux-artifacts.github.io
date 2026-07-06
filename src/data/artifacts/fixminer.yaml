@@ -1,0 +1,31 @@
+name: FixMiner
+type: tool
+description: >-
+  Mines relevant fix patterns from code changes in software repositories,
+  producing pattern collections that fuel automated program repair systems.
+authors:
+  - Anil Koyuncu
+  - Kui Liu
+  - Tegawendé F. Bissyandé
+  - Dongsun Kim
+  - Jacques Klein
+  - Martin Monperrus
+  - Yves Le Traon
+status: stable
+paper:
+  title: "FixMiner: Mining Relevant Fix Patterns for Automated Program Repair"
+  venue: EMSE
+  year: 2020
+links:
+  github: https://github.com/TruX-DTF/FixMiner
+tags:
+  - program-repair
+  - fix-patterns
+  - mining
+bibtex: |
+  @article{koyuncu2020fixminer,
+    title   = {FixMiner: Mining Relevant Fix Patterns for Automated Program Repair},
+    author  = {Koyuncu, Anil and Liu, Kui and Bissyand{\'e}, Tegawend{\'e} F. and Kim, Dongsun and Klein, Jacques and Monperrus, Martin and Le Traon, Yves},
+    journal = {Empirical Software Engineering},
+    year    = {2020}
+  }

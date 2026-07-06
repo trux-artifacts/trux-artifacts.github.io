@@ -1,0 +1,32 @@
+name: AndroZoo
+type: dataset
+description: >-
+  A growing collection of more than 25 million Android apps gathered from
+  several markets, continuously updated since 2016 and used by hundreds of
+  research teams worldwide.
+authors:
+  - Kevin Allix
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+  - Yves Le Traon
+status: maintained
+paper:
+  title: "AndroZoo: Collecting Millions of Android Apps for the Research Community"
+  venue: MSR
+  year: 2016
+  doi: 10.1145/2901739.2903508
+links:
+  website: https://androzoo.uni.lu
+tags:
+  - android
+  - apps
+  - malware
+  - large-scale
+bibtex: |
+  @inproceedings{allix2016androzoo,
+    title     = {AndroZoo: Collecting Millions of Android Apps for the Research Community},
+    author    = {Allix, Kevin and Bissyand{\'e}, Tegawend{\'e} F. and Klein, Jacques and Le Traon, Yves},
+    booktitle = {Proceedings of the 13th International Conference on Mining Software Repositories (MSR)},
+    year      = {2016},
+    pages     = {468--471}
+  }

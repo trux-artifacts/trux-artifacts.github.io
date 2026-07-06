@@ -1,0 +1,32 @@
+name: iFixR
+type: tool
+description: >-
+  Bug-report-driven automated program repair — generates patches from user
+  bug reports instead of test suites, closing the gap with real-world
+  maintenance workflows.
+authors:
+  - Anil Koyuncu
+  - Kui Liu
+  - Tegawendé F. Bissyandé
+  - Dongsun Kim
+  - Martin Monperrus
+  - Jacques Klein
+  - Yves Le Traon
+status: stable
+paper:
+  title: "iFixR: Bug Report Driven Program Repair"
+  venue: ESEC/FSE
+  year: 2019
+links:
+  github: https://github.com/TruX-DTF/iFixR
+tags:
+  - program-repair
+  - bug-reports
+  - java
+bibtex: |
+  @inproceedings{koyuncu2019ifixr,
+    title     = {iFixR: Bug Report Driven Program Repair},
+    author    = {Koyuncu, Anil and Liu, Kui and Bissyand{\'e}, Tegawend{\'e} F. and Kim, Dongsun and Monperrus, Martin and Klein, Jacques and Le Traon, Yves},
+    booktitle = {Proceedings of the 27th ACM Joint Meeting on European Software Engineering Conference and Symposium on the Foundations of Software Engineering (ESEC/FSE)},
+    year      = {2019}
+  }

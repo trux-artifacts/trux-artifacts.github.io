@@ -1,0 +1,29 @@
+name: RAICC
+type: tool
+description: >-
+  Reveals atypical inter-component communication (ICC) in Android apps by
+  instrumenting them so that state-of-the-art analyzers such as FlowDroid can
+  detect previously missed data leaks.
+authors:
+  - Jordan Samhi
+  - Alexandre Bartel
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+status: stable
+paper:
+  title: "RAICC: Revealing Atypical Inter-Component Communication in Android Apps"
+  venue: ICSE
+  year: 2021
+links:
+  github: https://github.com/JordanSamhi/RAICC
+tags:
+  - android
+  - icc
+  - taint-analysis
+bibtex: |
+  @inproceedings{samhi2021raicc,
+    title     = {RAICC: Revealing Atypical Inter-Component Communication in Android Apps},
+    author    = {Samhi, Jordan and Bartel, Alexandre and Bissyand{\'e}, Tegawend{\'e} F. and Klein, Jacques},
+    booktitle = {Proceedings of the 43rd International Conference on Software Engineering (ICSE)},
+    year      = {2021}
+  }

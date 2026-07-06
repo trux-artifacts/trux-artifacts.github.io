@@ -1,0 +1,28 @@
+name: TBar
+type: tool
+description: >-
+  A template-based automated program repair tool that revisits and unifies
+  fix patterns from the literature, a widely used baseline in APR research.
+authors:
+  - Kui Liu
+  - Anil Koyuncu
+  - Dongsun Kim
+  - Tegawendé F. Bissyandé
+status: stable
+paper:
+  title: "TBar: Revisiting Template-Based Automated Program Repair"
+  venue: ISSTA
+  year: 2019
+links:
+  github: https://github.com/TruX-DTF/TBar
+tags:
+  - program-repair
+  - java
+  - fix-patterns
+bibtex: |
+  @inproceedings{liu2019tbar,
+    title     = {TBar: Revisiting Template-Based Automated Program Repair},
+    author    = {Liu, Kui and Koyuncu, Anil and Kim, Dongsun and Bissyand{\'e}, Tegawend{\'e} F.},
+    booktitle = {Proceedings of the 28th ACM SIGSOFT International Symposium on Software Testing and Analysis (ISSTA)},
+    year      = {2019}
+  }

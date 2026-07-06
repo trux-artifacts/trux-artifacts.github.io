@@ -1,0 +1,30 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  artifact: CollectionEntry<'artifacts'>;
+}
+
+const { artifact } = Astro.props;
+const { name, type, description, paper, status, tags } = artifact.data;
+const search = [name, description, type, ...(tags ?? []), paper?.venue ?? '']
+  .join(' ')
+  .toLowerCase();
+---
+
+<a
+  class="card"
+  href={`/artifacts/${artifact.id}/`}
+  data-type={type}
+  data-search={search}
+>
+  <div class="card-head">
+    <h3>{name}</h3>
+    <span class={`badge ${type}`}>{type}</span>
+  </div>
+  <p>{description}</p>
+  <div class="card-meta">
+    {paper && <span>{paper.venue} {paper.year}</span>}
+    <span class={`status ${status}`}>{status}</span>
+  </div>
+</a>

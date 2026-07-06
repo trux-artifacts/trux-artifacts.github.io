@@ -1,0 +1,46 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Research artifacts from the TruX group at SnT, University of Luxembourg' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <a href="/" class="brand" aria-label="TruX Artifacts home">
+          <span class="logo">
+            <span class="logo-text">TruX</span>
+            <span class="logo-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          </span>
+          <span class="brand-sub">Artifacts</span>
+        </a>
+        <nav>
+          <a href="https://www.uni.lu/snt-en/research-groups/trux/">TruX group</a>
+          <a href="https://github.com/trux-artifacts">GitHub</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <span>Trustworthy Software Engineering (TruX) — SnT, University of Luxembourg</span>
+        <span>Want to add an artifact? <a href="https://github.com/trux-artifacts/trux-artifacts.github.io">Open a pull request</a></span>
+      </div>
+    </footer>
+  </body>
+</html>
