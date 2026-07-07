@@ -14,6 +14,8 @@ authors:
   - Yves Le Traon
 status: stable
 logo: repair
+figure: ifixr.png
+figureCaption: The iFixR program repair workflow (ESEC/FSE 2019 paper, Figure 2)
 paper:
   title: "iFixR: Bug Report Driven Program Repair"
   venue: ESEC/FSE

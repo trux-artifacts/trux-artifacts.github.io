@@ -11,6 +11,8 @@ authors:
   - Jacques Klein
 logo: android
 status: stable
+figure: raicc.png
+figureCaption: Overview of the RAICC instrumentation tool (ICSE 2021 paper, Figure 2)
 paper:
   title: "RAICC: Revealing Atypical Inter-Component Communication in Android Apps"
   venue: ICSE

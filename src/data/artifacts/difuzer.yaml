@@ -10,6 +10,8 @@ authors:
   - Jacques Klein
 logo: android
 status: stable
+figure: difuzer.png
+figureCaption: Overview of the Difuzer approach (ICSE 2022 paper, Figure 2)
 paper:
   title: "Difuzer: Uncovering Suspicious Hidden Sensitive Operations in Android Apps"
   venue: ICSE

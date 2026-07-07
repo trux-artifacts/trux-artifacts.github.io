@@ -10,6 +10,8 @@ authors:
   - Tegawendé F. Bissyandé
 status: stable
 logo: repair
+figure: tbar.png
+figureCaption: The overall workflow of TBar (ISSTA 2019 paper, Figure 1)
 paper:
   title: "TBar: Revisiting Template-Based Automated Program Repair"
   venue: ISSTA

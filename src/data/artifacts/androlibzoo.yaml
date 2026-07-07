@@ -10,6 +10,8 @@ authors:
   - Jacques Klein
 logo: android
 status: maintained
+figure: androlibzoo.png
+figureCaption: Overview of the methodology to construct AndroLibZoo (MSR 2024 paper, Figure 2)
 paper:
   title: "AndroLibZoo: A Reliable Dataset of Libraries Based on Software Dependency Analysis"
   venue: MSR

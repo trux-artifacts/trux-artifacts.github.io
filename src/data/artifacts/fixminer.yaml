@@ -13,6 +13,8 @@ authors:
   - Yves Le Traon
 status: stable
 logo: repair
+figure: fixminer.png
+figureCaption: The FixMiner approach (EMSE 2020 paper, Figure 5)
 paper:
   title: "FixMiner: Mining Relevant Fix Patterns for Automated Program Repair"
   venue: EMSE

@@ -8,6 +8,8 @@ authors:
   - Alexandre Bartel
 logo: android
 status: stable
+figure: tsopen.png
+figureCaption: Overview of the TSOpen analysis pipeline (IEEE TDSC paper, Figure 1)
 paper:
   title: "On the (In)Effectiveness of Static Logic Bomb Detection for Android Apps"
   venue: IEEE TDSC
