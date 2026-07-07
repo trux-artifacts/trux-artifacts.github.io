@@ -1,5 +1,6 @@
 name: TaskFlow
 type: tool
+area: Android Static & Dynamic Analysis
 description: >-
   An LLM-driven framework that generates task-specific lists of SOURCE
   methods for Android taint analysis, replacing static generic lists with

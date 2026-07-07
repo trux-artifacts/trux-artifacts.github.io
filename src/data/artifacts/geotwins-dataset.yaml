@@ -1,5 +1,6 @@
 name: GeoTwins Dataset
 type: dataset
+area: Android Datasets
 description: >-
   A dataset of 81,963 GeoTwins (859 GeoFamilies) — functionally similar,
   same-branding Android apps released under different package names across

@@ -1,5 +1,6 @@
 name: AndroBomb
 type: tool
+area: Android Security & Malware
 description: >-
   Automatically infects Android apps with logic bombs (trigger-based
   behaviors) to produce ground-truth benchmarks for logic bomb detection —

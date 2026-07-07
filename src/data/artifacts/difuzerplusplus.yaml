@@ -1,5 +1,6 @@
 name: Difuzer++
 type: tool
+area: Android Security & Malware
 description: >-
   Improves logic bomb identification in Android apps with context-aware
   anomaly detection, reducing false positives over its predecessor

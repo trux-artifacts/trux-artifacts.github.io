@@ -1,5 +1,6 @@
 name: DamFlow
 type: tool
+area: Android Static & Dynamic Analysis
 description: >-
   Prevents a flood of irrelevant data flows in Android taint analysis by
   scoring the semantic relevance of each reported flow, keeping analysts

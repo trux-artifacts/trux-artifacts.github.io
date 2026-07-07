@@ -1,5 +1,6 @@
 name: AndroLog
 type: tool
+area: Android Static & Dynamic Analysis
 description: >-
   Instruments Android apps in a black-box manner (on top of Soot) to compute
   fine-grained code coverage at class, method, statement, and component

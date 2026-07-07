@@ -1,5 +1,6 @@
 name: TBar
 type: tool
+area: Patches & Program Repair
 description: >-
   A template-based automated program repair tool that revisits and unifies
   fix patterns from the literature, a widely used baseline in APR research.

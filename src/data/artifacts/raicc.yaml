@@ -1,5 +1,6 @@
 name: RAICC
 type: tool
+area: Android Static & Dynamic Analysis
 description: >-
   Reveals atypical inter-component communication (ICC) in Android apps by
   instrumenting them so that state-of-the-art analyzers such as FlowDroid can

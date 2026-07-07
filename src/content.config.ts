@@ -6,6 +6,7 @@ const artifacts = defineCollection({
   schema: z.object({
     name: z.string(),
     type: z.enum(['dataset', 'tool', 'library', 'demo', 'benchmark']),
+    area: z.string().default('Other'),
     description: z.string(),
     authors: z.array(z.string()),
     status: z.enum(['maintained', 'stable', 'archived']).default('stable'),

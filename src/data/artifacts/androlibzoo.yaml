@@ -1,5 +1,6 @@
 name: AndroLibZoo
 type: dataset
+area: Android Datasets
 description: >-
   A reliable, evolving dataset of 34,813 third-party Android libraries built
   through software dependency analysis, for use in static analysis and

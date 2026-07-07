@@ -1,5 +1,6 @@
 name: GeoTwins
 type: tool
+area: Android Static & Dynamic Analysis
 description: >-
   A distributed app-collection and analysis pipeline that crawls Google Play
   from seven countries and compares regional app variants (permissions,

@@ -25,6 +25,23 @@ const counts = Object.fromEntries(
   ])
 );
 
+const areaOrder = [
+  'Android Datasets',
+  'Android Static & Dynamic Analysis',
+  'Android Security & Malware',
+  'Patches & Program Repair',
+  'LLMs for Software Engineering',
+];
+const byArea = new Map<string, typeof artifacts>();
+for (const artifact of artifacts) {
+  const area = artifact.data.area;
+  if (!byArea.has(area)) byArea.set(area, []);
+  byArea.get(area)!.push(artifact);
+}
+const knownAreas = areaOrder.filter((a) => byArea.has(a));
+const otherAreas = [...byArea.keys()].filter((a) => !areaOrder.includes(a)).sort();
+const orderedAreas = [...knownAreas, ...otherAreas];
+
 const plurals: Record<string, [string, string]> = {
   all: ['artifact', 'artifacts'],
   dataset: ['dataset', 'datasets'],
@@ -79,9 +96,14 @@ const stats = types
     ))}
   </div>
 
-  <div class="grid" id="grid">
-    {artifacts.map((artifact) => <ArtifactCard artifact={artifact} />)}
-  </div>
+  {orderedAreas.map((area) => (
+    <section class="area-section">
+      <h2 class="area-title">{area} <span class="area-count">{byArea.get(area)!.length}</span></h2>
+      <div class="grid">
+        {byArea.get(area)!.map((artifact) => <ArtifactCard artifact={artifact} />)}
+      </div>
+    </section>
+  ))}
 
   <div class="empty" id="empty">No artifacts match your search.</div>
   </div>
@@ -93,6 +115,8 @@ const stats = types
     const empty = document.getElementById('empty')!;
     let activeType = 'all';
 
+    const sections = document.querySelectorAll<HTMLElement>('.area-section');
+
     function apply() {
       const q = search.value.trim().toLowerCase();
       let visible = 0;
@@ -102,6 +126,12 @@ const stats = types
         const show = typeOk && textOk;
         card.style.display = show ? '' : 'none';
         if (show) visible++;
+      });
+      sections.forEach((section) => {
+        const any = [...section.querySelectorAll<HTMLElement>('.card')].some(
+          (c) => c.style.display !== 'none'
+        );
+        section.style.display = any ? '' : 'none';
       });
       empty.style.display = visible === 0 ? 'block' : 'none';
     }

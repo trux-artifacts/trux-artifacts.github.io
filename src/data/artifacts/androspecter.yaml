@@ -1,5 +1,6 @@
 name: AndroSpecter
 type: library
+area: Android Static & Dynamic Analysis
 description: >-
   A Java library that streamlines the static analysis of Java programs and
   Android apps — utilities for Soot/FlowDroid setup, APK handling, and common

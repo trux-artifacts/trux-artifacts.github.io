@@ -1,5 +1,6 @@
 name: TriggerZoo
 type: dataset
+area: Android Datasets
 description: >-
   A dataset of Android apps from Google Play automatically infected with
   logic bombs using AndroBomb, with labeled ground truth to evaluate

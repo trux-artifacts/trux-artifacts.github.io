@@ -357,7 +357,31 @@ a:hover {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
-  padding-bottom: 64px;
+}
+
+.area-section {
+  margin-bottom: 40px;
+}
+
+.area-section:last-of-type {
+  margin-bottom: 64px;
+}
+
+.area-title {
+  font-size: 21px;
+  font-weight: 700;
+  margin: 0 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--coral);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.area-count {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-3);
 }
 
 .card {

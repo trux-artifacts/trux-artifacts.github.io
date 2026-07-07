@@ -1,5 +1,6 @@
 name: iFixR
 type: tool
+area: Patches & Program Repair
 description: >-
   Bug-report-driven automated program repair — generates patches from user
   bug reports instead of test suites, closing the gap with real-world

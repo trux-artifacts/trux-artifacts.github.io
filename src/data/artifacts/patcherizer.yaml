@@ -1,5 +1,6 @@
 name: Patcherizer
 type: tool
+area: Patches & Program Repair
 description: >-
   Learns to represent code changes by combining a sequence-intention encoder
   and a graph-intention encoder over AST diffs, powering tasks such as patch

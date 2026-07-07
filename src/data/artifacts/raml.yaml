@@ -1,5 +1,6 @@
 name: RAML
 type: tool
+area: Android Security & Malware
 description: >-
   Retrieval-augmented localization of malicious payloads in Android apps —
   combines LLM-generated class descriptions, vector search, and LLM

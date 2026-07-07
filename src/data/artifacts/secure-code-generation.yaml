@@ -1,5 +1,6 @@
 name: How Secure is Secure Code Generation?
 type: benchmark
+area: LLMs for Software Engineering
 description: >-
   An auditing framework that stress-tests secure code generation methods
   (SVEN, SafeCoder, PromSec) with adversarial prompt perturbations,

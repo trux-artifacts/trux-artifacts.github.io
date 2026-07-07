@@ -1,5 +1,6 @@
 name: Difuzer
 type: tool
+area: Android Security & Malware
 description: >-
   Uncovers suspicious hidden sensitive operations in Android apps by combining
   static taint analysis with anomaly detection on inter-procedural triggers.

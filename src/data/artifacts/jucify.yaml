@@ -1,5 +1,6 @@
 name: JuCify
 type: tool
+area: Android Static & Dynamic Analysis
 description: >-
   Unifies Android bytecode and native code into a single representation so
   static analyzers can see the whole app — revealing sensitive flows that

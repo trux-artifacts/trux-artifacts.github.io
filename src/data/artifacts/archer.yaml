@@ -1,5 +1,6 @@
 name: Archer
 type: tool
+area: Android Static & Dynamic Analysis
 description: >-
   Resolves conditional implicit calls in Android apps (e.g., Thread.start()
   triggering run(), or constraint-guarded JobScheduler executions) to make

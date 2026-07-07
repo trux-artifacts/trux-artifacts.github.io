@@ -1,5 +1,6 @@
 name: LLMDA
 type: tool
+area: Patches & Program Repair
 description: >-
   Just-in-time detection of silent security patches — augments patches with
   LLM-generated explanations, aligns code and text representations

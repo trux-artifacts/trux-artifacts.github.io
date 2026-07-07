@@ -1,5 +1,6 @@
 name: FixMiner
 type: tool
+area: Patches & Program Repair
 description: >-
   Mines relevant fix patterns from code changes in software repositories,
   producing pattern collections that fuel automated program repair systems.
