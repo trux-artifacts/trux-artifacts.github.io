@@ -597,6 +597,28 @@ a.tag:hover {
   color: var(--amber);
 }
 
+.figure-box {
+  margin: 0;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.figure-box img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.figure-box figcaption {
+  margin-top: 14px;
+  font-size: 13px;
+  color: #5f5e5a;
+  text-align: center;
+}
+
 .video-wrap {
   position: relative;
   padding-bottom: 56.25%;

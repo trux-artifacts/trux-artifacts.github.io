@@ -15,8 +15,14 @@ interface Props {
 }
 
 const { artifact } = Astro.props;
-const { name, type, description, authors, status, paper, links, badges, tags, license, bibtex } =
+const { name, type, description, authors, status, paper, links, badges, tags, license, bibtex, figure, figureCaption } =
   artifact.data;
+
+const figureSrc = figure
+  ? figure.startsWith('http') || figure.startsWith('/')
+    ? figure
+    : `/figures/${figure}`
+  : null;
 
 function toEmbed(url: string): string | null {
   const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
@@ -60,6 +66,16 @@ const embed = links.video ? toEmbed(links.video) : null;
         <div class="video-wrap">
           <iframe src={embed} title={`${name} demonstration video`} allowfullscreen />
         </div>
+      </div>
+    )}
+
+    {figureSrc && (
+      <div class="section">
+        <h2>How it works</h2>
+        <figure class="figure-box">
+          <img src={figureSrc} alt={figureCaption ?? `Overview of the ${name} approach`} loading="lazy" />
+          {figureCaption && <figcaption>{figureCaption}</figcaption>}
+        </figure>
       </div>
     )}
 

@@ -28,6 +28,8 @@ const artifacts = defineCollection({
       })
       .default({}),
     logo: z.string().optional(),
+    figure: z.string().optional(),
+    figureCaption: z.string().optional(),
     badges: z.array(z.string()).default([]),
     tags: z.array(z.string()).default([]),
     license: z.string().optional(),

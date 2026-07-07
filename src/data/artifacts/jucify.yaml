@@ -16,6 +16,8 @@ authors:
   - Jacques Klein
 logo: android
 status: stable
+figure: jucify.png
+figureCaption: Overview of the JuCify approach, from the angle of call-graph construction (ICSE 2022 paper, Figure 2)
 paper:
   title: "JuCify: A Step Towards Android Code Unification for Enhanced Static Analysis"
   venue: ICSE
