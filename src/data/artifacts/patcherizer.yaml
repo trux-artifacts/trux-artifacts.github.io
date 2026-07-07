@@ -1,0 +1,44 @@
+name: Patcherizer
+type: tool
+description: >-
+  Learns to represent code changes by combining a sequence-intention encoder
+  and a graph-intention encoder over AST diffs, powering tasks such as patch
+  description generation and code change correctness assessment.
+authors:
+  - Xunzhu Tang
+  - Haoye Tian
+  - Weiguo Pian
+  - Saad Ezzini
+  - Abdoul Kader Kaboré
+  - Andrew Habib
+  - Kisub Kim
+  - Jacques Klein
+  - Tegawendé F. Bissyandé
+status: maintained
+logo: repair
+figure: patcherizer.png
+figureCaption: Overview of Patcherizer (EMSE 2026 paper, Figure 1)
+paper:
+  title: "Learning to Represent Code Changes"
+  venue: EMSE
+  year: 2026
+  doi: 10.1007/s10664-025-10763-6
+links:
+  website: https://anonymous.4open.science/r/Patcherizer-1E04
+tags:
+  - code-changes
+  - patches
+  - representation-learning
+  - deep-learning
+bibtex: |
+  @article{Tang2026patcherizer,
+    author  = {Tang, Xunzhu and Tian, Haoye and Pian, Weiguo and Ezzini, Saad and Kabor\'{e}, Abdoul Kader and Habib, Andrew and Kim, Kisub and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
+    title   = {Learning to Represent Code Changes},
+    journal = {Empirical Software Engineering},
+    year    = {2026},
+    volume  = {31},
+    number  = {3},
+    publisher = {Springer},
+    doi     = {10.1007/s10664-025-10763-6},
+    url     = {https://doi.org/10.1007/s10664-025-10763-6}
+  }

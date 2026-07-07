@@ -1,0 +1,35 @@
+name: Correctness isn't Efficiency
+type: benchmark
+description: >-
+  A profiling pipeline and metrics (DMPD over memory-usage profiles) showing
+  that functionally correct LLM-generated solutions can diverge widely in
+  runtime memory behavior — correctness does not imply efficiency.
+authors:
+  - Prateek Rajput
+  - Yewei Song
+  - Abdoul Aziz Bonkoungou
+  - Iyiola E. Olatunji
+  - Abdoul Kader Kaboré
+  - Jacques Klein
+  - Tegawendé F. Bissyandé
+status: maintained
+figure: correctness-efficiency.png
+figureCaption: Pipeline for code generation and memory profiling (ICSE-SEIP 2026 paper, Figure 4)
+paper:
+  title: "Correctness isn't Efficiency: Runtime Memory Divergence in LLM-Generated Code"
+  venue: ICSE-SEIP
+  year: 2026
+  url: https://arxiv.org/abs/2601.01215
+tags:
+  - llm
+  - code-generation
+  - memory
+  - benchmarks
+bibtex: |
+  @inproceedings{rajput2026correctness,
+    author    = {Rajput, Prateek and Song, Yewei and Bonkoungou, Abdoul Aziz and Olatunji, Iyiola E. and Kabor\'{e}, Abdoul Kader and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
+    title     = {Correctness isn't Efficiency: Runtime Memory Divergence in LLM-Generated Code},
+    booktitle = {Proceedings of the 48th International Conference on Software Engineering: Software Engineering in Practice (ICSE-SEIP)},
+    year      = {2026},
+    url       = {https://arxiv.org/abs/2601.01215}
+  }

@@ -1,0 +1,42 @@
+name: Archer
+type: tool
+description: >-
+  Resolves conditional implicit calls in Android apps (e.g., Thread.start()
+  triggering run(), or constraint-guarded JobScheduler executions) to make
+  the call graphs of static and dynamic analyzers more sound.
+authors:
+  - Jordan Samhi
+  - René Just
+  - Michael Ernst
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+status: maintained
+logo: android
+figure: archer.png
+figureCaption: Overview of the approach to resolving implicit calls and constraints (TOSEM 2026 paper, Figure 1)
+paper:
+  title: "Resolving Conditional Implicit Calls to Improve Static and Dynamic Analysis in Android Apps"
+  venue: TOSEM
+  year: 2026
+  doi: 10.1145/3729168
+links:
+  github: https://github.com/JordanSamhi/Archer
+  website: https://doi.org/10.5281/zenodo.10474310
+tags:
+  - android
+  - static-analysis
+  - call-graph
+  - implicit-calls
+bibtex: |
+  @article{10.1145/3729168,
+    author  = {Samhi, Jordan and Just, Ren\'{e} and Ernst, Michael D. and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
+    title   = {Resolving Conditional Implicit Calls to Improve Static and Dynamic Analysis in Android Apps},
+    journal = {ACM Transactions on Software Engineering and Methodology},
+    year    = {2026},
+    volume  = {35},
+    number  = {2},
+    pages   = {1--25},
+    publisher = {Association for Computing Machinery},
+    doi     = {10.1145/3729168},
+    url     = {https://doi.org/10.1145/3729168}
+  }

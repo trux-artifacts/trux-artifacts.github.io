@@ -1,0 +1,35 @@
+name: How Secure is Secure Code Generation?
+type: benchmark
+description: >-
+  An auditing framework that stress-tests secure code generation methods
+  (SVEN, SafeCoder, PromSec) with adversarial prompt perturbations,
+  evaluating security and functionality jointly.
+authors:
+  - Melissa Tessa
+  - Iyiola E. Olatunji
+  - Aicha War
+  - Jacques Klein
+  - Tegawendé F. Bissyandé
+status: maintained
+figure: secure-code-generation.png
+figureCaption: Secure code generation audit pipeline (paper, Figure 1)
+paper:
+  title: "How Secure is Secure Code Generation? Adversarial Prompts Put LLM Defenses to the Test"
+  venue: arXiv
+  year: 2026
+  url: https://arxiv.org/abs/2601.07084
+tags:
+  - llm
+  - secure-code-generation
+  - adversarial
+  - security
+bibtex: |
+  @misc{tessa2026howsecure,
+    author  = {Tessa, Melissa and Olatunji, Iyiola E. and War, Aicha and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
+    title   = {How Secure is Secure Code Generation? Adversarial Prompts Put LLM Defenses to the Test},
+    year    = {2026},
+    eprint  = {2601.07084},
+    archivePrefix = {arXiv},
+    primaryClass  = {cs.CR},
+    url     = {https://arxiv.org/abs/2601.07084}
+  }

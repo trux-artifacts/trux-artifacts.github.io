@@ -1,0 +1,43 @@
+name: LLMDA
+type: tool
+description: >-
+  Just-in-time detection of silent security patches — augments patches with
+  LLM-generated explanations, aligns code and text representations
+  (PT-Former), and classifies security relevance with a
+  similarity-based contrastive layer.
+authors:
+  - Xunzhu Tang
+  - Kisub Kim
+  - Saad Ezzini
+  - Yewei Song
+  - Haoye Tian
+  - Jacques Klein
+  - Tegawendé F. Bissyandé
+status: maintained
+logo: repair
+figure: llmda.png
+figureCaption: Overview of LLMDA (TOSEM 2026 paper, Figure 1)
+paper:
+  title: "Just-in-Time Detection of Silent Security Patches"
+  venue: TOSEM
+  year: 2026
+  doi: 10.1145/3749370
+links:
+  website: https://llmda.github.io
+tags:
+  - security-patches
+  - llm
+  - vulnerabilities
+bibtex: |
+  @article{10.1145/3749370,
+    author  = {Tang, Xunzhu and Kim, Kisub and Ezzini, Saad and Song, Yewei and Tian, Haoye and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e}},
+    title   = {Just-in-Time Detection of Silent Security Patches},
+    journal = {ACM Transactions on Software Engineering and Methodology},
+    year    = {2026},
+    volume  = {35},
+    number  = {6},
+    pages   = {1--34},
+    publisher = {Association for Computing Machinery},
+    doi     = {10.1145/3749370},
+    url     = {https://doi.org/10.1145/3749370}
+  }
