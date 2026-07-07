@@ -17,6 +17,7 @@ paper:
   doi: 10.1109/ICSE43902.2021.00126
 links:
   github: https://github.com/JordanSamhi/RAICC
+  download: https://github.com/JordanSamhi/RAICC/releases/latest/download/raicc.jar
 tags:
   - android
   - icc

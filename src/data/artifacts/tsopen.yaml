@@ -14,6 +14,7 @@ paper:
   doi: 10.1109/TDSC.2021.3108057
 links:
   github: https://github.com/JordanSamhi/TSOpen
+  download: https://github.com/JordanSamhi/TSOpen/releases/latest/download/TSOpen.jar
 tags:
   - android
   - logic-bombs

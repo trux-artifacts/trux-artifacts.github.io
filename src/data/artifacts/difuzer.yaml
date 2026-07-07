@@ -16,6 +16,7 @@ paper:
   doi: 10.1145/3510003.3510135
 links:
   github: https://github.com/JordanSamhi/Difuzer
+  download: https://github.com/JordanSamhi/Difuzer/raw/master/artefacts/bin/difuzer_with_libraries.jar
 tags:
   - android
   - hidden-behavior
