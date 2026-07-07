@@ -155,6 +155,23 @@ a:hover {
   font-size: 14px;
 }
 
+.header-logo-link {
+  display: inline-flex;
+  margin-left: 28px;
+}
+
+.header-logo {
+  height: 42px;
+  width: auto;
+  display: block;
+}
+
+@media (max-width: 720px) {
+  .header-logo {
+    height: 32px;
+  }
+}
+
 .site-header nav a {
   color: rgba(255, 255, 255, 0.85);
 }
