@@ -38,10 +38,10 @@ const embed = links.video ? toEmbed(links.video) : null;
     <p class="authors">{authors.join(', ')}{license && ` · ${license} license`}</p>
 
     <div class="btn-row">
-      {links.github && <a class="btn primary" href={links.github}>View on GitHub</a>}
-      {links.website && <a class="btn" href={links.website}>Website</a>}
-      {links.download && <a class="btn" href={links.download}>Download</a>}
-      {links.video && !embed && <a class="btn" href={links.video}>Watch demo</a>}
+      {links.github && <a class="btn primary" href={links.github} target="_blank" rel="noopener noreferrer">View on GitHub</a>}
+      {links.website && <a class="btn" href={links.website} target="_blank" rel="noopener noreferrer">Website</a>}
+      {links.download && <a class="btn" href={links.download} target="_blank" rel="noopener noreferrer">Download</a>}
+      {links.video && !embed && <a class="btn" href={links.video} target="_blank" rel="noopener noreferrer">Watch demo</a>}
       {bibtex && <button class="btn" id="copy-bibtex">Copy BibTeX</button>}
     </div>
 
@@ -59,9 +59,9 @@ const embed = links.video ? toEmbed(links.video) : null;
         <h2>Paper</h2>
         <div class="paper-box">
           {paper.doi ? (
-            <a href={`https://doi.org/${paper.doi}`}>{paper.title}</a>
+            <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer">{paper.title}</a>
           ) : paper.url ? (
-            <a href={paper.url}>{paper.title}</a>
+            <a href={paper.url} target="_blank" rel="noopener noreferrer">{paper.title}</a>
           ) : (
             paper.title
           )}

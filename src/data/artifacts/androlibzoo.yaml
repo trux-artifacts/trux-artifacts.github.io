@@ -16,6 +16,7 @@ paper:
   doi: 10.1145/3643991.3644866
 links:
   github: https://github.com/JordanSamhi/AndroLibZoo
+  download: https://raw.githubusercontent.com/JordanSamhi/AndroLibZoo/main/AndroLibZoo.lst
 tags:
   - android
   - libraries
