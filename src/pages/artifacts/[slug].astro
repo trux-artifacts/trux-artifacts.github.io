@@ -1,6 +1,7 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import people from '../../data/people.json';
 
 export async function getStaticPaths() {
   const artifacts = await getCollection('artifacts');
@@ -18,6 +19,8 @@ const { artifact } = Astro.props;
 const { name, type, description, authors, status, paper, links, badges, tags, license, bibtex, figure, figureCaption } =
   artifact.data;
 
+const site = (name: string): string | undefined => (people as Record<string, string>)[name];
+
 const figureSrc = figure
   ? figure.startsWith('http') || figure.startsWith('/')
     ? figure
@@ -34,6 +37,7 @@ const embed = links.video ? toEmbed(links.video) : null;
 <Base title={`${name} — TruX Artifacts`} description={description}>
   <div class="container">
   <div class="detail">
+    <a class="back-link" href="/">← All artifacts</a>
     <div class="type-row">
       <span class={`badge ${type}`}>{type}</span>
       <span class={`status ${status}`}>{status}</span>
@@ -41,7 +45,19 @@ const embed = links.video ? toEmbed(links.video) : null;
     </div>
     <h1>{name}</h1>
     <p class="lead">{description}</p>
-    <p class="authors">{authors.join(', ')}{license && ` · ${license} license`}</p>
+    <p class="authors">
+      {authors.map((a, i) => (
+        <>
+          {site(a) ? (
+            <a href={site(a)} target="_blank" rel="noopener noreferrer">{a}</a>
+          ) : (
+            a
+          )}
+          {i < authors.length - 1 && ', '}
+        </>
+      ))}
+      {license && ` · ${license} license`}
+    </p>
 
     {tags.length > 0 && (
       <div class="tag-row top-tags">
@@ -102,7 +118,6 @@ const embed = links.video ? toEmbed(links.video) : null;
       </div>
     )}
 
-    <a href="/">← All artifacts</a>
   </div>
   </div>
 
