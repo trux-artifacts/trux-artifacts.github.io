@@ -6,7 +6,8 @@ interface Props {
 }
 
 const { artifact } = Astro.props;
-const { name, type, description, paper, status, tags } = artifact.data;
+const { name, type, description, paper, status, tags, logo } = artifact.data;
+const logoSrc = logo ? (logo.startsWith('http') ? logo : `/logos/${logo}.svg`) : null;
 const search = [name, description, type, ...(tags ?? []), paper?.venue ?? '']
   .join(' ')
   .toLowerCase();
@@ -27,4 +28,5 @@ const search = [name, description, type, ...(tags ?? []), paper?.venue ?? '']
     {paper && <span>{paper.venue} {paper.year}</span>}
     <span class={`status ${status}`}>{status}</span>
   </div>
+  {logoSrc && <img class="card-logo" src={logoSrc} alt="" loading="lazy" />}
 </a>

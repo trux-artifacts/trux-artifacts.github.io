@@ -8,6 +8,7 @@ authors:
   - Li Li
   - Tegawendé F. Bissyandé
   - Jacques Klein
+logo: android
 status: stable
 paper:
   title: "Difuzer: Uncovering Suspicious Hidden Sensitive Operations in Android Apps"

@@ -9,6 +9,7 @@ authors:
   - Tegawendé F. Bissyandé
   - Jacques Klein
   - Yves Le Traon
+logo: android
 status: maintained
 paper:
   title: "AndroZoo: Collecting Millions of Android Apps for the Research Community"

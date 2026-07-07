@@ -8,6 +8,7 @@ authors:
   - Jordan Samhi
   - Tegawendé F. Bissyandé
   - Jacques Klein
+logo: android
 status: maintained
 paper:
   title: "AndroLibZoo: A Reliable Dataset of Libraries Based on Software Dependency Analysis"

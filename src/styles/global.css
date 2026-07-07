@@ -276,12 +276,21 @@ a:hover {
 .card {
   display: flex;
   flex-direction: column;
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 20px;
   color: var(--text);
   transition: border-color 0.15s;
+}
+
+.card-logo {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  width: 22px;
+  height: 22px;
 }
 
 .card:hover {
@@ -315,6 +324,7 @@ a:hover {
   gap: 12px;
   font-size: 13px;
   color: var(--text-3);
+  padding-right: 30px;
 }
 
 .badge {

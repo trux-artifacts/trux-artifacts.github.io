@@ -14,6 +14,7 @@ authors:
   - Kevin Allix
   - Tegawendé F. Bissyandé
   - Jacques Klein
+logo: android
 status: stable
 paper:
   title: "JuCify: A Step Towards Android Code Unification for Enhanced Static Analysis"

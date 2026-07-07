@@ -9,6 +9,7 @@ authors:
   - Alexandre Bartel
   - Tegawendé F. Bissyandé
   - Jacques Klein
+logo: android
 status: stable
 paper:
   title: "RAICC: Revealing Atypical Inter-Component Communication in Android Apps"

@@ -26,6 +26,7 @@ const artifacts = defineCollection({
         video: z.string().optional(),
       })
       .default({}),
+    logo: z.string().optional(),
     badges: z.array(z.string()).default([]),
     tags: z.array(z.string()).default([]),
     license: z.string().optional(),

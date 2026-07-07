@@ -6,6 +6,7 @@ description: >-
 authors:
   - Jordan Samhi
   - Alexandre Bartel
+logo: android
 status: stable
 paper:
   title: "On the (In)Effectiveness of Static Logic Bomb Detection for Android Apps"
