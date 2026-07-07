@@ -246,8 +246,39 @@ a:hover {
   max-width: 640px;
 }
 
+.hero-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 48px;
+  flex-wrap: wrap;
+}
+
+.hero-text {
+  max-width: 640px;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  margin-top: 36px;
+  flex-wrap: wrap;
+}
+
+.stat-num {
+  display: block;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #ffffff;
+}
+
+.stat-label {
+  font-size: 13.5px;
+  color: var(--hero-text);
+}
+
 .hero-actions {
-  margin-top: 32px;
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
@@ -543,6 +574,16 @@ pre.bibtex {
   border-radius: 999px;
   background: var(--gray-bg);
   color: var(--text-2);
+}
+
+a.tag:hover {
+  background: var(--border);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.top-tags {
+  margin: -12px 0 28px;
 }
 
 .award {

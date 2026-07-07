@@ -37,6 +37,14 @@ const embed = links.video ? toEmbed(links.video) : null;
     <p class="lead">{description}</p>
     <p class="authors">{authors.join(', ')}{license && ` · ${license} license`}</p>
 
+    {tags.length > 0 && (
+      <div class="tag-row top-tags">
+        {tags.map((t) => (
+          <a class="tag" href={`/?topic=${encodeURIComponent(t)}`} title={`See all artifacts about ${t}`}>{t}</a>
+        ))}
+      </div>
+    )}
+
     <div class="btn-row">
       {links.github && <a class="btn primary" href={links.github} target="_blank" rel="noopener noreferrer">View on GitHub</a>}
       {links.website && <a class="btn" href={links.website} target="_blank" rel="noopener noreferrer">Website</a>}
@@ -75,15 +83,6 @@ const embed = links.video ? toEmbed(links.video) : null;
       <div class="section">
         <h2>Cite this artifact</h2>
         <pre class="bibtex" id="bibtex">{bibtex.trim()}</pre>
-      </div>
-    )}
-
-    {tags.length > 0 && (
-      <div class="section">
-        <h2>Topics</h2>
-        <div class="tag-row">
-          {tags.map((t) => <span class="tag">{t}</span>)}
-        </div>
       </div>
     )}
 
