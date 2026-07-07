@@ -100,8 +100,7 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding-top: 16px;
-  padding-bottom: 16px;
+  height: 72px;
 }
 
 .brand {
@@ -157,18 +156,20 @@ a:hover {
 
 .header-logo-link {
   display: inline-flex;
+  align-items: center;
+  align-self: stretch;
   margin-left: 28px;
 }
 
 .header-logo {
-  height: 42px;
+  height: 72px;
   width: auto;
   display: block;
 }
 
 @media (max-width: 720px) {
   .header-logo {
-    height: 32px;
+    height: 48px;
   }
 }
 
