@@ -1,0 +1,39 @@
+name: DamFlow
+type: tool
+description: >-
+  Prevents a flood of irrelevant data flows in Android taint analysis by
+  scoring the semantic relevance of each reported flow, keeping analysts
+  focused on the flows that matter.
+authors:
+  - Marco Alecci
+  - Jordan Samhi
+  - Marc Miltenberger
+  - Steven Arzt
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+status: maintained
+logo: android
+figure: damflow.png
+figureCaption: DamFlow approach overview (TOSEM 2025 paper, Figure 2)
+paper:
+  title: "DamFlow: Preventing a Flood of Irrelevant Data Flows in Android Apps"
+  venue: TOSEM
+  year: 2025
+  doi: 10.1145/3772002
+links:
+  github: https://github.com/Trustworthy-Software/DamFlow
+tags:
+  - android
+  - taint-analysis
+  - data-flows
+  - machine-learning
+bibtex: |
+  @article{10.1145/3772002,
+    author  = {Alecci, Marco and Samhi, Jordan and Miltenberger, Marc and Arzt, Steven and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
+    title   = {DamFlow: Preventing a Flood of Irrelevant Data Flows in Android Apps},
+    journal = {ACM Transactions on Software Engineering and Methodology},
+    year    = {2025},
+    publisher = {Association for Computing Machinery},
+    doi     = {10.1145/3772002},
+    url     = {https://doi.org/10.1145/3772002}
+  }

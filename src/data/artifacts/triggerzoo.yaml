@@ -1,0 +1,40 @@
+name: TriggerZoo
+type: dataset
+description: >-
+  A dataset of Android apps from Google Play automatically infected with
+  logic bombs using AndroBomb, with labeled ground truth to evaluate
+  logic bomb detectors.
+authors:
+  - Jordan Samhi
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+status: stable
+logo: android
+figure: https://raw.githubusercontent.com/JordanSamhi/TriggerZoo/master/plots/trigger_types.png
+figureCaption: Number of infected apps by trigger type in TriggerZoo
+paper:
+  title: "TriggerZoo: A Dataset of Android Applications Automatically Infected with Logic Bombs"
+  venue: MSR
+  year: 2022
+  doi: 10.1145/3524842.3528020
+links:
+  github: https://github.com/JordanSamhi/TriggerZoo
+  website: https://doi.org/10.5281/zenodo.5907916
+  access: https://androzoo.uni.lu/access
+tags:
+  - android
+  - logic-bombs
+  - malware
+license: Apache-2.0
+bibtex: |
+  @inproceedings{10.1145/3524842.3528020,
+    author    = {Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
+    title     = {TriggerZoo: A Dataset of Android Applications Automatically Infected with Logic Bombs},
+    booktitle = {Proceedings of the 19th International Conference on Mining Software Repositories},
+    year      = {2022},
+    pages     = {459--463},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    doi       = {10.1145/3524842.3528020},
+    url       = {https://doi.org/10.1145/3524842.3528020}
+  }

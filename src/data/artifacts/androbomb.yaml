@@ -1,0 +1,37 @@
+name: AndroBomb
+type: tool
+description: >-
+  Automatically infects Android apps with logic bombs (trigger-based
+  behaviors) to produce ground-truth benchmarks for logic bomb detection —
+  the tool behind the TriggerZoo dataset.
+authors:
+  - Jordan Samhi
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+status: stable
+logo: android
+figure: androbomb.png
+figureCaption: Overview of the AndroBomb approach to infect an Android app (MSR 2022 paper, Figure 1)
+paper:
+  title: "TriggerZoo: A Dataset of Android Applications Automatically Infected with Logic Bombs"
+  venue: MSR
+  year: 2022
+  doi: 10.1145/3524842.3528020
+links:
+  github: https://github.com/JordanSamhi/AndroBomb
+tags:
+  - android
+  - logic-bombs
+  - instrumentation
+bibtex: |
+  @inproceedings{10.1145/3524842.3528020,
+    author    = {Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
+    title     = {TriggerZoo: A Dataset of Android Applications Automatically Infected with Logic Bombs},
+    booktitle = {Proceedings of the 19th International Conference on Mining Software Repositories},
+    year      = {2022},
+    pages     = {459--463},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    doi       = {10.1145/3524842.3528020},
+    url       = {https://doi.org/10.1145/3524842.3528020}
+  }

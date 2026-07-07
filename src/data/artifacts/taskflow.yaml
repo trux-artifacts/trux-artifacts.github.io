@@ -1,0 +1,37 @@
+name: TaskFlow
+type: tool
+description: >-
+  An LLM-driven framework that generates task-specific lists of SOURCE
+  methods for Android taint analysis, replacing static generic lists with
+  specifications tailored to the analysis goal.
+authors:
+  - Marco Alecci
+  - Jordan Samhi
+  - Marc Miltenberger
+  - Steven Arzt
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+status: maintained
+logo: android
+paper:
+  title: "TaskFlow: LLMs for Android Taint Specification"
+  venue: TOSEM
+  year: 2026
+  doi: 10.1145/3815184
+links:
+  github: https://github.com/Trustworthy-Software/TaskFlow
+tags:
+  - android
+  - taint-analysis
+  - llm
+  - sources-and-sinks
+bibtex: |
+  @article{10.1145/3815184,
+    author  = {Alecci, Marco and Samhi, Jordan and Miltenberger, Marc and Arzt, Steven and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
+    title   = {TaskFlow: LLMs for Android Taint Specification},
+    journal = {ACM Transactions on Software Engineering and Methodology},
+    year    = {2026},
+    publisher = {Association for Computing Machinery},
+    doi     = {10.1145/3815184},
+    url     = {https://doi.org/10.1145/3815184}
+  }

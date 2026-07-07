@@ -1,0 +1,42 @@
+name: Difuzer++
+type: tool
+description: >-
+  Improves logic bomb identification in Android apps with context-aware
+  anomaly detection, reducing false positives over its predecessor
+  Difuzer.
+authors:
+  - Marco Alecci
+  - Jordan Samhi
+  - Li Li
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+status: stable
+logo: android
+figure: difuzerplusplus.png
+figureCaption: Overview of the Difuzer++ approach on a given APK file (IEEE TDSC 2024 paper, Figure 2)
+paper:
+  title: "Improving Logic Bomb Identification in Android Apps via Context-Aware Anomaly Detection"
+  venue: IEEE TDSC
+  year: 2024
+  doi: 10.1109/TDSC.2024.3358979
+links:
+  github: https://github.com/Trustworthy-Software/DifuzerPlusPlus
+  download: https://github.com/Trustworthy-Software/DifuzerPlusPlus/raw/main/Difuzer-0.1-jar-with-dependencies.jar
+tags:
+  - android
+  - logic-bombs
+  - anomaly-detection
+  - machine-learning
+bibtex: |
+  @article{10.1109/TDSC.2024.3358979,
+    author  = {Alecci, Marco and Samhi, Jordan and Li, Li and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
+    title   = {Improving Logic Bomb Identification in Android Apps via Context-Aware Anomaly Detection},
+    journal = {IEEE Transactions on Dependable and Secure Computing},
+    year    = {2024},
+    volume  = {21},
+    number  = {5},
+    pages   = {4735--4753},
+    publisher = {IEEE},
+    doi     = {10.1109/TDSC.2024.3358979},
+    url     = {https://doi.org/10.1109/TDSC.2024.3358979}
+  }

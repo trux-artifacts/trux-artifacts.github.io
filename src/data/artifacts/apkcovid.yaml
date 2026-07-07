@@ -1,0 +1,38 @@
+name: APKCOVID
+type: dataset
+description: >-
+  A curated dataset of Android apps related to COVID-19 collected from
+  Google Play, supporting the first empirical study of how the pandemic
+  was reflected in mobile apps.
+authors:
+  - Jordan Samhi
+  - Kevin Allix
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+status: stable
+logo: android
+figure: apkcovid.png
+figureCaption: Dataset curation process, numbers represent numbers of apps (EMSE 2021 paper, Figure 6)
+paper:
+  title: "A First Look at Android Applications in Google Play Related to COVID-19"
+  venue: EMSE
+  year: 2021
+  doi: 10.1007/s10664-021-09943-x
+links:
+  github: https://github.com/JordanSamhi/APKCOVID
+tags:
+  - android
+  - covid-19
+  - empirical-study
+bibtex: |
+  @article{Samhi2021apkcovid,
+    author  = {Samhi, Jordan and Allix, Kevin and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
+    title   = {A First Look at Android Applications in Google Play Related to COVID-19},
+    journal = {Empirical Software Engineering},
+    year    = {2021},
+    volume  = {26},
+    number  = {4},
+    publisher = {Springer},
+    doi     = {10.1007/s10664-021-09943-x},
+    url     = {https://doi.org/10.1007/s10664-021-09943-x}
+  }
