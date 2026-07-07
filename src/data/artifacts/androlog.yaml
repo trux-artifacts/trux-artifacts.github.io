@@ -1,0 +1,37 @@
+name: AndroLog
+type: tool
+description: >-
+  Instruments Android apps in a black-box manner (on top of Soot) to compute
+  fine-grained code coverage at class, method, statement, and component
+  levels — instrumenting up to 98% of recent apps where prior tools stall.
+authors:
+  - Jordan Samhi
+  - Andreas Zeller
+status: maintained
+logo: android
+figure: androlog.png
+figureCaption: AndroLog's architecture, the Instrumenter instruments an app and the Log Processor generates a code coverage report (FSE 2024 paper, Figure 1)
+paper:
+  title: "AndroLog: Android Instrumentation and Code Coverage Analysis"
+  venue: FSE
+  year: 2024
+  doi: 10.1145/3663529.3663806
+links:
+  github: https://github.com/JordanSamhi/AndroLog
+tags:
+  - android
+  - instrumentation
+  - code-coverage
+  - dynamic-analysis
+bibtex: |
+  @inproceedings{10.1145/3663529.3663806,
+    author    = {Samhi, Jordan and Zeller, Andreas},
+    title     = {AndroLog: Android Instrumentation and Code Coverage Analysis},
+    booktitle = {Companion Proceedings of the 32nd ACM International Conference on the Foundations of Software Engineering},
+    year      = {2024},
+    pages     = {597--601},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    doi       = {10.1145/3663529.3663806},
+    url       = {https://doi.org/10.1145/3663529.3663806}
+  }
