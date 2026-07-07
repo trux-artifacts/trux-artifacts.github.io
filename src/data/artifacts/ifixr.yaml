@@ -13,6 +13,7 @@ authors:
   - Jacques Klein
   - Yves Le Traon
 status: stable
+logo: repair
 paper:
   title: "iFixR: Bug Report Driven Program Repair"
   venue: ESEC/FSE

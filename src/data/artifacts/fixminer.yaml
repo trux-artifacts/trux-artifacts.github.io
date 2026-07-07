@@ -12,6 +12,7 @@ authors:
   - Martin Monperrus
   - Yves Le Traon
 status: stable
+logo: repair
 paper:
   title: "FixMiner: Mining Relevant Fix Patterns for Automated Program Repair"
   venue: EMSE

@@ -9,6 +9,7 @@ authors:
   - Dongsun Kim
   - Tegawendé F. Bissyandé
 status: stable
+logo: repair
 paper:
   title: "TBar: Revisiting Template-Based Automated Program Repair"
   venue: ISSTA
