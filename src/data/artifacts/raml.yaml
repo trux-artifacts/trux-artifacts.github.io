@@ -1,0 +1,42 @@
+name: RAML
+type: tool
+description: >-
+  Retrieval-augmented localization of malicious payloads in Android apps —
+  combines LLM-generated class descriptions, vector search, and LLM
+  re-ranking to pinpoint malicious classes and methods from a behavior query.
+authors:
+  - Tiezhu Sun
+  - Marco Alecci
+  - Yewei Song
+  - Xunzhu Tang
+  - Kisub Kim
+  - Jordan Samhi
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+status: maintained
+logo: android
+figure: raml.png
+figureCaption: The overview of the RAML pipeline (ASE 2025 paper, Figure 2)
+paper:
+  title: "RAML: Toward Retrieval-Augmented Localization of Malicious Payloads in Android Apps"
+  venue: ASE
+  year: 2025
+  doi: 10.1109/ASE63991.2025.00351
+links:
+  github: https://github.com/Trustworthy-Software/RAML
+tags:
+  - android
+  - malware
+  - llm
+  - retrieval-augmented
+bibtex: |
+  @inproceedings{10.1109/ASE63991.2025.00351,
+    author    = {Sun, Tiezhu and Alecci, Marco and Song, Yewei and Tang, Xunzhu and Kim, Kisub and Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
+    title     = {RAML: Toward Retrieval-Augmented Localization of Malicious Payloads in Android Apps},
+    booktitle = {2025 40th IEEE/ACM International Conference on Automated Software Engineering (ASE)},
+    year      = {2025},
+    pages     = {3963--3967},
+    publisher = {IEEE},
+    doi       = {10.1109/ASE63991.2025.00351},
+    url       = {https://doi.org/10.1109/ASE63991.2025.00351}
+  }

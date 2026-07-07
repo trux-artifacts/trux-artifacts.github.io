@@ -1,0 +1,36 @@
+name: GeoTwins
+type: tool
+description: >-
+  Uncovers hidden geographic disparities in Android apps by comparing the
+  app versions served to users in different countries.
+authors:
+  - Marco Alecci
+  - Pedro Jesús Ruiz Jiménez
+  - Jordan Samhi
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+status: maintained
+logo: android
+paper:
+  title: "GeoTwins: Uncovering Hidden Geographic Disparities in Android Apps"
+  venue: MobiSys
+  year: 2026
+  doi: 10.1145/3745756.3809191
+links:
+  github: https://github.com/Trustworthy-Software/GeoTwins
+tags:
+  - android
+  - geographic-disparities
+  - empirical-study
+bibtex: |
+  @inproceedings{10.1145/3745756.3809191,
+    author    = {Alecci, Marco and Ruiz Jim\'{e}nez, Pedro Jes\'{u}s and Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
+    title     = {GeoTwins: Uncovering Hidden Geographic Disparities in Android Apps},
+    booktitle = {Proceedings of the 24th Annual International Conference on Mobile Systems, Applications and Services},
+    year      = {2026},
+    pages     = {83--95},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    doi       = {10.1145/3745756.3809191},
+    url       = {https://doi.org/10.1145/3745756.3809191}
+  }

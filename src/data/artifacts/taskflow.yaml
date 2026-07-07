@@ -13,6 +13,8 @@ authors:
   - Jacques Klein
 status: maintained
 logo: android
+figure: taskflow.png
+figureCaption: Overview of the TaskFlow approach, illustrating the two main phases (TOSEM 2026 paper, Figure 1)
 paper:
   title: "TaskFlow: LLMs for Android Taint Specification"
   venue: TOSEM
