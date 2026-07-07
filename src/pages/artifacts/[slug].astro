@@ -41,6 +41,7 @@ const embed = links.video ? toEmbed(links.video) : null;
       {links.github && <a class="btn primary" href={links.github} target="_blank" rel="noopener noreferrer">View on GitHub</a>}
       {links.website && <a class="btn" href={links.website} target="_blank" rel="noopener noreferrer">Website</a>}
       {links.download && <a class="btn" href={links.download} target="_blank" rel="noopener noreferrer">Download</a>}
+      {links.access && <a class="btn" href={links.access} target="_blank" rel="noopener noreferrer">Request access</a>}
       {links.video && !embed && <a class="btn" href={links.video} target="_blank" rel="noopener noreferrer">Watch demo</a>}
       {bibtex && <button class="btn" id="copy-bibtex">Copy BibTeX</button>}
     </div>

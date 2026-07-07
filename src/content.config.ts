@@ -23,6 +23,7 @@ const artifacts = defineCollection({
         github: z.string().optional(),
         website: z.string().optional(),
         download: z.string().optional(),
+        access: z.string().optional(),
         video: z.string().optional(),
       })
       .default({}),
