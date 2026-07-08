@@ -25,22 +25,15 @@ const counts = Object.fromEntries(
   ])
 );
 
-const areaOrder = [
-  'Android Datasets',
-  'Android Static & Dynamic Analysis',
-  'Android Security & Malware',
-  'Patches & Program Repair',
-  'LLMs for Software Engineering',
-];
 const byArea = new Map<string, typeof artifacts>();
 for (const artifact of artifacts) {
   const area = artifact.data.area;
   if (!byArea.has(area)) byArea.set(area, []);
   byArea.get(area)!.push(artifact);
 }
-const knownAreas = areaOrder.filter((a) => byArea.has(a));
-const otherAreas = [...byArea.keys()].filter((a) => !areaOrder.includes(a)).sort();
-const orderedAreas = [...knownAreas, ...otherAreas];
+const orderedAreas = [...byArea.keys()].sort((a, b) =>
+  a === 'Other' ? 1 : b === 'Other' ? -1 : a.localeCompare(b, 'en')
+);
 
 const plurals: Record<string, [string, string]> = {
   all: ['artifact', 'artifacts'],
