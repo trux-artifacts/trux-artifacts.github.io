@@ -781,6 +781,43 @@ a.tag:hover {
   to { opacity: 1; transform: none; }
 }
 
+.demo-explanation {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: var(--coral-bg);
+  border-radius: 8px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--coral-text);
+  animation: demo-fade 0.4s ease;
+}
+
+.demo-exp-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  border-radius: 50%;
+  background: var(--coral);
+  position: relative;
+}
+
+.demo-exp-icon::after {
+  content: 'i';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  font-style: italic;
+}
+
 .demo-note {
   font-size: 12.5px;
   color: var(--text-3);

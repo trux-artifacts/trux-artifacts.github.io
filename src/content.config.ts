@@ -35,6 +35,7 @@ const artifacts = defineCollection({
       .object({
         intro: z.string().optional(),
         outputLabel: z.string().default('Output'),
+        countOutput: z.boolean().default(true),
         note: z.string().default('Precomputed example — no live model is called.'),
         scenarios: z.array(
           z.object({
@@ -42,6 +43,7 @@ const artifacts = defineCollection({
             query: z.string(),
             thinking: z.array(z.string()),
             output: z.array(z.string()),
+            explanation: z.string().optional(),
           })
         ),
       })

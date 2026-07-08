@@ -184,7 +184,10 @@ const embed = links.video ? toEmbed(links.video) : null;
         think.remove();
         const head = document.createElement('p');
         head.className = 'demo-output-label';
-        head.textContent = `${demoData.outputLabel} (${s.output.length})`;
+        const showCount = demoData.countOutput !== false;
+        head.textContent = showCount
+          ? `${demoData.outputLabel} (${s.output.length})`
+          : demoData.outputLabel;
         stage.appendChild(head);
 
         const list = document.createElement('div');
@@ -197,6 +200,18 @@ const embed = links.video ? toEmbed(links.video) : null;
           line.textContent = m;
           list.appendChild(line);
           await sleep(90);
+        }
+
+        if (s.explanation) {
+          if (run !== myRun) return;
+          await sleep(350);
+          const exp = document.createElement('div');
+          exp.className = 'demo-explanation';
+          exp.innerHTML = '<span class="demo-exp-icon" aria-hidden="true"></span>';
+          const txt = document.createElement('span');
+          txt.textContent = s.explanation;
+          exp.appendChild(txt);
+          stage.appendChild(exp);
         }
       }
 

@@ -25,6 +25,85 @@ tags:
   - android
   - hidden-behavior
   - anomaly-detection
+demo:
+  intro: >-
+    Pick a sample app: Difuzer analyzes it and reports any suspicious hidden
+    sensitive operation (a potential logic bomb) together with the condition
+    that triggers it.
+  outputLabel: Difuzer output
+  countOutput: false
+  note: >-
+    Precomputed examples on illustrative apps — no analysis is actually run in
+    your browser. Run Difuzer from the repository to analyze real APKs.
+  scenarios:
+    - label: Time-triggered sample
+      query: java -jar difuzer.jar -a com.fittrack.pro.apk -p android-platforms/
+      thinking:
+        - Building the app model with FlowDroid…
+        - Extracting the inter-procedural control-flow graph…
+        - Taint tracking — identifying trigger candidates…
+        - Anomaly detection — predicting outliers…
+      output:
+        - "Difuzer v1.0 — analysis completed"
+        - "- Potential logic bomb found in: <com.a.b.q: void a(android.content.Context)>"
+        - "  - Condition: if $l0 > 1767225600000L goto $r3 = virtualinvoke $r1.<com.a.b.s: void d()>()"
+        - "  - Test performed on following potential values:"
+        - "    - <java.lang.System: long currentTimeMillis()>"
+      explanation: >-
+        The hidden code only runs when the current time passes a hardcoded
+        timestamp (1767225600000 ms = 1 January 2026). This is a time bomb: the
+        malicious branch stays dormant during analysis and activates on that
+        date.
+    - label: SMS-triggered sample
+      query: java -jar difuzer.jar -a com.quicknote.free.apk -p android-platforms/
+      thinking:
+        - Building the app model with FlowDroid…
+        - Extracting the inter-procedural control-flow graph…
+        - Taint tracking — identifying trigger candidates…
+        - Anomaly detection — predicting outliers…
+      output:
+        - "Difuzer v1.0 — analysis completed"
+        - "- Potential logic bomb found in: <com.n.k.j: boolean b(java.lang.String)>"
+        - "  - Condition: if $z0 == 1 goto $r5 = virtualinvoke $r0.<com.n.k.m: void f(byte[])>()"
+        - "  - Test performed on following potential values:"
+        - "    - <android.telephony.SmsMessage: java.lang.String getMessageBody()>"
+      explanation: >-
+        The trigger depends on the body of an incoming SMS. The hidden operation
+        fires only when the device receives a specific text message — a covert
+        remote-activation channel that never shows up under normal testing.
+    - label: Location-triggered sample
+      query: java -jar difuzer.jar -a com.photoeditor.lite.apk -p android-platforms/
+      thinking:
+        - Building the app model with FlowDroid…
+        - Extracting the inter-procedural control-flow graph…
+        - Taint tracking — identifying trigger candidates…
+        - Anomaly detection — predicting outliers…
+      output:
+        - "Difuzer v1.0 — analysis completed"
+        - "- Potential logic bomb found in: <com.x.y.h: void c()>"
+        - "  - Condition: if $r2 == \"RU\" goto $r8 = virtualinvoke $r4.<com.x.y.p: void s()>()"
+        - "  - Test performed on following potential values:"
+        - "    - <android.telephony.TelephonyManager: java.lang.String getNetworkCountryIso()>"
+      explanation: >-
+        The condition checks the device's network country code and only runs the
+        hidden code when it equals "RU". This geo-fenced payload activates solely
+        for phones located in Russia, staying invisible everywhere else.
+    - label: Benign sample
+      query: java -jar difuzer.jar -a org.weatherlite.apk -p android-platforms/
+      thinking:
+        - Building the app model with FlowDroid…
+        - Extracting the inter-procedural control-flow graph…
+        - Taint tracking — identifying trigger candidates…
+        - Anomaly detection — predicting outliers…
+      output:
+        - "Difuzer v1.0 — analysis completed"
+        - "- No suspicious hidden sensitive operation found."
+        - "- 14 triggers analyzed, 0 flagged as outliers."
+      explanation: >-
+        Not every conditional is malicious. Here Difuzer's anomaly detection saw
+        14 ordinary triggers (permission checks, feature flags…) and flagged none
+        as outliers — showing the tool distinguishes benign guards from real
+        logic bombs instead of raising a false alarm on every branch.
 bibtex: |
   @inproceedings{10.1145/3510003.3510135,
     author    = {Samhi, Jordan and Li, Li and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
