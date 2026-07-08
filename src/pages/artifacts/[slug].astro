@@ -157,12 +157,7 @@ const embed = links.video ? toEmbed(links.video) : null;
 
       const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-      async function play(i: number) {
-        const myRun = ++run;
-        const s = demoData.scenarios[i];
-        taskBtns.forEach((b, j) => b.classList.toggle('active', j === i));
-
-        stage.innerHTML = '';
+      async function playLlm(myRun: number, s: any) {
         const query = document.createElement('p');
         query.className = 'demo-query';
         query.textContent = '❯ ' + s.query;
@@ -201,6 +196,59 @@ const embed = links.video ? toEmbed(links.video) : null;
           list.appendChild(line);
           await sleep(90);
         }
+      }
+
+      async function playTerminal(myRun: number, s: any) {
+        const term = document.createElement('div');
+        term.className = 'demo-terminal';
+        term.innerHTML =
+          '<div class="demo-terminal-bar"><i class="r"></i><i class="y"></i><i class="g"></i></div>';
+        const body = document.createElement('div');
+        body.className = 'demo-terminal-body';
+        term.appendChild(body);
+        stage.appendChild(term);
+
+        const prompt = document.createElement('div');
+        prompt.innerHTML = '<span class="demo-term-prompt">❯</span> <span class="demo-term-cmd"></span>';
+        prompt.querySelector('.demo-term-cmd')!.textContent = s.query;
+        body.appendChild(prompt);
+
+        const cursorLine = document.createElement('div');
+        cursorLine.innerHTML = '<span class="demo-term-cursor"></span>';
+        body.appendChild(cursorLine);
+
+        for (const t of s.thinking) {
+          if (run !== myRun) return;
+          const line = document.createElement('div');
+          line.className = 'demo-term-think';
+          line.textContent = t;
+          body.insertBefore(line, cursorLine);
+          await sleep(1000);
+        }
+        if (run !== myRun) return;
+
+        for (const m of s.output) {
+          if (run !== myRun) return;
+          const line = document.createElement('div');
+          line.className = 'demo-term-out';
+          line.textContent = m;
+          body.insertBefore(line, cursorLine);
+          await sleep(90);
+        }
+      }
+
+      async function play(i: number) {
+        const myRun = ++run;
+        const s = demoData.scenarios[i];
+        taskBtns.forEach((b, j) => b.classList.toggle('active', j === i));
+
+        stage.innerHTML = '';
+        if (demoData.style === 'terminal') {
+          await playTerminal(myRun, s);
+        } else {
+          await playLlm(myRun, s);
+        }
+        if (run !== myRun) return;
 
         if (s.explanation) {
           if (run !== myRun) return;

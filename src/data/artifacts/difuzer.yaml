@@ -26,6 +26,7 @@ tags:
   - hidden-behavior
   - anomaly-detection
 demo:
+  style: terminal
   intro: >-
     Pick a sample app: Difuzer analyzes it and reports any suspicious hidden
     sensitive operation (a potential logic bomb) together with the condition

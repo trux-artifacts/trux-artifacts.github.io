@@ -34,6 +34,7 @@ const artifacts = defineCollection({
     demo: z
       .object({
         intro: z.string().optional(),
+        style: z.enum(['llm', 'terminal']).default('llm'),
         outputLabel: z.string().default('Output'),
         countOutput: z.boolean().default(true),
         note: z.string().default('Precomputed example — no live model is called.'),
