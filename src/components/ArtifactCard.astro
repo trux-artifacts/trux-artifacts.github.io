@@ -18,6 +18,7 @@ const search = [name, description, type, ...(tags ?? []), paper?.venue ?? '']
   href={`/artifacts/${artifact.id}/`}
   data-type={type}
   data-search={search}
+  data-tags={(tags ?? []).join(',')}
 >
   <div class="card-head">
     <h3>{name}</h3>

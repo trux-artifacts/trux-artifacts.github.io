@@ -31,9 +31,24 @@ for (const artifact of artifacts) {
   if (!byArea.has(area)) byArea.set(area, []);
   byArea.get(area)!.push(artifact);
 }
-const orderedAreas = [...byArea.keys()].sort((a, b) =>
-  a === 'Other' ? 1 : b === 'Other' ? -1 : a.localeCompare(b, 'en')
-);
+const firstArea = 'LLMs for Software Engineering';
+const orderedAreas = [...byArea.keys()].sort((a, b) => {
+  if (a === firstArea) return -1;
+  if (b === firstArea) return 1;
+  if (a === 'Other') return 1;
+  if (b === 'Other') return -1;
+  return a.localeCompare(b, 'en');
+});
+
+const tagCounts = new Map<string, number>();
+for (const artifact of artifacts) {
+  for (const t of artifact.data.tags) tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
+}
+const topTags = [...tagCounts.entries()]
+  .filter(([, n]) => n >= 2)
+  .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+  .slice(0, 10)
+  .map(([t]) => t);
 
 const plurals: Record<string, [string, string]> = {
   all: ['artifact', 'artifacts'],
@@ -89,6 +104,13 @@ const stats = types
     ))}
   </div>
 
+  <div class="tags-row">
+    <span class="tags-row-label">Topics</span>
+    {topTags.map((t) => (
+      <button class="chip chip-tag" data-tag={t}>{t}</button>
+    ))}
+  </div>
+
   {orderedAreas.map((area) => (
     <section class="area-section">
       <h2 class="area-title">{area} <span class="area-count">{byArea.get(area)!.length}</span></h2>
@@ -109,6 +131,8 @@ const stats = types
     let activeType = 'all';
 
     const sections = document.querySelectorAll<HTMLElement>('.area-section');
+    const tagChips = document.querySelectorAll<HTMLButtonElement>('.chip-tag');
+    let activeTag: string | null = null;
 
     function apply() {
       const q = search.value.trim().toLowerCase();
@@ -116,7 +140,8 @@ const stats = types
       cards.forEach((card) => {
         const typeOk = activeType === 'all' || card.dataset.type === activeType;
         const textOk = !q || (card.dataset.search ?? '').includes(q);
-        const show = typeOk && textOk;
+        const tagOk = !activeTag || (card.dataset.tags ?? '').split(',').includes(activeTag);
+        const show = typeOk && textOk && tagOk;
         card.style.display = show ? '' : 'none';
         if (show) visible++;
       });
@@ -139,11 +164,25 @@ const stats = types
       });
     });
 
+    tagChips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const tag = chip.dataset.tag ?? null;
+        activeTag = activeTag === tag ? null : tag;
+        tagChips.forEach((c) => c.classList.toggle('active', c.dataset.tag === activeTag));
+        apply();
+      });
+    });
+
     const topic = new URLSearchParams(window.location.search).get('topic');
     if (topic) {
-      search.value = topic;
-      apply();
-      search.focus();
+      const chip = [...tagChips].find((c) => c.dataset.tag === topic);
+      if (chip) {
+        chip.click();
+      } else {
+        search.value = topic;
+        apply();
+        search.focus();
+      }
     }
   </script>
 </Base>
