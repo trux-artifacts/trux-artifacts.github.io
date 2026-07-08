@@ -28,6 +28,57 @@ tags:
   - taint-analysis
   - llm
   - sources-and-sinks
+demo:
+  intro: >-
+    Pick an analysis task: TaskFlow generates a task-specific list of Android
+    SOURCE methods, tailored to that goal.
+  outputLabel: Task-specific SOURCE methods
+  note: >-
+    Precomputed example for illustration — no live model is called. Run
+    TaskFlow from the repository to generate lists for your own tasks.
+  scenarios:
+    - label: Track location data
+      query: Generate SOURCE methods for tracking location-based data
+      thinking:
+        - Filtering 46,034 documented Android API methods…
+        - Reusing preprocessing labels (offline phase)…
+        - Label-driven filtering for the location task…
+        - Task-driven refinement of candidate methods…
+      output:
+        - android.location.Location.getLatitude()
+        - android.location.Location.getLongitude()
+        - android.location.LocationManager.getLastKnownLocation(String)
+        - android.telephony.TelephonyManager.getCellLocation()
+        - android.location.Location.getAltitude()
+        - android.location.LocationManager.getCurrentLocation(...)
+        - android.telephony.gsm.GsmCellLocation.getCid()
+    - label: Track SMS & messaging
+      query: Generate SOURCE methods for tracking SMS and messaging data
+      thinking:
+        - Filtering 46,034 documented Android API methods…
+        - Reusing preprocessing labels (offline phase)…
+        - Label-driven filtering for the messaging task…
+        - Task-driven refinement of candidate methods…
+      output:
+        - android.telephony.SmsMessage.getMessageBody()
+        - android.telephony.SmsMessage.getOriginatingAddress()
+        - android.telephony.SmsMessage.getDisplayMessageBody()
+        - android.telephony.SmsManager.getDefault()
+        - android.provider.Telephony.Sms.Inbox.CONTENT_URI
+    - label: Track device identifiers
+      query: Generate SOURCE methods for tracking device and network identifiers
+      thinking:
+        - Filtering 46,034 documented Android API methods…
+        - Reusing preprocessing labels (offline phase)…
+        - Label-driven filtering for the identifier task…
+        - Task-driven refinement of candidate methods…
+      output:
+        - android.telephony.TelephonyManager.getDeviceId()
+        - android.telephony.TelephonyManager.getImei()
+        - android.telephony.TelephonyManager.getSubscriberId()
+        - android.telephony.TelephonyManager.getSimSerialNumber()
+        - android.net.wifi.WifiInfo.getMacAddress()
+        - android.provider.Settings.Secure.getString(ContentResolver, String)
 bibtex: |
   @article{10.1145/3815184,
     author  = {Alecci, Marco and Samhi, Jordan and Miltenberger, Marc and Arzt, Steven and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

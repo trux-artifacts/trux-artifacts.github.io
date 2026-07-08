@@ -16,7 +16,7 @@ interface Props {
 }
 
 const { artifact } = Astro.props;
-const { name, type, description, authors, status, paper, links, badges, tags, license, bibtex, figure, figureCaption } =
+const { name, type, description, authors, status, paper, links, badges, tags, license, bibtex, figure, figureCaption, demo } =
   artifact.data;
 
 const site = (name: string): string | undefined => (people as Record<string, string>)[name];
@@ -95,6 +95,24 @@ const embed = links.video ? toEmbed(links.video) : null;
       </div>
     )}
 
+    {demo && (
+      <div class="section">
+        <h2>Interactive demo</h2>
+        {demo.intro && <p class="demo-intro">{demo.intro}</p>}
+        <div class="demo-box" id="demo" data-demo={JSON.stringify(demo)}>
+          <div class="demo-tasks">
+            {demo.scenarios.map((s, i) => (
+              <button class="btn demo-task" data-i={i}>{s.label}</button>
+            ))}
+          </div>
+          <div class="demo-stage" id="demo-stage">
+            <p class="demo-hint">Pick a task above to see it in action.</p>
+          </div>
+        </div>
+        <p class="demo-note">{demo.note}</p>
+      </div>
+    )}
+
     {paper && (
       <div class="section">
         <h2>Paper</h2>
@@ -129,5 +147,60 @@ const embed = links.video ? toEmbed(links.video) : null;
       btn.textContent = 'Copied';
       setTimeout(() => (btn.textContent = 'Copy BibTeX'), 1500);
     });
+
+    const demoBox = document.getElementById('demo');
+    if (demoBox) {
+      const demoData = JSON.parse(demoBox.dataset.demo ?? '{}');
+      const stage = document.getElementById('demo-stage')!;
+      const taskBtns = demoBox.querySelectorAll<HTMLButtonElement>('.demo-task');
+      let run = 0;
+
+      const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+      async function play(i: number) {
+        const myRun = ++run;
+        const s = demoData.scenarios[i];
+        taskBtns.forEach((b, j) => b.classList.toggle('active', j === i));
+
+        stage.innerHTML = '';
+        const query = document.createElement('p');
+        query.className = 'demo-query';
+        query.textContent = '❯ ' + s.query;
+        stage.appendChild(query);
+
+        const think = document.createElement('div');
+        think.className = 'demo-thinking';
+        think.innerHTML = '<span class="demo-spinner"></span><span class="demo-think-msg"></span>';
+        stage.appendChild(think);
+        const msg = think.querySelector('.demo-think-msg')!;
+
+        for (const t of s.thinking) {
+          if (run !== myRun) return;
+          msg.textContent = t;
+          await sleep(1000);
+        }
+        if (run !== myRun) return;
+
+        think.remove();
+        const head = document.createElement('p');
+        head.className = 'demo-output-label';
+        head.textContent = `${demoData.outputLabel} (${s.output.length})`;
+        stage.appendChild(head);
+
+        const list = document.createElement('div');
+        list.className = 'demo-output';
+        stage.appendChild(list);
+        for (const m of s.output) {
+          if (run !== myRun) return;
+          const line = document.createElement('code');
+          line.className = 'demo-method';
+          line.textContent = m;
+          list.appendChild(line);
+          await sleep(90);
+        }
+      }
+
+      taskBtns.forEach((b, i) => b.addEventListener('click', () => play(i)));
+    }
   </script>
 </Base>
