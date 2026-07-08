@@ -31,6 +31,93 @@ tags:
   - native-code
   - static-analysis
   - call-graph
+demo:
+  style: terminal
+  intro: >-
+    Pick one of the four native-flow scenarios from the paper (Figure 3).
+    JuCify unifies the app's bytecode and native code, then taint analysis
+    finds sensitive flows that cross the Java↔native boundary — flows a
+    Java-only analyzer misses.
+  note: >-
+    Precomputed examples on illustrative apps — nothing runs in your browser.
+    Run JuCify from the repository to analyze your own APKs.
+  scenarios:
+    - label: Getter
+      query: ./main.sh -f com.torch.freeled.apk -p Android-platforms/jars/stubs/ -t
+      thinking:
+        - "Loading binary call-graphs + java-to-native and native-to-java links…"
+        - "Adding java-to-native and native-to-java edges…"
+        - "Binary call-graph imported"
+        - "Taint analysis in progress…"
+      output:
+        - "JuCify v0.1 — analysis completed"
+        - "[✓] Found path through native code:"
+        - "    Source: <TelephonyManager: String getDeviceId()>          [ NATIVE ]"
+        - "    Bridge: DummyBinaryClass.Java_..._nativeGetImei()   returns tainted value to Java"
+        - "    Sink:   <Log: int d(String,String)>                       [ JAVA ]  MainActivity.onCreate"
+        - "    Nodes 16 → 20 · edges 16 → 20 · new native call-graph edges: 4"
+        - "    Has flow through native: YES"
+      explanation: >-
+        GETTER: the sensitive value is produced inside native code and returned
+        to Java, which leaks it. A Java-only analyzer sees the native call
+        return an untainted value and misses the leak entirely.
+    - label: Leaker
+      query: ./main.sh -f com.qr.scanner.apk -p Android-platforms/jars/stubs/ -t
+      thinking:
+        - "Loading binary call-graphs + java-to-native and native-to-java links…"
+        - "Adding java-to-native and native-to-java edges…"
+        - "Binary call-graph imported"
+        - "Taint analysis in progress…"
+      output:
+        - "JuCify v0.1 — analysis completed"
+        - "[✓] Found path through native code:"
+        - "    Source: <TelephonyManager: String getLine1Number()>       [ JAVA ]  MainActivity.onCreate"
+        - "    Bridge: DummyBinaryClass.Java_..._nativeSend(String)   Java passes tainted value into native"
+        - "    Sink:   <java.net.URL: URLConnection openConnection()>    [ NATIVE ]"
+        - "    Nodes 19 → 23 · edges 18 → 22 · new native call-graph edges: 4"
+        - "    Has flow through native: YES"
+      explanation: >-
+        LEAKER: Java reads the sensitive value and hands it to native code,
+        where the sink lives. The exfiltration happens entirely below the Java
+        layer — invisible without unifying the native code.
+    - label: Proxy
+      query: ./main.sh -f com.weather.simple.apk -p Android-platforms/jars/stubs/ -t
+      thinking:
+        - "Loading binary call-graphs + java-to-native and native-to-java links…"
+        - "Adding java-to-native and native-to-java edges…"
+        - "Binary call-graph imported"
+        - "Taint analysis in progress…"
+      output:
+        - "JuCify v0.1 — analysis completed"
+        - "[✓] Found path through native code:"
+        - "    Source: <LocationManager: Location getLastKnownLocation(String)>  [ JAVA ]"
+        - "    Relay:  DummyBinaryClass.Java_..._nativeProcess(Location)   arg in → tainted value out"
+        - "    Sink:   <java.net.URL: URLConnection openConnection()>            [ JAVA ]  LocationService.run"
+        - "    Nodes 22 → 27 · edges 21 → 26 · new native call-graph edges: 5"
+        - "    Has flow through native: YES"
+      explanation: >-
+        PROXY: the tainted value is passed into native, relayed straight back to
+        Java, and leaked there. Native acts as a pass-through that breaks the
+        Java-only data-flow chain unless the two worlds are linked.
+    - label: Delegation
+      query: ./main.sh -f com.battery.saver.apk -p Android-platforms/jars/stubs/ -t
+      thinking:
+        - "Loading binary call-graphs + java-to-native and native-to-java links…"
+        - "Adding java-to-native and native-to-java edges…"
+        - "Binary call-graph imported"
+        - "Taint analysis in progress…"
+      output:
+        - "JuCify v0.1 — analysis completed"
+        - "[✓] Found path through native code:"
+        - "    Source: <TelephonyManager: String getSimSerialNumber()>    [ NATIVE ]"
+        - "    Sink:   <SmsManager: void sendTextMessage(...)>            [ NATIVE ]"
+        - "    Java entrypoint only calls: nativeRun()"
+        - "    Nodes 14 → 21 · edges 13 → 20 · new native call-graph edges: 6"
+        - "    Has flow through native: YES"
+      explanation: >-
+        DELEGATION: both the source and the sink live in native code; Java merely
+        delegates by invoking a native method. The whole flow is opaque to
+        Java-only analysis — JuCify recovers it from the binary.
 bibtex: |
   @inproceedings{10.1145/3510003.3512766,
     author    = {Samhi, Jordan and Gao, Jun and Daoudi, Nadia and Graux, Pierre and Hoyez, Henri and Sun, Xiaoyu and Allix, Kevin and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
