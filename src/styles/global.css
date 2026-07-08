@@ -733,18 +733,18 @@ a.tag:hover {
   color: var(--text-3);
 }
 
-.demo-spinner {
-  width: 16px;
-  height: 16px;
+.demo-brain {
+  width: 20px;
+  height: 20px;
   flex: none;
-  border-radius: 50%;
-  border: 2.5px solid var(--border);
-  border-top-color: var(--coral);
-  animation: demo-spin 0.7s linear infinite;
+  color: var(--coral);
+  transform-origin: center;
+  animation: demo-think-pulse 1.4s ease-in-out infinite;
 }
 
-@keyframes demo-spin {
-  to { transform: rotate(360deg); }
+@keyframes demo-think-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.14); opacity: 1; }
 }
 
 .demo-think-msg {
