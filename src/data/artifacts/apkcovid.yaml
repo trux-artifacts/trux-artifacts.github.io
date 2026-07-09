@@ -25,6 +25,38 @@ tags:
   - android
   - covid-19
   - empirical-study
+dataset:
+  stats:
+    - value: 92
+      label: COVID-19 apps
+    - value: 184563
+      label: apps screened
+  sampleTitle: Sample apps (package names)
+  sampleSource: package_names.txt
+  sampleCount: 8
+  sampleNote: >-
+    Real package names from the dataset — recognizable government and health
+    apps from around the world. The full dataset is distributed as SHA256
+    hashes, resolved to APKs through AndroZoo (not hosted here).
+  samples:
+    - am.gov.covid19
+    - au.gov.health.covidsafe
+    - br.gov.datasus.guardioes
+    - ca.gc.hcsc.canada.covid19
+    - at.roteskreuz.stopcorona
+    - bh.bahrain.corona.tracker
+    - cat.gencat.mobi.StopCovid19Cat
+    - ch.covid19bs.app.PMSMobile
+    - co.gov.ins.guardianes
+    - ar.gob.coronavirus
+    - app.ceylon.selftrackingapp
+    - bf.diagnoseme.fasocivic
+    - com.gov.mcmc.projectcatur
+    - com.agetic.coronavirusapp
+    - com.edu.aku.akuhccheck
+    - com.coronacheck.haugxhaug.testyourcorona
+    - com.docandu.checker
+    - com.Eha.covid_19
 bibtex: |
   @article{Samhi2021apkcovid,
     author  = {Samhi, Jordan and Allix, Kevin and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
