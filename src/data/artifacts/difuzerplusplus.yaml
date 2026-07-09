@@ -28,6 +28,76 @@ tags:
   - logic-bombs
   - anomaly-detection
   - machine-learning
+demo:
+  style: terminal
+  intro: >-
+    Pick an app. Difuzer++ scores each suspicious hidden operation against a
+    model of apps in the SAME category — so behavior that is normal for a
+    category no longer looks anomalous, cutting the false positives Difuzer
+    made with a single global model.
+  outputLabel: Difuzer++ output
+  countOutput: false
+  note: >-
+    Precomputed examples on illustrative apps with made-up scores — nothing runs
+    in your browser. Run Difuzer++ from the repository to analyze your own apps.
+  scenarios:
+    - label: Time-triggered logic bomb
+      query: python3 Difuzer++.py category apps.csv
+      thinking:
+        - Loading per-category OCSVM models…
+        - Extracting SHSO candidates (taint + triggers)…
+        - Scoring against the category model…
+      output:
+        - "Difuzer++ — context-aware logic bomb detection"
+        - "  app:       com.torch.freeled"
+        - "  category:  TOOLS"
+        - "  SHSO:      time-triggered branch in <a.b.q: void a(Context)>"
+        - "  trigger:   System.currentTimeMillis() > 1767225600000"
+        - "  OCSVM (TOOLS model) anomaly score: 0.87"
+        - "  verdict:   ⚠  LOGIC BOMB"
+      explanation: >-
+        The hidden operation only runs after a hardcoded date. Scored against
+        other TOOLS apps, this trigger is a strong outlier — Difuzer++ flags it
+        as a logic bomb.
+    - label: False positive avoided
+      query: python3 Difuzer++.py category apps.csv
+      thinking:
+        - Loading per-category OCSVM models…
+        - Extracting SHSO candidates (taint + triggers)…
+        - Scoring against the category model…
+      output:
+        - "Difuzer++ — context-aware logic bomb detection"
+        - "  app:       com.skycast.weather"
+        - "  category:  WEATHER"
+        - "  SHSO:      location check in <c.d.h: void onLocationChanged(Location)>"
+        - "  trigger:   getLastKnownLocation() guards a network call"
+        - "  OCSVM (WEATHER model) anomaly score: 0.11"
+        - "  verdict:   ✓  benign"
+        - "  note:      Difuzer's single global model flagged this — false positive"
+      explanation: >-
+        A weather app reacting to location is perfectly normal — but against a
+        global model of unrelated apps it looks anomalous, so Difuzer raised a
+        false alarm. Difuzer++ compares it only to other WEATHER apps, where
+        this behavior is common, and correctly clears it. This is the core
+        improvement: context cuts false positives.
+    - label: SMS-triggered logic bomb
+      query: python3 Difuzer++.py category apps.csv
+      thinking:
+        - Loading per-category OCSVM models…
+        - Extracting SHSO candidates (taint + triggers)…
+        - Scoring against the category model…
+      output:
+        - "Difuzer++ — context-aware logic bomb detection"
+        - "  app:       com.puzzlequest.blast"
+        - "  category:  GAME_PUZZLE"
+        - "  SHSO:      SMS-triggered branch in <n.k.j: boolean b(String)>"
+        - "  trigger:   SmsMessage.getMessageBody().equals(\"ACTIVATE\")"
+        - "  OCSVM (GAME_PUZZLE model) anomaly score: 0.79"
+        - "  verdict:   ⚠  LOGIC BOMB"
+      explanation: >-
+        A puzzle game has no reason to act on incoming SMS content. Even scored
+        against other games, this trigger is a clear outlier — Difuzer++ reveals
+        a hidden SMS-activated payload.
 bibtex: |
   @article{10.1109/TDSC.2024.3358979,
     author  = {Alecci, Marco and Samhi, Jordan and Li, Li and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
