@@ -26,6 +26,30 @@ tags:
   - android
   - geographic-disparities
   - apps
+dataset:
+  stats:
+    - value: 81963
+      label: GeoTwin pairs
+    - value: 859
+      label: GeoFamilies
+  sampleTitle: Sample GeoTwin pairs
+  sampleSource: 4_geoTwins.csv
+  sampleCount: 6
+  sampleNote: >-
+    Real pairs from the dataset — the same branded app published under different
+    package names across countries. Download the full pair and family lists
+    from the repository.
+  samples:
+    - "com.climax.homeportal.tw  ↔  com.climax.homeportal.us"
+    - "com.americanexpress.android.acctsvcs.fr  ↔  com.americanexpress.android.acctsvcs.uk"
+    - "com.americanexpress.android.acctsvcs.us  ↔  com.americanexpress.android.acctsvcs.japan"
+    - "com.bddroid.android.verbnepali  ↔  com.bddroid.android.verbkorean"
+    - "com.bddroid.android.verbnepali  ↔  com.bddroid.android.verbjapanese"
+    - "com.radiosonline.radiofmchile  ↔  com.radiosonline.radiofmargentina"
+    - "com.radiosonline.radiofmchile  ↔  com.radiosonline.radiofmnewzealand"
+    - "all.language.translator.hub.samoantoturkishtranslator  ↔  all.language.translator.hub.icelandictoyiddishtranslator"
+    - "com.americanexpress.android.acctsvcs.fr  ↔  com.americanexpress.android.acctsvcs.de"
+    - "all.language.translator.hub.samoantoturkishtranslator  ↔  all.language.translator.hub.somalitozulutranslator"
 bibtex: |
   @inproceedings{10.1145/3745756.3809191,
     author    = {Alecci, Marco and Ruiz Jim\'{e}nez, Pedro Jes\'{u}s and Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
