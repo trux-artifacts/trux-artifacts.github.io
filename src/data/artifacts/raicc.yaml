@@ -26,6 +26,126 @@ tags:
   - android
   - icc
   - taint-analysis
+demo:
+  style: terminal
+  intro: >-
+    Pick an app. RAICC finds the atypical ICC (AICC) methods it uses and
+    rewrites them as standard ICC, so analyzers like FlowDroid can follow the
+    hidden component links they would otherwise miss.
+  outputLabel: RAICC output
+  countOutput: false
+  note: >-
+    Precomputed examples on illustrative apps with made-up numbers — nothing
+    runs in your browser. Run RAICC from the repository to instrument your own
+    APKs.
+  scenarios:
+    - label: PendingIntent.send()
+      query: java -jar RAICC-2.0-jar-with-dependencies.jar -p ./platforms/ -o ./out/ -a com.brightevents.app.apk -r
+      thinking:
+        - Loading Soot and the Android platform…
+        - Running RAICC on the APK…
+      output:
+        - "[*] Processing: com.brightevents.app"
+        - "[*] Initializing Environment"
+        - "[?] Done"
+        - "[*] Propagating AICC target types"
+        - "[?] Done"
+        - "[*] Instrumenting app with ICC calls"
+        - "[?] Done"
+        - "[*] 3 new statements added"
+        - "Results:"
+        - " - App name: com.brightevents.app-2.3.1"
+        - " - Initialization elapsed time: 6.84s"
+        - " - Propagation elapsed time: 0.52s"
+        - " - Instrumentation elapsed time: 1.10s"
+        - " - Writing apk elapsed time: 0.31s"
+        - " - Analysis elapsed time: 8.77s"
+        - " - Reached timeout: no"
+      explanation: >-
+        The app launched a component through PendingIntent.send() — an atypical
+        ICC that standard analyzers ignore. RAICC linked it to an equivalent
+        startActivity, so FlowDroid on the instrumented APK now follows a
+        device-id leak it previously missed.
+    - label: AlarmManager.setExact()
+      query: java -jar RAICC-2.0-jar-with-dependencies.jar -p ./platforms/ -o ./out/ -a com.skytrail.weather.apk -r
+      thinking:
+        - Loading Soot and the Android platform…
+        - Running RAICC on the APK…
+      output:
+        - "[*] Processing: com.skytrail.weather"
+        - "[*] Initializing Environment"
+        - "[?] Done"
+        - "[*] Propagating AICC target types"
+        - "[?] Done"
+        - "[*] Instrumenting app with ICC calls"
+        - "[?] Done"
+        - "[*] 1 new statement added"
+        - "Results:"
+        - " - App name: com.skytrail.weather-4.0.2"
+        - " - Initialization elapsed time: 5.12s"
+        - " - Propagation elapsed time: 0.33s"
+        - " - Instrumentation elapsed time: 0.67s"
+        - " - Writing apk elapsed time: 0.19s"
+        - " - Analysis elapsed time: 6.31s"
+        - " - Reached timeout: no"
+      explanation: >-
+        A time-triggered ICC: the app scheduled a component launch with
+        AlarmManager.setExact() and a PendingIntent. RAICC makes the link
+        explicit so the delayed component transition is no longer invisible to
+        static analysis.
+    - label: requestLocationUpdates()
+      query: java -jar RAICC-2.0-jar-with-dependencies.jar -p ./platforms/ -o ./out/ -a com.pixelrun.arcade.apk -r
+      thinking:
+        - Loading Soot and the Android platform…
+        - Running RAICC on the APK…
+      output:
+        - "[*] Processing: com.pixelrun.arcade"
+        - "[*] Initializing Environment"
+        - "[?] Done"
+        - "[*] Propagating AICC target types"
+        - "[?] Done"
+        - "[*] Instrumenting app with ICC calls"
+        - "[?] Done"
+        - "[*] 2 new statements added"
+        - "Results:"
+        - " - App name: com.pixelrun.arcade-1.7.0"
+        - " - Initialization elapsed time: 8.03s"
+        - " - Propagation elapsed time: 0.61s"
+        - " - Instrumentation elapsed time: 1.44s"
+        - " - Writing apk elapsed time: 0.42s"
+        - " - Analysis elapsed time: 10.50s"
+        - " - Reached timeout: no"
+      explanation: >-
+        A location-triggered ICC: the app registered a PendingIntent with
+        LocationManager.requestLocationUpdates(), firing a component when the
+        device moves. RAICC recovers the two hidden links so leaks flowing
+        through them become detectable.
+    - label: IntentSender.sendIntent()
+      query: java -jar RAICC-2.0-jar-with-dependencies.jar -p ./platforms/ -o ./out/ -a com.quicknote.pro.apk -r
+      thinking:
+        - Loading Soot and the Android platform…
+        - Running RAICC on the APK…
+      output:
+        - "[*] Processing: com.quicknote.pro"
+        - "[*] Initializing Environment"
+        - "[?] Done"
+        - "[*] Propagating AICC target types"
+        - "[?] Done"
+        - "[*] Instrumenting app with ICC calls"
+        - "[?] Done"
+        - "[*] 5 new statements added"
+        - "Results:"
+        - " - App name: com.quicknote.pro-3.1.5"
+        - " - Initialization elapsed time: 9.55s"
+        - " - Propagation elapsed time: 0.88s"
+        - " - Instrumentation elapsed time: 2.10s"
+        - " - Writing apk elapsed time: 0.55s"
+        - " - Analysis elapsed time: 13.08s"
+        - " - Reached timeout: no"
+      explanation: >-
+        This app relayed several intents through IntentSender.sendIntent().
+        RAICC added five standard ICC statements, uncovering a chain of
+        component transitions that carried data toward a network sink.
 bibtex: |
   @inproceedings{9402043,
     author    = {Samhi, Jordan and Bartel, Alexandre and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
