@@ -16,7 +16,7 @@ interface Props {
 }
 
 const { artifact } = Astro.props;
-const { name, type, description, authors, status, paper, links, badges, tags, license, bibtex, figure, figureCaption, demo } =
+const { name, type, description, authors, status, paper, links, badges, tags, license, bibtex, figure, figureCaption, demo, dataset } =
   artifact.data;
 
 const site = (name: string): string | undefined => (people as Record<string, string>)[name];
@@ -110,6 +110,30 @@ const embed = links.video ? toEmbed(links.video) : null;
           </div>
         </div>
         <p class="demo-note">{demo.note}</p>
+      </div>
+    )}
+
+    {dataset && (
+      <div class="section">
+        <h2>Explore the dataset</h2>
+        <div class="ds-stats">
+          {dataset.stats.map((s) => (
+            <div class="ds-stat">
+              <span class="ds-stat-num" data-target={s.value} data-suffix={s.suffix}>0</span>
+              <span class="ds-stat-label">{s.label}</span>
+            </div>
+          ))}
+        </div>
+        <div class="ds-sample" id="ds-sample" data-dataset={JSON.stringify(dataset)}>
+          <div class="ds-sample-head">
+            <span class="ds-sample-title">
+              {dataset.sampleTitle}{dataset.sampleSource ? ` · ${dataset.sampleSource}` : ''}
+            </span>
+            <button class="btn ds-shuffle" id="ds-shuffle">Draw random sample ↻</button>
+          </div>
+          <div class="ds-sample-body" id="ds-sample-body"></div>
+        </div>
+        {dataset.sampleNote && <p class="demo-note">{dataset.sampleNote}</p>}
       </div>
     )}
 
@@ -270,6 +294,91 @@ const embed = links.video ? toEmbed(links.video) : null;
       }
 
       taskBtns.forEach((b, i) => b.addEventListener('click', () => play(i)));
+    }
+
+    const dsBox = document.getElementById('ds-sample');
+    if (dsBox) {
+      const ds = JSON.parse(dsBox.dataset.dataset ?? '{}');
+      const body = document.getElementById('ds-sample-body')!;
+      const shuffleBtn = document.getElementById('ds-shuffle');
+      const nums = document.querySelectorAll<HTMLElement>('.ds-stat-num');
+      const fmt = new Intl.NumberFormat('en-US');
+      const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+      const rand = (min: number, max: number) => min + Math.random() * (max - min);
+      let drawRun = 0;
+
+      function countUp(el: HTMLElement) {
+        const target = Number(el.dataset.target ?? '0');
+        const suffix = el.dataset.suffix ?? '';
+        const dur = 1200;
+        const start = performance.now();
+        function step(now: number) {
+          const t = Math.min(1, (now - start) / dur);
+          const eased = 1 - Math.pow(1 - t, 3);
+          el.textContent = fmt.format(Math.round(target * eased)) + suffix;
+          if (t < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+        // Safety: guarantee the final value even if rAF was paused (background tab).
+        setTimeout(() => {
+          el.textContent = fmt.format(target) + suffix;
+        }, dur + 400);
+      }
+
+      async function draw() {
+        const myRun = ++drawRun;
+        const pool = [...ds.samples];
+        for (let i = pool.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [pool[i], pool[j]] = [pool[j], pool[i]];
+        }
+        const rows = pool.slice(0, Math.min(ds.sampleCount ?? 8, pool.length));
+
+        body.innerHTML = '';
+        if (ds.sampleHeader) {
+          const h = document.createElement('code');
+          h.className = 'ds-row ds-row-header';
+          h.textContent = ds.sampleHeader;
+          body.appendChild(h);
+        }
+        for (const r of rows) {
+          if (drawRun !== myRun) return;
+          const line = document.createElement('code');
+          line.className = 'ds-row';
+          line.textContent = r;
+          body.appendChild(line);
+          await sleep(rand(60, 150));
+        }
+      }
+
+      shuffleBtn?.addEventListener('click', draw);
+
+      let started = false;
+      function start() {
+        if (started) return;
+        started = true;
+        nums.forEach(countUp);
+        draw();
+        window.removeEventListener('scroll', onScroll);
+      }
+      function inView() {
+        const r = dsBox!.getBoundingClientRect();
+        return r.top < window.innerHeight * 0.85 && r.bottom > 0;
+      }
+      function onScroll() {
+        if (inView()) start();
+      }
+      if (inView()) start();
+      else {
+        window.addEventListener('scroll', onScroll, { passive: true });
+        const io = new IntersectionObserver(
+          (entries) => {
+            if (entries[0].isIntersecting) start();
+          },
+          { threshold: 0.25 }
+        );
+        io.observe(dsBox);
+      }
     }
   </script>
 </Base>

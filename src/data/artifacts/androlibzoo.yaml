@@ -25,6 +25,41 @@ tags:
   - android
   - libraries
   - static-analysis
+dataset:
+  stats:
+    - value: 34813
+      label: third-party libraries
+    - value: 69316
+      label: Maven groupIds mined
+  sampleTitle: Sample entries
+  sampleSource: AndroLibZoo.lst
+  sampleCount: 8
+  sampleNote: >-
+    Real package prefixes drawn from AndroLibZoo.lst. Download the full list
+    from the repository for the complete, evolving dataset.
+  samples:
+    - pro.cryptoevil
+    - br.com.prodist.native-tools
+    - codes.rafael.task
+    - org.imixs.jwt
+    - org.sonatype.m2e.egit
+    - com.jinrishici
+    - com.karmanno.plugins.dependency
+    - io.bpic.cielo
+    - org.jsonschema2pojo
+    - com.gimbal.android.v2
+    - tech.anima
+    - com.vladsch.tree-iteration
+    - co.zecko.retailer
+    - com.kayrasolutions.aem.foundation
+    - eu.rssw.pct
+    - org.hyperscala
+    - net.lightoze.gwt-i18n-server
+    - org.paxml
+    - ch.so.agi.interlis-repository-creator
+    - com.almworks.integers
+    - name.velikodniy.vitaliy
+    - de.entrecode
 bibtex: |
   @inproceedings{10.1145/3643991.3644866,
     author    = {Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

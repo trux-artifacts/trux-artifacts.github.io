@@ -26,6 +26,30 @@ tags:
   - android
   - logic-bombs
   - malware
+dataset:
+  stats:
+    - value: 406
+      label: infected apps
+    - value: 2000
+      label: apps processed
+    - value: 10
+      label: trigger types
+  sampleTitle: Labeled entries
+  sampleSource: triggerzoo_labeled_dataset
+  sampleHeader: "sha256_original_app;class_infected;component;method_infected;trigger_type;guarded_code_type;depths"
+  sampleCount: 4
+  sampleNote: >-
+    Real labeled rows from the dataset (each app infected with one trigger-based
+    behavior). Access the full dataset through AndroZoo — see the buttons above.
+  samples:
+    - "01B14EC0…;com.gmail.coolapps726.bankTester.utilities.BankDisplay;Activity;<…: String a(String)>;location;native_log_string;2"
+    - "0183941E…;lp2i.radiodelta.fr.MainActivity;Activity;<…: void facebook(View)>;is_screen_off;set_text;0"
+    - "01C568B2…;navi.android.my_launcher.ParticleImageSelection;Activity;<…: void onActivityResult(int,int,Intent)>;is_screen_off;stop_wifi;0"
+    - "01DD0234…;com.osmanli.kilotakip.Sayfa1Activity;Activity;<…: void Ekle()>;network;write_string;1"
+    - "04B9D9DE…;com.prueba.joel.sort.MainActivity;Activity;<…: void onBackPressed()>;location;return;0"
+    - "06239084…;com.bcs.marvlis.fle.psapmonitor.MainActivity;Activity;<…: void onCreateContextMenu(…)>;build;set_text;0"
+    - "0298F2C4…;com.speedymarks.android.averageFree.Main;Activity;<…: void createAdView()>;music;native_write_phone_number;1|1"
+    - "06328181…;com.sportconsulting.ayuntamientoalcantarilla.MainActivity;Activity;<…: void onCreate(Bundle)>;is_screen_off;sms_string;0"
 license: Apache-2.0
 bibtex: |
   @inproceedings{10.1145/3524842.3528020,
