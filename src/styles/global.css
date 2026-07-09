@@ -864,6 +864,35 @@ a.tag:hover {
   border-bottom: 1px solid var(--border);
 }
 
+.ds-usage {
+  margin-top: 18px;
+}
+
+.ds-usage-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.ds-usage-note {
+  margin: 0 0 8px;
+}
+
+.ds-usage-code {
+  background: #14161b;
+  color: #d8dee9;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre;
+  margin: 0;
+}
+
 .demo-terminal {
   border-radius: 8px;
   overflow: hidden;

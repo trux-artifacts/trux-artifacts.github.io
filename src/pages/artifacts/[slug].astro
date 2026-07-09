@@ -1,5 +1,7 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
+import fs from 'node:fs';
+import path from 'node:path';
 import Base from '../../layouts/Base.astro';
 import people from '../../data/people.json';
 
@@ -18,6 +20,15 @@ interface Props {
 const { artifact } = Astro.props;
 const { name, type, description, authors, status, paper, links, badges, tags, license, bibtex, figure, figureCaption, demo, dataset } =
   artifact.data;
+
+// Load a large sample pool from an external file at build time, so big datasets
+// (e.g. thousands of hashes) stay out of the YAML.
+let datasetData = dataset;
+if (dataset?.samplesFile) {
+  const p = path.join(process.cwd(), 'src/data/samples', dataset.samplesFile);
+  const rows = fs.readFileSync(p, 'utf-8').split('\n').map((s) => s.trim()).filter(Boolean);
+  datasetData = { ...dataset, samples: rows };
+}
 
 const site = (name: string): string | undefined => (people as Record<string, string>)[name];
 
@@ -113,27 +124,38 @@ const embed = links.video ? toEmbed(links.video) : null;
       </div>
     )}
 
-    {dataset && (
+    {datasetData && (
       <div class="section">
         <h2>Explore the dataset</h2>
         <div class="ds-stats">
-          {dataset.stats.map((s) => (
+          {datasetData.stats.map((s) => (
             <div class="ds-stat">
-              <span class="ds-stat-num" data-target={s.value} data-suffix={s.suffix}>0</span>
+              <span class="ds-stat-num" data-target={s.value} data-suffix={s.suffix} data-animate={String(s.animate)}>{s.animate ? '0' : `${s.value}${s.suffix}`}</span>
               <span class="ds-stat-label">{s.label}</span>
             </div>
           ))}
         </div>
-        <div class="ds-sample" id="ds-sample" data-dataset={JSON.stringify(dataset)}>
+        <div class="ds-sample" id="ds-sample" data-dataset={JSON.stringify(datasetData)}>
           <div class="ds-sample-head">
             <span class="ds-sample-title">
-              {dataset.sampleTitle}{dataset.sampleSource ? ` · ${dataset.sampleSource}` : ''}
+              {datasetData.sampleTitle}{datasetData.sampleSource ? ` · ${datasetData.sampleSource}` : ''}
             </span>
             <button class="btn ds-shuffle" id="ds-shuffle">Draw random sample ↻</button>
           </div>
           <div class="ds-sample-body" id="ds-sample-body"></div>
         </div>
-        {dataset.sampleNote && <p class="demo-note">{dataset.sampleNote}</p>}
+        {datasetData.sampleNote && <p class="demo-note">{datasetData.sampleNote}</p>}
+
+        {datasetData.usage && (
+          <div class="ds-usage">
+            <div class="ds-usage-head">
+              <span class="ds-sample-title">{datasetData.usage.title}</span>
+              <button class="btn" id="ds-copy-usage">Copy</button>
+            </div>
+            {datasetData.usage.note && <p class="demo-note ds-usage-note">{datasetData.usage.note}</p>}
+            <pre class="ds-usage-code" id="ds-usage-code">{datasetData.usage.code.trim()}</pre>
+          </div>
+        )}
       </div>
     )}
 
@@ -308,6 +330,7 @@ const embed = links.video ? toEmbed(links.video) : null;
       let drawRun = 0;
 
       function countUp(el: HTMLElement) {
+        if (el.dataset.animate === 'false') return;
         const target = Number(el.dataset.target ?? '0');
         const suffix = el.dataset.suffix ?? '';
         const dur = 1200;
@@ -352,6 +375,14 @@ const embed = links.video ? toEmbed(links.video) : null;
       }
 
       shuffleBtn?.addEventListener('click', draw);
+
+      const copyUsageBtn = document.getElementById('ds-copy-usage');
+      const usageCode = document.getElementById('ds-usage-code');
+      copyUsageBtn?.addEventListener('click', async () => {
+        await navigator.clipboard.writeText(usageCode?.textContent ?? '');
+        copyUsageBtn.textContent = 'Copied';
+        setTimeout(() => (copyUsageBtn.textContent = 'Copy'), 1500);
+      });
 
       function onVisible(el: Element, cb: () => void, threshold = 0.5) {
         let done = false;

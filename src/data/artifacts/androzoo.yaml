@@ -25,6 +25,31 @@ tags:
   - apps
   - malware
   - large-scale
+dataset:
+  stats:
+    - value: 27491894
+      label: Android apps collected
+    - value: 2016
+      label: continuously updated since
+      animate: false
+  sampleTitle: Sample app hashes (SHA256)
+  sampleSource: latest.csv
+  sampleCount: 10
+  samplesFile: androzoo-shas.txt
+  sampleNote: >-
+    Real SHA256 identifiers from AndroZoo. The dataset is distributed as a
+    hash-indexed CSV (sha256, pkg_name, dex_date, vt_detection, markets…); each
+    hash resolves to an APK through the API below.
+  usage:
+    title: Download an app
+    note: >-
+      Request a free API key on the access page, then fetch any APK by its
+      SHA256:
+    code: |
+      curl -O --remote-header-name -G \
+        -d apikey=${APIKEY} \
+        -d sha256=${SHA256} \
+        https://androzoo.uni.lu/api/download
 bibtex: |
   @inproceedings{10.1145/2901739.2903508,
     author    = {Allix, Kevin and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques and Le Traon, Yves},

@@ -39,6 +39,7 @@ const artifacts = defineCollection({
               value: z.number(),
               label: z.string(),
               suffix: z.string().default(''),
+              animate: z.boolean().default(true),
             })
           )
           .default([]),
@@ -47,7 +48,15 @@ const artifacts = defineCollection({
         sampleHeader: z.string().optional(),
         sampleCount: z.number().default(8),
         sampleNote: z.string().optional(),
-        samples: z.array(z.string()),
+        samples: z.array(z.string()).default([]),
+        samplesFile: z.string().optional(),
+        usage: z
+          .object({
+            title: z.string().default('How to use it'),
+            note: z.string().optional(),
+            code: z.string(),
+          })
+          .optional(),
       })
       .optional(),
     demo: z
