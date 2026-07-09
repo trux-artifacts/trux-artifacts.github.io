@@ -75,7 +75,7 @@ const stats = types
         <div class="hero-stats">
           {stats.map((s) => (
             <div class="stat">
-              <span class="stat-num">{s.count}</span>
+              <span class="stat-num" data-target={s.count}>0</span>
               <span class="stat-label">{s.label}</span>
             </div>
           ))}
@@ -183,6 +183,37 @@ const stats = types
         apply();
         search.focus();
       }
+    }
+
+    const fmt = new Intl.NumberFormat('en-US');
+    function countUp(el: HTMLElement) {
+      const target = Number(el.dataset.target ?? '0');
+      const dur = 1100;
+      const start = performance.now();
+      function step(now: number) {
+        const t = Math.min(1, (now - start) / dur);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = fmt.format(Math.round(target * eased));
+        if (t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+      setTimeout(() => (el.textContent = fmt.format(target)), dur + 400);
+    }
+    const heroNums = document.querySelectorAll<HTMLElement>('.stat-num');
+    if (heroNums.length) {
+      const heroStats = document.querySelector('.hero-stats')!;
+      let counted = false;
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && !counted) {
+            counted = true;
+            heroNums.forEach(countUp);
+            io.disconnect();
+          }
+        },
+        { threshold: 0.5 }
+      );
+      io.observe(heroStats);
     }
   </script>
 </Base>

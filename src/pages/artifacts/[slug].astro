@@ -353,32 +353,24 @@ const embed = links.video ? toEmbed(links.video) : null;
 
       shuffleBtn?.addEventListener('click', draw);
 
-      let started = false;
-      function start() {
-        if (started) return;
-        started = true;
-        nums.forEach(countUp);
-        draw();
-        window.removeEventListener('scroll', onScroll);
-      }
-      function inView() {
-        const r = dsBox!.getBoundingClientRect();
-        return r.top < window.innerHeight * 0.85 && r.bottom > 0;
-      }
-      function onScroll() {
-        if (inView()) start();
-      }
-      if (inView()) start();
-      else {
-        window.addEventListener('scroll', onScroll, { passive: true });
+      function onVisible(el: Element, cb: () => void, threshold = 0.5) {
+        let done = false;
         const io = new IntersectionObserver(
           (entries) => {
-            if (entries[0].isIntersecting) start();
+            if (entries[0].isIntersecting && !done) {
+              done = true;
+              cb();
+              io.disconnect();
+            }
           },
-          { threshold: 0.25 }
+          { threshold }
         );
-        io.observe(dsBox);
+        io.observe(el);
       }
+
+      const statsEl = document.querySelector('.ds-stats');
+      if (statsEl) onVisible(statsEl, () => nums.forEach(countUp), 0.6);
+      onVisible(dsBox, draw, 0.2);
     }
   </script>
 </Base>

@@ -271,6 +271,7 @@ a:hover {
   font-weight: 800;
   line-height: 1.15;
   color: #ffffff;
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-label {
