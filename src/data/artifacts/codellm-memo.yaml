@@ -1,6 +1,7 @@
 name: CodeLLM-Memo
 type: benchmark
 area: LLMs for Software Engineering
+logo: llm
 description: >-
   A framework quantifying the memorization advantage of code LLMs via the
   Perturbation Sensitivity Hypothesis — measuring how model performance

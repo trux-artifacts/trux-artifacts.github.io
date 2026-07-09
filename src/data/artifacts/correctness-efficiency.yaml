@@ -1,6 +1,7 @@
 name: Correctness isn't Efficiency
 type: benchmark
 area: LLMs for Software Engineering
+logo: llm
 description: >-
   A profiling pipeline and metrics (DMPD over memory-usage profiles) showing
   that functionally correct LLM-generated solutions can diverge widely in
