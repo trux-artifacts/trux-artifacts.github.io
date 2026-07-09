@@ -24,6 +24,137 @@ tags:
   - android
   - logic-bombs
   - instrumentation
+demo:
+  style: terminal
+  intro: >-
+    Pick a logic bomb to inject. AndroBomb takes a benign app, plants a trigger
+    and a guarded-code payload, and repackages it into an infected APK —
+    producing the ground truth that detectors like Difuzer are evaluated
+    against.
+  outputLabel: AndroBomb output
+  countOutput: false
+  note: >-
+    Precomputed examples on illustrative apps — nothing runs in your browser.
+    AndroBomb itself is access-restricted to identified researchers (via Zenodo)
+    to avoid encouraging malware development.
+  scenarios:
+    - label: time → native_write_phone_number
+      query: java -jar androbomb.jar -p platforms/ -a com.flashlite.torch.apk -o out/ -t time -g native_write_phone_number
+      thinking:
+        - Loading Soot and the Android platform…
+        - Running AndroBomb…
+      output:
+        - "AndroBomb — infecting com.flashlite.torch.apk"
+        - "[*] Unpacking APK"
+        - "[?] Done"
+        - "[*] Building call graph"
+        - "[?] Done"
+        - "[*] Pinpointing insertion point"
+        - "[?] Done"
+        - "[*] Generating condition (trigger: time)"
+        - "[*] Generating guarded code (native_write_phone_number)"
+        - "[*] Injecting trigger class + method"
+        - "[*] Repackaging: permissions, native files, align, sign"
+        - "[?] Done"
+        - "[✓] Infected APK written: com.flashlite.torch_infected.apk"
+        - "Results:"
+        - " - Trigger:         time"
+        - " - Guarded code:    native_write_phone_number"
+        - " - Insertion point: <com.flashlite.torch.MainActivity: void onCreate(Bundle)>"
+        - " - Insertion depth: 2"
+        - " - Ground-truth label appended to: triggerzoo_labels.csv"
+      explanation: >-
+        A time bomb: after a hardcoded date, hidden code reads the device phone
+        number and hands it to native code that writes it to a file. The
+        infected APK and its label become ground truth for evaluating detectors
+        like Difuzer.
+    - label: location → http_location
+      query: java -jar androbomb.jar -p platforms/ -a com.dailymeteo.weather.apk -o out/ -t location -g http_location
+      thinking:
+        - Loading Soot and the Android platform…
+        - Running AndroBomb…
+      output:
+        - "AndroBomb — infecting com.dailymeteo.weather.apk"
+        - "[*] Unpacking APK"
+        - "[?] Done"
+        - "[*] Building call graph"
+        - "[?] Done"
+        - "[*] Pinpointing insertion point"
+        - "[?] Done"
+        - "[*] Generating condition (trigger: location)"
+        - "[*] Generating guarded code (http_location)"
+        - "[*] Injecting trigger class + method"
+        - "[*] Repackaging: permissions, native files, align, sign"
+        - "[?] Done"
+        - "[✓] Infected APK written: com.dailymeteo.weather_infected.apk"
+        - "Results:"
+        - " - Trigger:         location"
+        - " - Guarded code:    http_location"
+        - " - Insertion point: <com.dailymeteo.weather.MapService: void onCreate()>"
+        - " - Insertion depth: 1"
+        - " - Ground-truth label appended to: triggerzoo_labels.csv"
+      explanation: >-
+        A location-triggered payload: when the device reaches a specific area,
+        hidden code sends the current location to a remote server over HTTP.
+    - label: sms → sms_imei
+      query: java -jar androbomb.jar -p platforms/ -a com.quicknotes.free.apk -o out/ -t sms -g sms_imei
+      thinking:
+        - Loading Soot and the Android platform…
+        - Running AndroBomb…
+      output:
+        - "AndroBomb — infecting com.quicknotes.free.apk"
+        - "[*] Unpacking APK"
+        - "[?] Done"
+        - "[*] Building call graph"
+        - "[?] Done"
+        - "[*] Pinpointing insertion point"
+        - "[?] Done"
+        - "[*] Generating condition (trigger: sms)"
+        - "[*] Generating guarded code (sms_imei)"
+        - "[*] Injecting trigger class + method"
+        - "[*] Repackaging: permissions, native files, align, sign"
+        - "[?] Done"
+        - "[✓] Infected APK written: com.quicknotes.free_infected.apk"
+        - "Results:"
+        - " - Trigger:         sms"
+        - " - Guarded code:    sms_imei"
+        - " - Insertion point: <com.quicknotes.free.SmsReceiver: void onReceive(Context,Intent)>"
+        - " - Insertion depth: 3"
+        - " - Ground-truth label appended to: triggerzoo_labels.csv"
+      explanation: >-
+        An SMS-activated payload: when a specific text message arrives, hidden
+        code reads the device IMEI and sends it out by SMS — a covert remote
+        trigger paired with identifier theft.
+    - label: is_screen_off → set_text
+      query: java -jar androbomb.jar -p platforms/ -a com.puzzlemania.blocks.apk -o out/ -t is_screen_off -g set_text
+      thinking:
+        - Loading Soot and the Android platform…
+        - Running AndroBomb…
+      output:
+        - "AndroBomb — infecting com.puzzlemania.blocks.apk"
+        - "[*] Unpacking APK"
+        - "[?] Done"
+        - "[*] Building call graph"
+        - "[?] Done"
+        - "[*] Pinpointing insertion point"
+        - "[?] Done"
+        - "[*] Generating condition (trigger: is_screen_off)"
+        - "[*] Generating guarded code (set_text)"
+        - "[*] Injecting trigger class + method"
+        - "[*] Repackaging: permissions, native files, align, sign"
+        - "[?] Done"
+        - "[✓] Infected APK written: com.puzzlemania.blocks_infected.apk"
+        - "Results:"
+        - " - Trigger:         is_screen_off"
+        - " - Guarded code:    set_text"
+        - " - Insertion point: <com.puzzlemania.blocks.GameActivity: void onPause()>"
+        - " - Insertion depth: 0"
+        - " - Ground-truth label appended to: triggerzoo_labels.csv"
+      explanation: >-
+        A stealthy pair: the payload fires only while the screen is off and then
+        quietly changes on-screen text. It shows AndroBomb covers subtle
+        trigger/guarded-code combinations, not just the obvious ones — useful for
+        stress-testing detectors.
 bibtex: |
   @inproceedings{10.1145/3524842.3528020,
     author    = {Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
