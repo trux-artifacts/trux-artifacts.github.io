@@ -74,6 +74,9 @@ const artifacts = defineCollection({
             output: z.array(z.string()),
             file: z.string().optional(),
             pattern: z.string().optional(),
+            verdictAnswer: z.string().optional(),
+            verdictLabel: z.string().optional(),
+            verdictKind: z.enum(['correct', 'incorrect']).optional(),
             explanation: z.string().optional(),
           })
         ),

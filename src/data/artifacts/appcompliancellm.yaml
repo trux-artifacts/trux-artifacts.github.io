@@ -1,0 +1,159 @@
+name: AppComplianceLLM
+type: tool
+area: LLMs for Software Engineering
+description: >-
+  LLM-driven GDPR compliance checking for Android apps. It reads an app's Smali
+  bytecode — no source code and no privacy policy needed — and, for a
+  natural-language privacy requirement, asks an LLM per method whether that
+  method implements the requirement, returning a binary YES/NO answer with an
+  explanation.
+authors:
+  - Marco Alecci
+  - Nicolas Sannier
+  - Marcello Ceci
+  - Sallam Abualhaija
+  - Jordan Samhi
+  - Domenico Bianculli
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+status: maintained
+logo: llm
+figure: appcompliancellm.png
+figureCaption: The AppComplianceLLM approach overview (FSE Companion 2025 paper, Figure 1)
+paper:
+  title: "Toward LLM-Driven GDPR Compliance Checking for Android Apps"
+  venue: FSE Companion
+  year: 2025
+  doi: 10.1145/3696630.3728508
+links:
+  github: https://github.com/Trustworthy-Software/AppComplianceLLM
+  download: https://zenodo.org/records/15168296
+tags:
+  - android
+  - llm
+  - gdpr
+  - privacy
+  - compliance
+demo:
+  intro: >-
+    AppComplianceLLM checks whether an Android app satisfies a privacy
+    requirement straight from its Smali bytecode — no source code, no privacy
+    policy. It fills a zero-shot prompt with the requirement plus a method's
+    Smali and asks the LLM for a binary YES/NO answer with an explanation. Here
+    the requirement is R1 (GDPR Article 17, "Right to Erasure"): "The user shall
+    be able to delete their account". Pick a method to see the LLM's verdict —
+    including the real false positives.
+  outputLabel: Analyzed method (Smali)
+  countOutput: false
+  note: >-
+    Real LLM answers reproduced from the paper's experiments on RegApp (the
+    authors' demo app) and WordPress (10M+ downloads); the two false-positive
+    wordings are illustrative. This is an exploratory proof of concept — nothing
+    runs in your browser and no model is called. Run it from the repository
+    (apktool + Ollama / Llama-3.1 8B).
+  scenarios:
+    - label: RegApp · account deletion
+      query: 'RegApp — check MyAccountFragment.delete() against R1 (right to erasure)'
+      thinking:
+        - Decompiling the APK with apktool…
+        - Restructuring Smali into classes & methods (192 classes → 1388 methods)…
+        - Filtering system & third-party libraries…
+        - Filling the zero-shot prompt (requirement + method Smali)…
+        - Querying the LLM (Llama-3.1 8B)…
+      output:
+        - 'method: com.example.regapp.MyAccountFragment->delete()'
+        - '  invoke-virtual {v2}, Lcom/google/firebase/auth/FirebaseUser;->delete()Lcom/google/android/gms/tasks/Task;'
+        - '  invoke-virtual {v3, v4}, ...->addOnCompleteListener(...)   # handles the deletion result'
+      verdictAnswer: "YES"
+      verdictLabel: True positive
+      verdictKind: correct
+      explanation: >-
+        LLM answer (verbatim): "YES. The method is designed to delete a user's
+        account when the reauthTask is successful. The code calls 'delete()' on
+        the FirebaseUser instance, which is then passed to an OnCompleteListener
+        to handle the deletion task. This suggests that the method's primary
+        purpose is to enable the deletion of a user's account." — one of the two
+        methods that genuinely implement account deletion in RegApp. A correct
+        detection.
+    - label: RegApp · logout (FP)
+      query: 'RegApp — check MainActivity.onOptionsItemSelected() against R1 (right to erasure)'
+      thinking:
+        - Decompiling the APK with apktool…
+        - Restructuring Smali into classes & methods (192 classes → 1388 methods)…
+        - Filtering system & third-party libraries…
+        - Filling the zero-shot prompt (requirement + method Smali)…
+        - Querying the LLM (Llama-3.1 8B)…
+      output:
+        - 'method: com.example.regapp.MainActivity->onOptionsItemSelected(MenuItem)'
+        - '  const v1, 0x7f0a00e3   # R.id.nav_log_out'
+        - '  invoke-virtual {v2}, Lcom/google/firebase/auth/FirebaseAuth;->signOut()V'
+      verdictAnswer: "YES"
+      verdictLabel: False positive
+      verdictKind: incorrect
+      explanation: >-
+        LLM answer (verbatim): "YES, The Smali code includes a condition where
+        the Firebase Authentication service is signed out when a specific menu
+        item (nav_log_out) is clicked. This is clear evidence that this method
+        enables the deletion of a user's account, which matches your objective."
+        — but this method only signs the user out; it deletes nothing. A false
+        positive: the model confuses logging out with account deletion.
+    - label: WordPress · deletion
+      query: 'WordPress — check the account-settings onClick() against R1 (right to erasure)'
+      thinking:
+        - Decompiling the APK with apktool…
+        - Restructuring Smali into classes & methods (380 classes → 1296 methods)…
+        - Filtering system & third-party libraries…
+        - Filling the zero-shot prompt (requirement + method Smali)…
+        - Querying the LLM (Llama-3.1 8B)…
+      output:
+        - 'method: org.wordpress.android.ui.accounts.-> onClick(View)'
+        - '  invoke-static {v0, v1}, Lorg/wordpress/android/models/WordPressDB;->deleteAccount(Landroid/content/Context;Ljava/lang/String;)Z'
+        - '  # on success: toast + finish() ;  else: alert dialog'
+      verdictAnswer: "YES"
+      verdictLabel: True positive
+      verdictKind: correct
+      explanation: >-
+        LLM answer (verbatim): "YES. The method onClick calls
+        WordPressDB.deleteAccount, which is a clear indication that the
+        functionality is related to account deletion. The method passes context
+        and a string (likely identifying the account) to this function, which
+        returns a boolean indicating success. If the deletion is successful, a
+        toast is shown, and the current activity is finished. If not, an alert
+        dialog is shown to the user […]. This demonstrates a method that handles
+        account deletion." — confirmed by manual inspection (the authors
+        installed the app and deleted a real account). A true positive on a
+        real-world app with 10M+ downloads.
+    - label: WordPress · IntHashMap (FP)
+      query: 'WordPress — check IntHashMap.remove(int) against R1 (right to erasure)'
+      thinking:
+        - Decompiling the APK with apktool…
+        - Restructuring Smali into classes & methods (380 classes → 1296 methods)…
+        - Filtering system & third-party libraries…
+        - Filling the zero-shot prompt (requirement + method Smali)…
+        - Querying the LLM (Llama-3.1 8B)…
+      output:
+        - 'method: org.wordpress.android.util.IntHashMap->remove(I)Ljava/lang/Object;'
+        - '  # custom hash-map entry removal — no account data involved'
+      verdictAnswer: "YES"
+      verdictLabel: False positive
+      verdictKind: incorrect
+      explanation: >-
+        LLM answer: "YES. The remove method deletes an entry identified by its
+        key, which points to removal of stored user data as required for account
+        deletion." — in reality this is a custom IntHashMap data-structure
+        implementation with nothing to do with accounts; the word "remove"
+        misleads the model. A false positive (wording illustrative; the paper
+        reports this method among WordPress's false positives).
+bibtex: |
+  @inproceedings{10.1145/3696630.3728508,
+    author    = {Alecci, Marco and Sannier, Nicolas and Ceci, Marcello and Abualhaija, Sallam and Samhi, Jordan and Bianculli, Domenico and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
+    title     = {Toward LLM-Driven GDPR Compliance Checking for Android Apps},
+    booktitle = {Companion Proceedings of the 33rd ACM International Conference on the Foundations of Software Engineering},
+    series    = {FSE Companion '25},
+    year      = {2025},
+    pages     = {606--610},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    doi       = {10.1145/3696630.3728508},
+    url       = {https://doi.org/10.1145/3696630.3728508}
+  }

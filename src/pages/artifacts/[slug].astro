@@ -369,6 +369,27 @@ const embed = links.video ? toEmbed(links.video) : null;
         }
         if (run !== myRun) return;
 
+        if (s.verdictAnswer) {
+          await sleep(300);
+          if (run !== myRun) return;
+          const v = document.createElement('div');
+          v.className = 'demo-verdict ' + (s.verdictKind === 'incorrect' ? 'bad' : 'good');
+          const icon = s.verdictKind === 'incorrect'
+            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>'
+            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+          const ans = document.createElement('span');
+          ans.className = 'demo-verdict-answer';
+          ans.innerHTML = icon + '<b>LLM answer: ' + s.verdictAnswer + '</b>';
+          v.appendChild(ans);
+          if (s.verdictLabel) {
+            const tag = document.createElement('span');
+            tag.className = 'demo-verdict-tag';
+            tag.textContent = s.verdictLabel;
+            v.appendChild(tag);
+          }
+          stage.appendChild(v);
+        }
+
         if (s.explanation) {
           if (run !== myRun) return;
           await sleep(350);
