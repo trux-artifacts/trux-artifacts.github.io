@@ -1,0 +1,103 @@
+name: Dissecting APKs
+type: dataset
+area: Android Datasets
+description: >-
+  The first large-scale empirical study dissecting the composition of Android
+  apps from Google Play — cataloguing every file type inside 410,125 APKs across
+  25 SDK versions (2010–2023), studying how file types and sizes evolve, and
+  measuring how disguised and discrepant files (wrong extensions, APKs embedded
+  in other APKs) hint at maliciousness.
+authors:
+  - Pedro Jesús Ruiz Jiménez
+  - Jordan Samhi
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+status: stable
+logo: android
+figure: dissecting-apks.png
+figureCaption: Dataset evolution — from 22.5M AndroZoo APKs down to the 410,125 sampled for the study (paper, Figure 1)
+paper:
+  title: "Dissecting APKs from Google Play: Trends, Insights and Security Implications"
+  venue: Preprint
+  year: 2024
+  url: https://jordansamhi.com/static/files/papers/dissection_androzoo.pdf
+links:
+  github: https://github.com/Trustworthy-Software/DissectingAPKs
+tags:
+  - android
+  - apk
+  - file-types
+  - empirical-study
+  - security
+dataset:
+  stats:
+    - value: 22512965
+      label: APK files in AndroZoo (Oct 2023)
+    - value: 8433849
+      label: Google-Play APKs (deduplicated)
+    - value: 410125
+      label: APKs dissected in the study
+    - value: 271155026
+      label: Files extracted and typed
+    - value: 25
+      label: SDK versions covered (2010–2023)
+    - value: 485
+      label: Median number of files per APK
+    - value: 15349
+      label: Unique file extensions
+    - value: 1099
+      label: Unique magic (real) types
+    - value: 234
+      label: Unique MIME types
+    - value: 587062
+      label: Dalvik .dex files (over 1 per app)
+    - value: 1124050
+      label: Native .so libraries
+    - value: 35462
+      label: APKs bundling compressed files
+    - value: 1509
+      label: APKs hiding another APK inside
+    - value: 445947
+      label: Disguised files (faked extension)
+  sampleTitle: Top file extensions inside APKs
+  sampleSource: paper, Table V
+  sampleCount: 10
+  sampleNote: >-
+    A random draw from the study's most frequent extensions — hit shuffle for
+    more. "Files" counts every occurrence across the 410,125 APKs; "in N% of
+    APKs" is the share of apps containing at least one. Note the many non-Android
+    code files (.js, .class, .dll) — code in apps is far from just .dex.
+  samples:
+    - ".png · 120,035,855 files · in 99% of APKs"
+    - ".xml · 88,079,179 files · in 99% of APKs"
+    - ".js · 5,343,040 files · in 21% of APKs"
+    - ".jpg · 4,283,765 files · in 44% of APKs"
+    - ".properties · 3,656,582 files · in 49% of APKs"
+    - ".svg · 3,037,053 files · in 8% of APKs"
+    - ".class · 3,036,890 files · in 1% of APKs"
+    - ".html · 2,727,661 files · in 32% of APKs"
+    - ".txt · 1,965,585 files · in 30% of APKs"
+    - ".json · 1,633,817 files · in 24% of APKs"
+    - ".mp3 · 1,435,960 files · in 4% of APKs"
+    - ".so · 1,124,050 files · in 28% of APKs"
+    - ".webp · 1,024,007 files · in 2% of APKs"
+    - ".ttf · 889,255 files · in 33% of APKs"
+    - ".dex · 586,548 files · in 99% of APKs"
+    - ".dll · 527,728 files · in 5% of APKs"
+    - ".gif · 432,944 files · in 20% of APKs"
+    - ".arsc · 412,112 files · in 99% of APKs"
+    - ".java · 407,196 files · in 98% of APKs"
+    - ".ogg · 328,717 files · in 7% of APKs"
+    - ".bin · 176,040 files · in 12% of APKs"
+    - ".zip · 169,454 files · in 5% of APKs"
+  usage:
+    title: Get the artifacts & data
+    note: The dataset, analysis scripts, and additional data are released on GitHub.
+    code: git clone https://github.com/Trustworthy-Software/DissectingAPKs
+bibtex: |
+  @misc{ruizjimenez2024dissecting,
+    author       = {Ruiz Jim\'{e}nez, Pedro Jes\'{u}s and Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
+    title        = {Dissecting APKs from Google Play: Trends, Insights and Security Implications},
+    year         = {2024},
+    howpublished = {\url{https://github.com/Trustworthy-Software/DissectingAPKs}}
+  }
