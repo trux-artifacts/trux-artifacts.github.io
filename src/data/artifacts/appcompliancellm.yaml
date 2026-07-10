@@ -64,7 +64,7 @@ demo:
         - 'method: com.example.regapp.MyAccountFragment->delete()'
         - '  invoke-virtual {v2}, Lcom/google/firebase/auth/FirebaseUser;->delete()Lcom/google/android/gms/tasks/Task;'
         - '  invoke-virtual {v3, v4}, ...->addOnCompleteListener(...)   # handles the deletion result'
-      verdictAnswer: "YES"
+      verdictAnswer: "LLM answer: YES"
       verdictLabel: True positive
       verdictKind: correct
       explanation: >-
@@ -87,7 +87,7 @@ demo:
         - 'method: com.example.regapp.MainActivity->onOptionsItemSelected(MenuItem)'
         - '  const v1, 0x7f0a00e3   # R.id.nav_log_out'
         - '  invoke-virtual {v2}, Lcom/google/firebase/auth/FirebaseAuth;->signOut()V'
-      verdictAnswer: "YES"
+      verdictAnswer: "LLM answer: YES"
       verdictLabel: False positive
       verdictKind: incorrect
       explanation: >-
@@ -109,7 +109,7 @@ demo:
         - 'method: org.wordpress.android.ui.accounts.-> onClick(View)'
         - '  invoke-static {v0, v1}, Lorg/wordpress/android/models/WordPressDB;->deleteAccount(Landroid/content/Context;Ljava/lang/String;)Z'
         - '  # on success: toast + finish() ;  else: alert dialog'
-      verdictAnswer: "YES"
+      verdictAnswer: "LLM answer: YES"
       verdictLabel: True positive
       verdictKind: correct
       explanation: >-
@@ -134,7 +134,7 @@ demo:
       output:
         - 'method: org.wordpress.android.util.IntHashMap->remove(I)Ljava/lang/Object;'
         - '  # custom hash-map entry removal — no account data involved'
-      verdictAnswer: "YES"
+      verdictAnswer: "LLM answer: YES"
       verdictLabel: False positive
       verdictKind: incorrect
       explanation: >-

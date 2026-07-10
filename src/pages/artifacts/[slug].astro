@@ -354,6 +354,85 @@ const embed = links.video ? toEmbed(links.video) : null;
         }
       }
 
+      const pixelSvg =
+        '<svg class="demo-brain" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+        '<rect x="3" y="3" width="5" height="5" rx="1"/><rect x="10" y="3" width="5" height="5" rx="1" opacity="0.55"/><rect x="17" y="3" width="4" height="5" rx="1"/>' +
+        '<rect x="3" y="10" width="5" height="5" rx="1" opacity="0.55"/><rect x="10" y="10" width="5" height="5" rx="1"/><rect x="17" y="10" width="4" height="5" rx="1" opacity="0.55"/>' +
+        '<rect x="3" y="17" width="5" height="4" rx="1"/><rect x="10" y="17" width="5" height="4" rx="1" opacity="0.55"/><rect x="17" y="17" width="4" height="4" rx="1"/></svg>';
+
+      function drawDex(canvas: HTMLCanvasElement, seed: number) {
+        const N = 128;
+        const ctx = canvas.getContext('2d')!;
+        const img = ctx.createImageData(N, N);
+        let st = seed >>> 0;
+        const rnd = () => { st = (st * 1664525 + 1013904223) >>> 0; return st / 4294967296; };
+        const bands: { y1: number; base: number; f: number }[] = [];
+        let y = 0;
+        while (y < N) {
+          const h = 5 + Math.floor(rnd() * 20);
+          bands.push({ y1: Math.min(N, y + h), base: 25 + rnd() * 175, f: 0.12 + rnd() * 0.85 });
+          y += h;
+        }
+        for (let row = 0; row < N; row++) {
+          let band = bands[0];
+          for (const b of bands) { if (row < b.y1) { band = b; break; } }
+          for (let col = 0; col < N; col++) {
+            const streak = Math.sin(col * band.f) * 18;
+            let v = band.base + streak + (rnd() - 0.5) * 55;
+            v = v < 0 ? 0 : v > 255 ? 255 : v;
+            const i = (row * N + col) * 4;
+            img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+            img.data[i + 3] = 255;
+          }
+        }
+        ctx.putImageData(img, 0, 0);
+      }
+
+      async function playImage(myRun: number, s: any) {
+        const think = document.createElement('div');
+        think.className = 'demo-thinking';
+        think.innerHTML = pixelSvg + '<span class="demo-think-msg"></span>';
+        stage.appendChild(think);
+        const msg = think.querySelector('.demo-think-msg')!;
+        for (const t of s.thinking) {
+          if (run !== myRun) return;
+          msg.textContent = t;
+          await sleep(rand(650, 1400));
+        }
+        if (run !== myRun) return;
+        think.remove();
+
+        const card = document.createElement('div');
+        card.className = 'demo-image';
+
+        const hex = document.createElement('div');
+        hex.className = 'demo-image-hex';
+        let hs = (s.seed || 1) >>> 0;
+        const nextByte = () => { hs = (hs * 1664525 + 1013904223) >>> 0; return (hs >>> 16) & 0xff; };
+        let hexStr = '';
+        for (let i = 0; i < 14; i++) hexStr += '0x' + nextByte().toString(16).toUpperCase().padStart(2, '0') + ' ';
+        hex.textContent = hexStr + '…';
+        card.appendChild(hex);
+
+        const cap = document.createElement('div');
+        cap.className = 'demo-image-cap';
+        cap.textContent = 'DEX bytecode → 8-bit grey-scale image (128 × 128)';
+        card.appendChild(cap);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 128;
+        canvas.className = 'demo-image-canvas';
+        card.appendChild(canvas);
+        stage.appendChild(card);
+        drawDex(canvas, (s.seed || 1) >>> 0);
+
+        const arrow = document.createElement('div');
+        arrow.className = 'demo-image-cap';
+        arrow.textContent = '↓  fed to the 1-D CNN';
+        card.appendChild(arrow);
+      }
+
       async function play(i: number) {
         const myRun = ++run;
         const s = demoData.scenarios[i];
@@ -364,6 +443,8 @@ const embed = links.video ? toEmbed(links.video) : null;
           await playTerminal(myRun, s);
         } else if (demoData.style === 'patch') {
           await playPatch(myRun, s);
+        } else if (demoData.style === 'image') {
+          await playImage(myRun, s);
         } else {
           await playLlm(myRun, s);
         }
@@ -372,14 +453,15 @@ const embed = links.video ? toEmbed(links.video) : null;
         if (s.verdictAnswer) {
           await sleep(300);
           if (run !== myRun) return;
+          const bad = s.verdictKind === 'incorrect' || s.verdictKind === 'malware';
           const v = document.createElement('div');
-          v.className = 'demo-verdict ' + (s.verdictKind === 'incorrect' ? 'bad' : 'good');
-          const icon = s.verdictKind === 'incorrect'
+          v.className = 'demo-verdict ' + (bad ? 'bad' : 'good');
+          const icon = bad
             ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>'
             : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
           const ans = document.createElement('span');
           ans.className = 'demo-verdict-answer';
-          ans.innerHTML = icon + '<b>LLM answer: ' + s.verdictAnswer + '</b>';
+          ans.innerHTML = icon + '<b>' + s.verdictAnswer + '</b>';
           v.appendChild(ans);
           if (s.verdictLabel) {
             const tag = document.createElement('span');
