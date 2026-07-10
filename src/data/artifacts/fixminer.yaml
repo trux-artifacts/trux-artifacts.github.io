@@ -27,6 +27,103 @@ tags:
   - program-repair
   - fix-patterns
   - mining
+demo:
+  style: patch
+  intro: >-
+    FixMiner mines a corpus of bug-fixing commits, abstracts each change into a
+    Rich Edit Script (shape · repair actions · tokens), and clusters identical
+    ones. Pick a mined pattern to see the recurring code change it discovered,
+    its repair actions, and how many patches support it. Unlike a repair tool,
+    the output is the pattern itself — an abstract template with placeholders,
+    ready to feed an APR engine like TBar.
+  note: >-
+    Precomputed illustrative patterns — nothing runs in your browser. FixMiner's
+    real pipeline (GumTree AST diffs + Rich Edit Script clustering) mines
+    patterns from patch corpora; the support figures shown here are illustrative.
+  scenarios:
+    - label: Insert null check
+      file: "Pattern #17 · Insert Null-Pointer Check"
+      pattern: 486 changes · 73 projects
+      thinking:
+        - Scanning bug-fixing commits…
+        - Computing AST diffs with GumTree…
+        - Deriving Rich Edit Scripts (shape · action · tokens)…
+        - Clustering identical edit scripts…
+        - Ranking mined patterns by support…
+      output:
+        - "  repair actions:  INS_IF, INS_INFIX_EXPR(!=), MOVE_STMT"
+        - ""
+        - "-    $rcv.$m($args);"
+        - "+    if ($rcv != null) {"
+        - "+        $rcv.$m($args);"
+        - "+    }"
+      explanation: >-
+        The single most frequent pattern FixMiner recovers: a method call whose
+        receiver can be null is wrapped in a null guard. The placeholders ($rcv,
+        $m, $args) mark what varies across the 486 clustered patches — FixMiner
+        keeps the shared structure and abstracts the rest.
+    - label: Insert bounds check
+      file: "Pattern #23 · Insert Array-Bounds Check"
+      pattern: 358 changes · 62 projects
+      thinking:
+        - Scanning bug-fixing commits…
+        - Computing AST diffs with GumTree…
+        - Deriving Rich Edit Scripts (shape · action · tokens)…
+        - Clustering identical edit scripts…
+        - Ranking mined patterns by support…
+      output:
+        - "  repair actions:  INS_IF, INS_INFIX_EXPR(<)"
+        - ""
+        - "-    $arr[$idx] = $val;"
+        - "+    if ($idx < $arr.length) {"
+        - "+        $arr[$idx] = $val;"
+        - "+    }"
+      explanation: >-
+        A recurring guard against out-of-bounds access: an array write is
+        protected by an index-vs-length check. FixMiner discovered this from 358
+        real fixes without anyone hand-writing the template — that is the point
+        of the tool.
+    - label: Wrap with try-catch
+      file: "Pattern #41 · Wrap Statement in Try-Catch"
+      pattern: 312 changes · 58 projects
+      thinking:
+        - Scanning bug-fixing commits…
+        - Computing AST diffs with GumTree…
+        - Deriving Rich Edit Scripts (shape · action · tokens)…
+        - Clustering identical edit scripts…
+        - Ranking mined patterns by support…
+      output:
+        - "  repair actions:  INS_TRY, INS_CATCH, MOVE_STMT"
+        - ""
+        - "-    $stmt;"
+        - "+    try {"
+        - "+        $stmt;"
+        - "+    } catch ($Exc e) {"
+        - "+        $handler;"
+        - "+    }"
+      explanation: >-
+        A statement that can throw is enclosed in a try-catch. The pattern keeps
+        the try/catch skeleton and the repair actions (INS_TRY, INS_CATCH) while
+        abstracting the guarded statement, the exception type and the handler.
+    - label: Add method argument
+      file: "Pattern #58 · Update Method-Invocation Arguments"
+      pattern: 254 changes · 49 projects
+      thinking:
+        - Scanning bug-fixing commits…
+        - Computing AST diffs with GumTree…
+        - Deriving Rich Edit Scripts (shape · action · tokens)…
+        - Clustering identical edit scripts…
+        - Ranking mined patterns by support…
+      output:
+        - "  repair actions:  UPD_METHOD_INV, INS_ARG"
+        - ""
+        - "-    $rcv.$m($a1);"
+        - "+    $rcv.$m($a1, $a2);"
+      explanation: >-
+        A frequently-fixed mistake: a method was called with a missing argument
+        (for example a length, a charset, or a default). FixMiner clusters these
+        under a single "add argument" pattern, recording that the change updates
+        a method invocation and inserts one argument.
 bibtex: |
   @article{Koyuncu2020,
     author  = {Koyuncu, Anil and Liu, Kui and Bissyand\'{e}, Tegawend\'{e} F. and Kim, Dongsun and Klein, Jacques and Monperrus, Martin and Le Traon, Yves},
