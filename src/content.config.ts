@@ -77,7 +77,9 @@ const artifacts = defineCollection({
             seed: z.number().optional(),
             verdictAnswer: z.string().optional(),
             verdictLabel: z.string().optional(),
-            verdictKind: z.enum(['correct', 'incorrect', 'malware', 'goodware']).optional(),
+            verdictKind: z
+              .enum(['correct', 'incorrect', 'malware', 'goodware', 'memorized', 'learned'])
+              .optional(),
             explanation: z.string().optional(),
           })
         ),

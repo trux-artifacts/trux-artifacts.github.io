@@ -453,7 +453,10 @@ const embed = links.video ? toEmbed(links.video) : null;
         if (s.verdictAnswer) {
           await sleep(300);
           if (run !== myRun) return;
-          const bad = s.verdictKind === 'incorrect' || s.verdictKind === 'malware';
+          const bad =
+            s.verdictKind === 'incorrect' ||
+            s.verdictKind === 'malware' ||
+            s.verdictKind === 'memorized';
           const v = document.createElement('div');
           v.className = 'demo-verdict ' + (bad ? 'bad' : 'good');
           const icon = bad
