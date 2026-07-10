@@ -2,9 +2,12 @@ name: Patcherizer
 type: tool
 area: Patches & Program Repair
 description: >-
-  Learns to represent code changes by combining a sequence-intention encoder
-  and a graph-intention encoder over AST diffs, powering tasks such as patch
-  description generation and code change correctness assessment.
+  Learns a task-agnostic representation of code changes by fusing the
+  surrounding context with two intention-aware encoders — a Transformer over the
+  token sequence and a GCN over the AST before/after the change. The learned
+  embedding powers three downstream tasks: code-change description
+  (commit-message) generation, patch correctness assessment, and change-intention
+  detection. Trained on a dataset of 90k parsable code changes.
 authors:
   - Xunzhu Tang
   - Haoye Tian
@@ -24,8 +27,6 @@ paper:
   venue: EMSE
   year: 2026
   doi: 10.1007/s10664-025-10763-6
-links:
-  website: https://anonymous.4open.science/r/Patcherizer-1E04
 tags:
   - code-changes
   - patches
@@ -34,26 +35,27 @@ tags:
 demo:
   style: terminal
   intro: >-
-    Pick a code change. Patcherizer encodes the diff with its
-    sequence-intention and graph-intention encoders, then feeds the learned
-    representation to two downstream heads: one that writes a natural-language
-    patch description, one that assesses whether the change is correct.
+    Pick a code change. Patcherizer encodes the diff with its sequence-intention
+    (Transformer) and graph-intention (GCN) encoders, then feeds the single
+    learned representation to three downstream heads: one writes a natural-language
+    patch description, one assesses whether the change is correct, and one detects
+    the change's intention (add / remove / update).
   outputLabel: Patcherizer output
   countOutput: false
   note: >-
     Precomputed illustrative examples — nothing runs in your browser.
     Patcherizer is a representation-learning model (not an LLM); its real
-    pipeline encodes AST diffs and runs the task-specific heads from the
-    repository.
+    pipeline encodes AST diffs and runs the three task-specific heads
+    (description, correctness, intention) from the repository.
   scenarios:
     - label: Null-check fix
-      query: python patcherizer.py --diff patches/null_check.diff --tasks describe,correctness
+      query: python patcherizer.py --diff patches/null_check.diff --tasks describe,correctness,intention
       thinking:
         - Parsing the AST diff…
         - Sequence-intention encoding (token stream)…
         - Graph-intention encoding (AST graph)…
         - Fusing into a change representation…
-        - Running downstream heads (describe + correctness)…
+        - Running downstream heads (describe + correctness + intention)…
       output:
         - "Patcherizer — encoding code change (UserService.java)"
         - "Input diff:"
@@ -70,19 +72,22 @@ demo:
         - ""
         - "[Task 2] Correctness assessment:"
         - "  CORRECT  ✓   (confidence 0.94)"
+        - ""
+        - "[Task 3] Intention detection:"
+        - "  ADD   — introduces a new null-guard block"
       explanation: >-
         The graph-intention encoder sees that a guard now dominates the
         dereference, so the description names the intent — a null check — rather
         than just echoing the added tokens, and the correctness head rates the
         fix as sound.
     - label: Off-by-one fix
-      query: python patcherizer.py --diff patches/off_by_one.diff --tasks describe,correctness
+      query: python patcherizer.py --diff patches/off_by_one.diff --tasks describe,correctness,intention
       thinking:
         - Parsing the AST diff…
         - Sequence-intention encoding (token stream)…
         - Graph-intention encoding (AST graph)…
         - Fusing into a change representation…
-        - Running downstream heads (describe + correctness)…
+        - Running downstream heads (describe + correctness + intention)…
       output:
         - "Patcherizer — encoding code change (RingBuffer.java)"
         - "Input diff:"
@@ -96,18 +101,21 @@ demo:
         - ""
         - "[Task 2] Correctness assessment:"
         - "  CORRECT  ✓   (confidence 0.91)"
+        - ""
+        - "[Task 3] Intention detection:"
+        - "  UPDATE   — modifies an existing loop bound"
       explanation: >-
         A one-character change (<= becomes <) carries a precise intent.
         Patcherizer's representation captures the boundary shift and produces a
         description an analyst could drop straight into a commit message.
     - label: Overfitting APR patch
-      query: python patcherizer.py --diff patches/apr_candidate.diff --tasks describe,correctness
+      query: python patcherizer.py --diff patches/apr_candidate.diff --tasks describe,correctness,intention
       thinking:
         - Parsing the AST diff…
         - Sequence-intention encoding (token stream)…
         - Graph-intention encoding (AST graph)…
         - Fusing into a change representation…
-        - Running downstream heads (describe + correctness)…
+        - Running downstream heads (describe + correctness + intention)…
       output:
         - "Patcherizer — encoding code change (Discount.java)"
         - "Input diff (auto-generated by an APR tool):"
@@ -121,19 +129,22 @@ demo:
         - ""
         - "[Task 2] Correctness assessment:"
         - "  INCORRECT  ✗   overfitting  (confidence 0.88)"
+        - ""
+        - "[Task 3] Intention detection:"
+        - "  ADD   — inserts a special-case branch"
       explanation: >-
         The patch passes the failing test but hardcodes one input — a classic
         overfitting fix from automated program repair. Patcherizer's correctness
         head flags it as incorrect, exactly the kind of plausible-but-wrong patch
         this task is meant to catch.
     - label: Resource-leak fix
-      query: python patcherizer.py --diff patches/resource_leak.diff --tasks describe,correctness
+      query: python patcherizer.py --diff patches/resource_leak.diff --tasks describe,correctness,intention
       thinking:
         - Parsing the AST diff…
         - Sequence-intention encoding (token stream)…
         - Graph-intention encoding (AST graph)…
         - Fusing into a change representation…
-        - Running downstream heads (describe + correctness)…
+        - Running downstream heads (describe + correctness + intention)…
       output:
         - "Patcherizer — encoding code change (FileLoader.java)"
         - "Input diff:"
@@ -151,6 +162,9 @@ demo:
         - ""
         - "[Task 2] Correctness assessment:"
         - "  CORRECT  ✓   (confidence 0.89)"
+        - ""
+        - "[Task 3] Intention detection:"
+        - "  UPDATE   — restructures the resource handling"
       explanation: >-
         The change restructures control flow rather than adding a line. The
         graph-intention encoder recognises the try-with-resources pattern and
