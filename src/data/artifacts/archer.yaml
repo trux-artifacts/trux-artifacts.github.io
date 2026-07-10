@@ -28,6 +28,114 @@ tags:
   - static-analysis
   - call-graph
   - implicit-calls
+demo:
+  style: terminal
+  intro: >-
+    Pick an app. Archer resolves conditional implicit calls — method executions
+    triggered indirectly under runtime conditions (a scheduled job, an alarm, a
+    thread) — and adds the missing edges to the call graph, making hidden code
+    reachable.
+  outputLabel: Archer output
+  countOutput: false
+  note: >-
+    The first example is the real Scylla malware from the paper (real numbers);
+    the others are illustrative apps with made-up numbers. Nothing runs in your
+    browser — run Archer from the repository to analyze your own APKs.
+  scenarios:
+    - label: Scylla (real malware)
+      query: java -jar Archer.jar -p platforms/ -a 2D46A76C…D6402.apk -t -r -c SPARK
+      thinking:
+        - Building the call graph (SPARK)…
+        - Collecting implicit-call methods (executor / executee / helper)…
+        - Extracting constraints…
+        - Computing conditional implicit call targets…
+        - Enhancing the call graph…
+      output:
+        - "Results:"
+        - " - App name: 2D46A76C94DFF80992615354C713E1552A1F55F3EB0C4D5297D52571180D6402"
+        - " - Analysis elapsed time: 133"
+        - " - Instrumentation elapsed time: 31"
+        - " - Taint Analysis elapsed time: 0"
+        - " - Number of new Edges in call graph: 48"
+        - " - Number of new Nodes in call graph: 48"
+        - " - Number of Edges in call graph: 30595"
+        - " - Number of Nodes in call graph: 7017"
+        - " - Number of extra statement covered: 870"
+      explanation: >-
+        A real Scylla malware sample. By resolving conditional implicit calls,
+        Archer added 48 call-graph edges and made 870 extra statements
+        reachable — exactly where a standard call graph goes blind, and where a
+        malicious payload can hide.
+    - label: JobScheduler (deferred)
+      query: java -jar Archer.jar -p platforms/ -a com.dailydeals.shop.apk -t -r -c SPARK
+      thinking:
+        - Building the call graph (SPARK)…
+        - Collecting implicit-call methods (executor / executee / helper)…
+        - Extracting constraints…
+        - Computing conditional implicit call targets…
+        - Enhancing the call graph…
+      output:
+        - "Results:"
+        - " - App name: com.dailydeals.shop-3.2.0"
+        - " - Analysis elapsed time: 52"
+        - " - Instrumentation elapsed time: 9"
+        - " - Taint Analysis elapsed time: 0"
+        - " - Number of new Edges in call graph: 6"
+        - " - Number of new Nodes in call graph: 6"
+        - " - Number of Edges in call graph: 18240"
+        - " - Number of Nodes in call graph: 4102"
+        - " - Number of extra statement covered: 143"
+      explanation: >-
+        JobScheduler.schedule() defers work until the device is charging and on
+        WiFi. Standard analysis stops at schedule(); Archer links it to
+        onStartJob() and records the constraint, so the deferred code becomes
+        reachable.
+    - label: AlarmManager (time)
+      query: java -jar Archer.jar -p platforms/ -a com.zenalarm.clock.apk -t -r -c SPARK
+      thinking:
+        - Building the call graph (SPARK)…
+        - Collecting implicit-call methods (executor / executee / helper)…
+        - Extracting constraints…
+        - Computing conditional implicit call targets…
+        - Enhancing the call graph…
+      output:
+        - "Results:"
+        - " - App name: com.zenalarm.clock-1.9.4"
+        - " - Analysis elapsed time: 41"
+        - " - Instrumentation elapsed time: 7"
+        - " - Taint Analysis elapsed time: 0"
+        - " - Number of new Edges in call graph: 3"
+        - " - Number of new Nodes in call graph: 3"
+        - " - Number of Edges in call graph: 9877"
+        - " - Number of Nodes in call graph: 2455"
+        - " - Number of extra statement covered: 61"
+      explanation: >-
+        A time-conditional implicit call: AlarmManager fires a component after a
+        delay. Archer resolves the executor→executee link and the temporal
+        condition, so code that only runs later is no longer missed.
+    - label: Thread / Handler.post()
+      query: java -jar Archer.jar -p platforms/ -a com.pixelchat.messenger.apk -t -r -c SPARK
+      thinking:
+        - Building the call graph (SPARK)…
+        - Collecting implicit-call methods (executor / executee / helper)…
+        - Extracting constraints…
+        - Computing conditional implicit call targets…
+        - Enhancing the call graph…
+      output:
+        - "Results:"
+        - " - App name: com.pixelchat.messenger-5.6.1"
+        - " - Analysis elapsed time: 88"
+        - " - Instrumentation elapsed time: 18"
+        - " - Taint Analysis elapsed time: 0"
+        - " - Number of new Edges in call graph: 11"
+        - " - Number of new Nodes in call graph: 11"
+        - " - Number of Edges in call graph: 24310"
+        - " - Number of Nodes in call graph: 5980"
+        - " - Number of extra statement covered: 205"
+      explanation: >-
+        The classic implicit call — Thread.start() executes run(), and
+        Handler.post() runs a Runnable. Archer recovers these base implicit-call
+        edges that common call-graph algorithms silently omit.
 bibtex: |
   @article{10.1145/3729168,
     author  = {Samhi, Jordan and Just, Ren\'{e} and Ernst, Michael D. and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
