@@ -62,16 +62,18 @@ const artifacts = defineCollection({
     demo: z
       .object({
         intro: z.string().optional(),
-        style: z.enum(['llm', 'terminal']).default('llm'),
+        style: z.enum(['llm', 'terminal', 'patch']).default('llm'),
         outputLabel: z.string().default('Output'),
         countOutput: z.boolean().default(true),
         note: z.string().default('Precomputed example — no live model is called.'),
         scenarios: z.array(
           z.object({
             label: z.string(),
-            query: z.string(),
+            query: z.string().optional(),
             thinking: z.array(z.string()),
             output: z.array(z.string()),
+            file: z.string().optional(),
+            pattern: z.string().optional(),
             explanation: z.string().optional(),
           })
         ),

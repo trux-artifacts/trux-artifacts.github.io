@@ -24,6 +24,105 @@ tags:
   - program-repair
   - java
   - fix-patterns
+demo:
+  style: patch
+  intro: >-
+    Pick a bug. TBar localizes the faulty statement, matches it against its
+    catalog of fix templates, generates candidate patches, and validates them
+    against the test suite — returning the first patch that makes every test
+    pass.
+  note: >-
+    Precomputed illustrative examples on Defects4J-style bugs — nothing runs in
+    your browser. The fix-pattern names are TBar's real templates; run TBar from
+    the repository to repair your own programs.
+  scenarios:
+    - label: Null-pointer check
+      file: source/org/jfree/chart/plot/XYPlot.java
+      pattern: Insert Null Pointer Checker
+      thinking:
+        - "Failing test: XYPlotTest.testGetDataRange (NullPointerException)"
+        - Fault localization → XYPlot.java:4325 (suspiciousness 0.94)…
+        - Matching fix templates against the AST context…
+        - "Selected template: Insert Null Pointer Checker"
+        - Generating candidate patch…
+        - Validating against the test suite…
+      output:
+        - "@@ -4322,6 +4322,9 @@ public Range getDataRange(ValueAxis axis) {"
+        - "         Collection annotations = getAnnotations();"
+        - "+        if (annotations == null) {"
+        - "+            return result;"
+        - "+        }"
+        - "         Iterator iterator = annotations.iterator();"
+        - "         while (iterator.hasNext()) {"
+      explanation: >-
+        The faulty method dereferenced a collection that can be null. TBar's
+        Null Pointer Checker template inserts a guard that returns early, and the
+        patched program passes the full test suite.
+    - label: Conditional boundary
+      file: src/main/java/org/apache/commons/math/analysis/solvers/BrentSolver.java
+      pattern: Mutate Conditional Expression
+      thinking:
+        - "Failing test: BrentSolverTest.testRootEndpoints"
+        - Fault localization → BrentSolver.java:1287 (suspiciousness 0.88)…
+        - Matching fix templates against the AST context…
+        - "Selected template: Mutate Conditional Expression"
+        - Generating candidate patch…
+        - Validating against the test suite…
+      output:
+        - "@@ -1284,7 +1284,7 @@ public double solve(UnivariateFunction f, double min, double max) {"
+        - "         double fa = f.value(min);"
+        - "         double fb = f.value(max);"
+        - "-        if (fa * fb >= 0) {"
+        - "+        if (fa * fb > 0) {"
+        - "             throw new IllegalArgumentException(\"endpoints do not bracket a root\");"
+        - "         }"
+        - "         return brent(f, min, max, fa, fb);"
+      explanation: >-
+        A too-strict boundary rejected valid inputs where an endpoint is exactly
+        a root. TBar's Mutate Conditional Expression template weakens >= to >,
+        fixing the bracketing check without touching the rest of the solver.
+    - label: Literal mutation
+      file: src/main/java/org/apache/commons/lang3/time/FastDateParser.java
+      pattern: Mutate Literal Expression
+      thinking:
+        - "Failing test: FastDateParserTest.testTwoDigitYear"
+        - Fault localization → FastDateParser.java:310 (suspiciousness 0.91)…
+        - Matching fix templates against the AST context…
+        - "Selected template: Mutate Literal Expression"
+        - Generating candidate patch…
+        - Validating against the test suite…
+      output:
+        - "@@ -307,7 +307,7 @@ private int adjustYear(int twoDigitYear) {"
+        - "     private int adjustYear(int twoDigitYear) {"
+        - "-        return twoDigitYear < 50 ? twoDigitYear + 2000 : twoDigitYear + 1900;"
+        - "+        return twoDigitYear < 70 ? twoDigitYear + 2000 : twoDigitYear + 1900;"
+        - "     }"
+      explanation: >-
+        The two-digit-year pivot was off. TBar's Mutate Literal Expression
+        template replaces the literal 50 with 70, aligning the century boundary
+        with the expected behavior and turning the failing test green.
+    - label: Missing statement
+      file: src/main/java/org/joda/time/Partial.java
+      pattern: Insert Missing Statement
+      thinking:
+        - "Failing test: TestPartial_Basics.testWith_validation"
+        - Fault localization → Partial.java:458 (suspiciousness 0.86)…
+        - Matching fix templates against the AST context…
+        - "Selected template: Insert Missing Statement"
+        - Generating candidate patch…
+        - Validating against the test suite…
+      output:
+        - "@@ -455,6 +455,7 @@ public Partial with(DateTimeFieldType fieldType, int value) {"
+        - "         int[] newValues = getValues();"
+        - "         newValues[index] = value;"
+        - "+        newValues = getField(index).getField(getChronology()).set(this, index, newValues, value);"
+        - "         return new Partial(iChronology, newTypes, newValues);"
+        - "     }"
+      explanation: >-
+        The method skipped the field-validation call, so out-of-range values
+        slipped through. TBar's Insert Missing Statement template adds the
+        validated set call before constructing the new object, restoring the
+        contract the tests expect.
 bibtex: |
   @inproceedings{10.1145/3293882.3330577,
     author    = {Liu, Kui and Koyuncu, Anil and Kim, Dongsun and Bissyand\'{e}, Tegawend\'{e} F.},

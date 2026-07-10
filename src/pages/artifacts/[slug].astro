@@ -293,6 +293,67 @@ const embed = links.video ? toEmbed(links.video) : null;
         }
       }
 
+      async function playPatch(myRun: number, s: any) {
+        // Thinking phase: a small brain-free "working" line above the patch.
+        const think = document.createElement('div');
+        think.className = 'demo-thinking';
+        think.innerHTML = brainSvg + '<span class="demo-think-msg"></span>';
+        stage.appendChild(think);
+        const msg = think.querySelector('.demo-think-msg')!;
+        for (const t of s.thinking) {
+          if (run !== myRun) return;
+          msg.textContent = t;
+          await sleep(rand(650, 1400));
+        }
+        if (run !== myRun) return;
+        think.remove();
+
+        // Patch card: header (file + fix pattern), then a colored diff.
+        const card = document.createElement('div');
+        card.className = 'demo-diff';
+
+        const bar = document.createElement('div');
+        bar.className = 'demo-diff-bar';
+        const fileEl = document.createElement('span');
+        fileEl.className = 'demo-diff-file';
+        fileEl.textContent = s.file ?? 'patch.diff';
+        bar.appendChild(fileEl);
+        if (s.pattern) {
+          const pat = document.createElement('span');
+          pat.className = 'demo-diff-pattern';
+          pat.textContent = s.pattern;
+          bar.appendChild(pat);
+        }
+        card.appendChild(bar);
+
+        const bodyEl = document.createElement('div');
+        bodyEl.className = 'demo-diff-body';
+        card.appendChild(bodyEl);
+        stage.appendChild(card);
+
+        for (const raw of s.output) {
+          if (run !== myRun) return;
+          const line = document.createElement('div');
+          const c = raw.charAt(0);
+          const kind =
+            raw.startsWith('@@') ? 'hunk'
+            : c === '+' ? 'add'
+            : c === '-' ? 'del'
+            : 'ctx';
+          line.className = 'demo-diff-line ' + kind;
+          const gutter = document.createElement('span');
+          gutter.className = 'demo-diff-gutter';
+          gutter.textContent = kind === 'add' ? '+' : kind === 'del' ? '-' : ' ';
+          const code = document.createElement('span');
+          code.className = 'demo-diff-code';
+          code.textContent = kind === 'add' || kind === 'del' ? raw.slice(1) : raw;
+          line.appendChild(gutter);
+          line.appendChild(code);
+          bodyEl.appendChild(line);
+          await sleep(rand(60, 150));
+        }
+      }
+
       async function play(i: number) {
         const myRun = ++run;
         const s = demoData.scenarios[i];
@@ -301,6 +362,8 @@ const embed = links.video ? toEmbed(links.video) : null;
         stage.innerHTML = '';
         if (demoData.style === 'terminal') {
           await playTerminal(myRun, s);
+        } else if (demoData.style === 'patch') {
+          await playPatch(myRun, s);
         } else {
           await playLlm(myRun, s);
         }
