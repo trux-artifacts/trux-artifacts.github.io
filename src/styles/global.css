@@ -786,7 +786,7 @@ a.tag:hover {
 
 .ds-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(176px, 1fr));
   gap: 12px;
   margin-bottom: 18px;
 }
@@ -794,17 +794,19 @@ a.tag:hover {
 .ds-stat {
   background: var(--surface-1);
   border-radius: var(--radius);
-  padding: 16px 18px;
+  padding: 16px 15px;
+  overflow: hidden;
 }
 
 .ds-stat-num {
   display: block;
-  font-size: 28px;
+  font-size: 23px;
   font-weight: 800;
   line-height: 1.15;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   color: var(--coral);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .ds-stat-label {
