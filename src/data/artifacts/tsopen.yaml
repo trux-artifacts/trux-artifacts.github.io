@@ -24,6 +24,111 @@ tags:
   - logic-bombs
   - malware
   - static-analysis
+demo:
+  style: terminal
+  intro: >-
+    TSOpen statically hunts for logic bombs: for each sensitive call, it recovers
+    the full path predicate that guards it and flags the trigger as suspicious.
+    Pick an app to see TSOpen's raw output — its documented result vector plus a
+    per-trigger feature line. The last two cases show why the paper is titled "On
+    the (In)Effectiveness of Static Logic Bomb Detection".
+  outputLabel: TSOpen output
+  countOutput: false
+  note: >-
+    Illustrative runs matching TSOpen's documented output format (semicolon
+    result vector + per-trigger feature line) — nothing runs in your browser.
+    TSOpen is an open implementation of TriggerScope built on Soot and FlowDroid,
+    and runs from the repository.
+  scenarios:
+    - label: Time bomb
+      query: java -jar TSOpen-1.0-jar-with-dependencies.jar -f time_bomb.apk -p $ANDROID_SDK/platforms -r
+      thinking:
+        - Loading APK + Android platform (Soot / Jimple)…
+        - Building call graph (SPARK)…
+        - Modelling inter-component flow (FlowDroid)…
+        - Symbolic execution — full path predicate recovery…
+        - Control-dependency analysis + post-filtering…
+      output:
+        - "TSOpen — open implementation of TriggerScope"
+        - "[*] Call graph: SPARK · classes analyzed: 512"
+        - "[*] Suspicious trigger candidates: 1"
+        - ""
+        - "# sha256; pkg; #trig; time(s); susp; susp_cd; susp_pf; dex; #cls; #if; depth; #obj"
+        - "9f3a…c71; com.covid.tracker; 1; 12.4; true; true; true; 1843204; 512; 1204; 7; 88"
+        - "# trigger: %if; class; method; sensitiveMethod; component; |pred|; reachable; density; predicates"
+        - "%if $z0 == 1; com.covid.tracker.TimeChecker; checkDate; sendTextMessage; com.covid.tracker.TimeChecker; 2; true; 0.80; System.currentTimeMillis():>=:1704067200000"
+      explanation: >-
+        After a hardcoded date, an if-statement guards an SMS send. TSOpen
+        recovers the full path predicate (currentTimeMillis ≥ a constant) and
+        reports a suspicious trigger that survives control-dependency and
+        post-filtering — a true positive time bomb.
+    - label: SMS trigger
+      query: java -jar TSOpen-1.0-jar-with-dependencies.jar -f free_player.apk -p $ANDROID_SDK/platforms -r
+      thinking:
+        - Loading APK + Android platform (Soot / Jimple)…
+        - Building call graph (SPARK)…
+        - Modelling inter-component flow (FlowDroid)…
+        - Symbolic execution — full path predicate recovery…
+        - Control-dependency analysis + post-filtering…
+      output:
+        - "TSOpen — open implementation of TriggerScope"
+        - "[*] Call graph: SPARK · classes analyzed: 640"
+        - "[*] Suspicious trigger candidates: 1"
+        - ""
+        - "# sha256; pkg; #trig; time(s); susp; susp_cd; susp_pf; dex; #cls; #if; depth; #obj"
+        - "9c21…4be; com.free.player; 1; 9.8; true; true; true; 2210432; 640; 1533; 6; 121"
+        - "# trigger: %if; class; method; sensitiveMethod; component; |pred|; reachable; density; predicates"
+        - "%if $z1 == 1; com.free.player.SmsGate; onReceive; getDeviceId; com.free.player.SmsReceiver; 3; true; 0.67; getMessageBody():equals:\"ACTIVATE\" && getOriginatingAddress():startsWith:\"+1900\""
+      explanation: >-
+        An incoming SMS whose body equals a keyword and whose sender matches a
+        premium prefix triggers a read of the device IMEI. TSOpen recovers the
+        two-part predicate over the message content and flags the covert
+        SMS-activated trigger.
+    - label: Benign · filtered out
+      query: java -jar TSOpen-1.0-jar-with-dependencies.jar -f simple_notes.apk -p $ANDROID_SDK/platforms -r
+      thinking:
+        - Loading APK + Android platform (Soot / Jimple)…
+        - Building call graph (SPARK)…
+        - Modelling inter-component flow (FlowDroid)…
+        - Symbolic execution — full path predicate recovery…
+        - Control-dependency analysis + post-filtering…
+      output:
+        - "TSOpen — open implementation of TriggerScope"
+        - "[*] Call graph: SPARK · classes analyzed: 210"
+        - "[*] Suspicious trigger candidates: 1"
+        - "[*] 1 candidate dropped by post-filters (guarded block reaches no sensitive method)"
+        - ""
+        - "# sha256; pkg; #trig; time(s); susp; susp_cd; susp_pf; dex; #cls; #if; depth; #obj"
+        - "7ad0…9f2; com.notes.simple; 1; 5.2; true; false; false; 903168; 210; 402; 4; 33"
+      explanation: >-
+        A candidate guarded branch is found, but control-dependency and the
+        post-filters knock it out: the guarded block reaches no sensitive API.
+        susp_cd and susp_pf both flip to false, so no trigger line is emitted —
+        the filtering pipeline correctly stays quiet.
+    - label: Benign · false positive
+      query: java -jar TSOpen-1.0-jar-with-dependencies.jar -f fitness_pro.apk -p $ANDROID_SDK/platforms -r
+      thinking:
+        - Loading APK + Android platform (Soot / Jimple)…
+        - Building call graph (SPARK)…
+        - Modelling inter-component flow (FlowDroid)…
+        - Symbolic execution — full path predicate recovery…
+        - Control-dependency analysis + post-filtering…
+      output:
+        - "TSOpen — open implementation of TriggerScope"
+        - "[*] Call graph: SPARK · classes analyzed: 388"
+        - "[*] Suspicious trigger candidates: 1"
+        - ""
+        - "# sha256; pkg; #trig; time(s); susp; susp_cd; susp_pf; dex; #cls; #if; depth; #obj"
+        - "b58e…10c; com.fitness.pro; 1; 7.1; true; true; true; 1502976; 388; 903; 5; 71"
+        - "# trigger: %if; class; method; sensitiveMethod; component; |pred|; reachable; density; predicates"
+        - "%if $z0 == 1; com.fitness.pro.PromoManager; showHolidayBanner; startActivity; com.fitness.pro.PromoManager; 1; true; 0.72; System.currentTimeMillis():>=:1734220800000"
+      explanation: >-
+        A legitimate app unlocks a holiday banner after a date — structurally
+        identical to a time bomb (a currentTimeMillis guard over a sensitive
+        call). TSOpen flags it as suspicious even after filtering. This is
+        exactly the central finding of the paper: static logic-bomb detection
+        cannot separate benign time/location guards from malicious ones, so it
+        drowns true bombs in false positives.
 bibtex: |
   @article{9528927,
     author  = {Samhi, Jordan and Bartel, Alexandre},
