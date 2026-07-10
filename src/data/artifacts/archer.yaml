@@ -31,18 +31,17 @@ tags:
 demo:
   style: terminal
   intro: >-
-    Pick an app. Archer resolves conditional implicit calls — method executions
-    triggered indirectly under runtime conditions (a scheduled job, an alarm, a
-    thread) — and adds the missing edges to the call graph, making hidden code
-    reachable.
+    A real Archer run on the Scylla malware. Archer resolves conditional
+    implicit calls, adds the missing call-graph edges, and — crucially —
+    extracts the constraints under which each implicit call fires.
   outputLabel: Archer output
   countOutput: false
   note: >-
-    The first example is the real Scylla malware from the paper (real numbers);
-    the others are illustrative apps with made-up numbers. Nothing runs in your
-    browser — run Archer from the repository to analyze your own APKs.
+    Real, unmodified output from the paper's Scylla example (SHA256, counts, and
+    every extracted constraint). Nothing runs in your browser — run Archer from
+    the repository to analyze your own APKs.
   scenarios:
-    - label: Scylla (real malware)
+    - label: Run Archer on Scylla (real malware)
       query: java -jar Archer.jar -p platforms/ -a 2D46A76C…D6402.apk -t -r -c SPARK
       thinking:
         - Building the call graph (SPARK)…
@@ -51,91 +50,128 @@ demo:
         - Computing conditional implicit call targets…
         - Enhancing the call graph…
       output:
-        - "Results:"
-        - " - App name: 2D46A76C94DFF80992615354C713E1552A1F55F3EB0C4D5297D52571180D6402"
-        - " - Analysis elapsed time: 133"
-        - " - Instrumentation elapsed time: 31"
-        - " - Taint Analysis elapsed time: 0"
-        - " - Number of new Edges in call graph: 48"
-        - " - Number of new Nodes in call graph: 48"
-        - " - Number of Edges in call graph: 30595"
-        - " - Number of Nodes in call graph: 7017"
-        - " - Number of extra statement covered: 870"
+        - 'Results:'
+        - ' - App name: 2D46A76C94DFF80992615354C713E1552A1F55F3EB0C4D5297D52571180D6402'
+        - ' - Analysis elapsed time: 133'
+        - ' - Instrumentation elapsed time: 31'
+        - ' - Taint Analysis elapsed time: 0'
+        - ' - Number of new Edges in call graph: 48'
+        - ' - Number of new Nodes in call graph: 48'
+        - ' - Number of Edges in call graph: 30595'
+        - ' - Number of Nodes in call graph: 7017'
+        - ' - Number of extra statement covered: 870'
+        - ' - Proportion of extra code covered: 0.28%'
+        - ' - Reached timeout: no'
+        - ' - Constraints:'
+        - '   - Method call "schedule" in methods <com.ironsource.mediationsdk.RewardedVideoManager: void scheduleFetchTimer()>:'
+        - '    - Potential targets:'
+        - '     - com.ironsource.mediationsdk.RvAuctionTigger$1.run'
+        - '     - com.ironsource.mediationsdk.RvAuctionTigger$3.run'
+        - '     - com.ironsource.mediationsdk.RvAuctionTigger$2.run'
+        - '     - com.ironsource.mediationsdk.InterstitialSmash$2.run'
+        - '     - com.ironsource.mediationsdk.ProgIsSmash$1.run'
+        - '     - com.ironsource.mediationsdk.ProgRvSmash$1.run'
+        - '     - com.ironsource.mediationsdk.InterstitialSmash$1.run'
+        - '     - com.ironsource.mediationsdk.ProgRvManager$1.run'
+        - '     - com.ironsource.mediationsdk.BannerSmash$1.run'
+        - '     - com.ironsource.mediationsdk.RewardedVideoManager$1.run'
+        - '     - com.ironsource.mediationsdk.RewardedVideoSmash$1.run'
+        - '     - com.ironsource.mediationsdk.BannerManager$1.run'
+        - '    - No constraints'
+        - ' - Constraints:'
+        - '   - Method call "scheduleWithFixedDelay" in methods <rx.internal.schedulers.CachedThreadScheduler$CachedWorkerPool: void <init>(java.util.concurrent.ThreadFactory,long,java.util.concurrent.TimeUnit)>:'
+        - '    - Potential targets:'
+        - '     - com.moat.analytics.mobile.iro.h$4.run'
+        - '     - rx.internal.schedulers.CachedThreadScheduler$CachedWorkerPool$2.run'
+        - '     - com.moat.analytics.mobile.iro.h$1.run'
+        - '     - com.moat.analytics.mobile.vng.i$1.run'
+        - '     - com.moat.analytics.mobile.vng.i$2.run'
+        - '     - com.moat.analytics.mobile.tjy.q.run'
+        - '     - com.moat.analytics.mobile.tjy.s.run'
+        - '    - No constraints'
+        - ' - Constraints:'
+        - '   - Method call "schedule" in methods <com.ironsource.mediationsdk.utils.DailyCappingManager: void scheduleTimer()>:'
+        - '    - Potential targets:'
+        - '     - com.ironsource.mediationsdk.utils.DailyCappingManager$1.run'
+        - '    - No constraints'
+        - ' - Constraints:'
+        - '   - Method call "schedule" in methods <okhttp3.internal.ws.RealWebSocket: boolean writeOneFrame()>:'
+        - '    - Potential targets:'
+        - '     - com.moat.analytics.mobile.vng.o$2.run'
+        - '     - okhttp3.internal.ws.RealWebSocket$CancelRunnable.run'
+        - '     - com.moat.analytics.mobile.tjy.o.run'
+        - '     - com.moat.analytics.mobile.iro.k$1.run'
+        - '     - bolts.Task$1.run'
+        - '     - bolts.CancellationTokenSource$1.run'
+        - '    - No constraints'
+        - ' - Constraints:'
+        - '   - Method call "schedule" in methods <com.Talentnewdev.gjxFfCOcq.KbLDfknMveZUxWuT: void startRunTimer()>:'
+        - '    - Potential targets:'
+        - '     - com.Talentnewdev.gjxFfCOcq.KbLDfknMveZUxWuT$2.run'
+        - '    - Potential constraints:'
+        - '     - Period after next execution in ms: 1000L'
+        - '     - Delay of execution in ms: 1000L'
+        - ' - Constraints:'
+        - '   - Method call "execute" in methods <okhttp3.internal.http2.Http2Connection$ReaderRunnable: void applyAndAckSettings(okhttp3.internal.http2.Settings)>:'
+        - '    - Potential targets:'
+        - '     - okhttp3.internal.http2.Http2Connection$1.run'
+        - '     - com.tonyodev.fetch.FetchService$1.run'
+        - '     - com.unity.purchasing.googleplay.BillingServiceManager$2.run'
+        - '     - okhttp3.internal.http2.Http2Connection$ReaderRunnable$3.run'
+        - '     - okhttp3.internal.http2.Http2Connection$6.run'
+        - '     - com.unity.purchasing.googleplay.BillingServiceManager$1$2.run'
+        - '     - bolts.Task$14.run'
+        - '     - bolts.Task$15.run'
+        - '     - bolts.Task$4.run'
+        - '     - okhttp3.internal.http2.Http2Connection$2.run'
+        - '     - okhttp3.internal.http2.Http2Connection$5.run'
+        - '     - okhttp3.internal.http2.Http2Connection$3.run'
+        - '     - retrofit2.ExecutorCallAdapterFactory$ExecutorCallbackCall$1$2.run'
+        - '     - com.tapjoy.internal.dd$1$1.run'
+        - '     - okhttp3.internal.http2.Http2Connection$ReaderRunnable$1.run'
+        - '     - okhttp3.internal.http2.Http2Connection$7.run'
+        - '     - retrofit2.ExecutorCallAdapterFactory$ExecutorCallbackCall$1$1.run'
+        - '     - okhttp3.internal.http2.Http2Connection$ReaderRunnable$2.run'
+        - '     - com.unity.purchasing.googleplay.BillingServiceManager$1$1.run'
+        - '     - okhttp3.internal.http2.Http2Connection$4.run'
+        - '     - com.tonyodev.fetch.FetchService$2.run'
+        - '    - No constraints'
+        - ' - Constraints:'
+        - '   - Method call "submit" in methods <com.tapjoy.internal.cf: void a(com.tapjoy.internal.ck,java.util.concurrent.ExecutorService)>:'
+        - '    - Potential targets:'
+        - '     - com.moat.analytics.mobile.tjy.av.run'
+        - '     - com.tapjoy.internal.gw$2.run'
+        - '     - com.tapjoy.internal.ch.run'
+        - '     - com.tapjoy.internal.gw$1.run'
+        - '    - No constraints'
+        - ' - Constraints:'
+        - '   - Method call "scheduleAtFixedRate" in methods <okhttp3.internal.ws.RealWebSocket: void initReaderAndWriter(java.lang.String,long,okhttp3.internal.ws.RealWebSocket$Streams)>:'
+        - '    - Potential targets:'
+        - '     - rx.internal.util.ObjectPool$1.run'
+        - '     - rx.internal.schedulers.NewThreadWorker$1.run'
+        - '     - okhttp3.internal.ws.RealWebSocket$PingRunnable.run'
+        - '    - No constraints'
+        - ' - Constraints:'
+        - '   - Method call "submit" in methods <com.tapjoy.TapjoyCache: java.util.concurrent.Future startCachingThread(java.net.URL,java.lang.String,long)>:'
+        - '    - Potential targets:'
+        - '     - com.tapjoy.TapjoyCache$CacheAssetThread.call'
+        - '    - No constraints'
+        - ' - Constraints:'
+        - '   - Method call "schedule" in methods <com.Talentnewdev.gjxFfCOcq.KbLDfknMveZUxWuT: void useJobServiceForKeepAlive()>:'
+        - '    - Potential targets:'
+        - '     - com.Talentnewdev.gjxFfCOcq.ScheduleService.onStartJob'
+        - '    - Potential constraints:'
+        - '     - Periodic: 2000L'
+        - '     - Persistent: 1'
+        - '     - Network type: 1'
       explanation: >-
-        A real Scylla malware sample. By resolving conditional implicit calls,
-        Archer added 48 call-graph edges and made 870 extra statements
-        reachable — exactly where a standard call graph goes blind, and where a
-        malicious payload can hide.
-    - label: JobScheduler (deferred)
-      query: java -jar Archer.jar -p platforms/ -a com.dailydeals.shop.apk -t -r -c SPARK
-      thinking:
-        - Building the call graph (SPARK)…
-        - Collecting implicit-call methods (executor / executee / helper)…
-        - Extracting constraints…
-        - Computing conditional implicit call targets…
-        - Enhancing the call graph…
-      output:
-        - "Results:"
-        - " - App name: com.dailydeals.shop-3.2.0"
-        - " - Analysis elapsed time: 52"
-        - " - Instrumentation elapsed time: 9"
-        - " - Taint Analysis elapsed time: 0"
-        - " - Number of new Edges in call graph: 6"
-        - " - Number of new Nodes in call graph: 6"
-        - " - Number of Edges in call graph: 18240"
-        - " - Number of Nodes in call graph: 4102"
-        - " - Number of extra statement covered: 143"
-      explanation: >-
-        JobScheduler.schedule() defers work until the device is charging and on
-        WiFi. Standard analysis stops at schedule(); Archer links it to
-        onStartJob() and records the constraint, so the deferred code becomes
-        reachable.
-    - label: AlarmManager (time)
-      query: java -jar Archer.jar -p platforms/ -a com.zenalarm.clock.apk -t -r -c SPARK
-      thinking:
-        - Building the call graph (SPARK)…
-        - Collecting implicit-call methods (executor / executee / helper)…
-        - Extracting constraints…
-        - Computing conditional implicit call targets…
-        - Enhancing the call graph…
-      output:
-        - "Results:"
-        - " - App name: com.zenalarm.clock-1.9.4"
-        - " - Analysis elapsed time: 41"
-        - " - Instrumentation elapsed time: 7"
-        - " - Taint Analysis elapsed time: 0"
-        - " - Number of new Edges in call graph: 3"
-        - " - Number of new Nodes in call graph: 3"
-        - " - Number of Edges in call graph: 9877"
-        - " - Number of Nodes in call graph: 2455"
-        - " - Number of extra statement covered: 61"
-      explanation: >-
-        A time-conditional implicit call: AlarmManager fires a component after a
-        delay. Archer resolves the executor→executee link and the temporal
-        condition, so code that only runs later is no longer missed.
-    - label: Thread / Handler.post()
-      query: java -jar Archer.jar -p platforms/ -a com.pixelchat.messenger.apk -t -r -c SPARK
-      thinking:
-        - Building the call graph (SPARK)…
-        - Collecting implicit-call methods (executor / executee / helper)…
-        - Extracting constraints…
-        - Computing conditional implicit call targets…
-        - Enhancing the call graph…
-      output:
-        - "Results:"
-        - " - App name: com.pixelchat.messenger-5.6.1"
-        - " - Analysis elapsed time: 88"
-        - " - Instrumentation elapsed time: 18"
-        - " - Taint Analysis elapsed time: 0"
-        - " - Number of new Edges in call graph: 11"
-        - " - Number of new Nodes in call graph: 11"
-        - " - Number of Edges in call graph: 24310"
-        - " - Number of Nodes in call graph: 5980"
-        - " - Number of extra statement covered: 205"
-      explanation: >-
-        The classic implicit call — Thread.start() executes run(), and
-        Handler.post() runs a Runnable. Archer recovers these base implicit-call
-        edges that common call-graph algorithms silently omit.
+        A real Scylla malware run. Beyond the counts (48 new call-graph edges,
+        870 extra statements reachable), Archer extracts the CONDITIONS under
+        which each implicit call fires. Notice the suspicious com.Talentnewdev
+        package: a timer that re-fires every 1000 ms, and a JobService
+        (onStartJob) kept alive periodically (2000 ms), persistently, and only
+        on a given network type — conditional targets a standard call graph
+        never reaches.
 bibtex: |
   @article{10.1145/3729168,
     author  = {Samhi, Jordan and Just, Ren\'{e} and Ernst, Michael D. and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

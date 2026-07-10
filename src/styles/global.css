@@ -930,6 +930,8 @@ a.tag:hover {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   min-height: 170px;
+  max-height: 460px;
+  overflow-y: auto;
 }
 
 .demo-term-prompt { color: #98c379; }

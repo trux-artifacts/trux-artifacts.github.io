@@ -275,17 +275,21 @@ const embed = links.video ? toEmbed(links.video) : null;
           line.className = 'demo-term-think';
           line.textContent = t;
           body.insertBefore(line, cursorLine);
+          body.scrollTop = body.scrollHeight;
           await sleep(rand(500, 1400));
         }
         if (run !== myRun) return;
 
+        // Long real outputs stream faster so the run stays snappy.
+        const [lo, hi] = s.output.length > 30 ? [8, 32] : [50, 220];
         for (const m of s.output) {
           if (run !== myRun) return;
           const line = document.createElement('div');
           line.className = 'demo-term-out';
           line.textContent = m;
           body.insertBefore(line, cursorLine);
-          await sleep(rand(50, 220));
+          body.scrollTop = body.scrollHeight;
+          await sleep(rand(lo, hi));
         }
       }
 
