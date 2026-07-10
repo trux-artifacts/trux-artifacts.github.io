@@ -1,0 +1,147 @@
+name: CoDoC
+type: tool
+area: Android Static & Dynamic Analysis
+description: >-
+  Identifies privacy-sensitive SOURCE and SINK methods in the Android framework
+  by fusing two views of each method — its source code (embedded with Code2Vec)
+  and its JavaDoc documentation (embedded with Sentence-BERT) — and classifying
+  it as SOURCE, SINK, or NEITHER for taint-analysis lists.
+authors:
+  - Jordan Samhi
+  - Maria Kober
+  - Abdoul Kader Kaboré
+  - Steven Arzt
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+status: stable
+logo: android
+figure: codoc.png
+figureCaption: Overview of the CoDoC approach (arXiv 2023 paper, Figure 3)
+paper:
+  title: "Negative Results of Fusing Code and Documentation for Learning to Accurately Identify Sensitive Source and Sink Methods"
+  venue: arXiv
+  year: 2023
+  doi: 10.48550/arXiv.2301.03207
+links:
+  github: https://github.com/JordanSamhi/CoDoC
+tags:
+  - android
+  - sources-and-sinks
+  - taint-analysis
+  - deep-learning
+  - negative-results
+demo:
+  intro: >-
+    CoDoC decides whether an Android framework method is a privacy-sensitive
+    SOURCE, a SINK, or NEITHER — by fusing two views of the method: its source
+    code (embedded with Code2Vec) and its JavaDoc documentation (embedded with
+    Sentence-BERT). Pick a method to see the classifier's verdict. The last one
+    is the paper's negative result.
+  outputLabel: Method under classification (code + JavaDoc)
+  countOutput: false
+  note: >-
+    A "negative results" study. In 10-fold cross-validation CoDoC reaches
+    precision / recall / F1 = 91%, beating the state-of-the-art SuSi. But on
+    unseen Android framework methods it over-flags and produces many false
+    positives — machine learning struggles to pin down an abstract concept like
+    "privacy" in practice. Classifications shown are illustrative; nothing runs
+    in your browser. Open-source prototype and all artifacts on GitHub.
+  scenarios:
+    - label: getImei() → SOURCE
+      query: 'Classify android.telephony.TelephonyManager.getImei()'
+      thinking:
+        - Filtering to documented public methods…
+        - Extracting source code + JavaDoc…
+        - Embedding source code (Code2Vec)…
+        - Embedding documentation (Sentence-BERT)…
+        - Fusing embeddings → classifier…
+      output:
+        - 'public String getImei() {'
+        - '    return getImei(getSlotIndex());'
+        - '}'
+        - 'JavaDoc: "Returns the IMEI (International Mobile Equipment Identity)."'
+      verdictAnswer: "SOURCE"
+      verdictLabel: confidence 0.98
+      verdictKind: correct
+      explanation: >-
+        getImei() returns a device identifier — sensitive data under CoDoC's
+        SOURCE definition. The code (returns an identifier) and the documentation
+        (mentions the IMEI) point the same way, and CoDoC classifies it SOURCE. A
+        correct call.
+    - label: sendTextMessage() → SINK
+      query: 'Classify android.telephony.SmsManager.sendTextMessage(...)'
+      thinking:
+        - Filtering to documented public methods…
+        - Extracting source code + JavaDoc…
+        - Embedding source code (Code2Vec)…
+        - Embedding documentation (Sentence-BERT)…
+        - Fusing embeddings → classifier…
+      output:
+        - 'public void sendTextMessage(String destinationAddress,'
+        - '        String scAddress, String text, ...) {'
+        - '    // dispatch the SMS to the radio interface'
+        - '}'
+        - 'JavaDoc: "Send a text based SMS."'
+      verdictAnswer: "SINK"
+      verdictLabel: confidence 0.96
+      verdictKind: correct
+      explanation: >-
+        sendTextMessage() pushes data out of the app to the outside (the cellular
+        network), which is exactly CoDoC's definition of a SINK. Correctly
+        classified.
+    - label: getScrollIndicatorBounds() → NEITHER
+      query: 'Classify android.view.ViewGroup.getScrollIndicatorBounds(Rect)'
+      thinking:
+        - Filtering to documented public methods…
+        - Extracting source code + JavaDoc…
+        - Embedding source code (Code2Vec)…
+        - Embedding documentation (Sentence-BERT)…
+        - Fusing embeddings → classifier…
+      output:
+        - 'public void getScrollIndicatorBounds(Rect out) {'
+        - '    out.left = mScrollX;'
+        - '    out.top = mScrollY;'
+        - '    ...'
+        - '}'
+        - 'JavaDoc: "Stores the bounds of the scroll indicators in out."'
+      verdictAnswer: "NEITHER"
+      verdictLabel: confidence 0.93
+      verdictKind: correct
+      explanation: >-
+        This method just returns on-screen geometry — neither sensitive data nor
+        a data sink. Notably, the state-of-the-art SuSi wrongly filed it under an
+        "SMS_MMS" source category; CoDoC gets it right. This is a real example
+        from the paper.
+    - label: getRotation() → SOURCE (FP)
+      query: 'Classify android.view.Display.getRotation()'
+      thinking:
+        - Filtering to documented public methods…
+        - Extracting source code + JavaDoc…
+        - Embedding source code (Code2Vec)…
+        - Embedding documentation (Sentence-BERT)…
+        - Fusing embeddings → classifier…
+      output:
+        - 'public int getRotation() {'
+        - '    return mGlobal.getDisplayInfo(mDisplayId).rotation;'
+        - '}'
+        - 'JavaDoc: "Returns the rotation of the screen from its natural orientation."'
+      verdictAnswer: "SOURCE"
+      verdictLabel: confidence 0.64
+      verdictKind: incorrect
+      explanation: >-
+        Screen rotation is not privacy-sensitive, so the correct label is
+        NEITHER — yet CoDoC returns SOURCE. On unseen framework methods like this
+        one, it over-flags innocuous getters. This is the paper's negative
+        result: strong 10-fold cross-validation scores (F1 = 91%) do not carry
+        over to the wild, where CoDoC produces many false positives, just like
+        SuSi. Machine learning for an abstract concept such as "privacy" fails in
+        practice despite good lab results.
+bibtex: |
+  @article{samhi2023negative,
+    author  = {Samhi, Jordan and Kober, Maria and Kabor\'{e}, Abdoul Kader and Arzt, Steven and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
+    title   = {Negative Results of Fusing Code and Documentation for Learning to Accurately Identify Sensitive Source and Sink Methods: An Application to the Android Framework for Data Leak Detection},
+    journal = {arXiv preprint arXiv:2301.03207},
+    year    = {2023},
+    doi     = {10.48550/arXiv.2301.03207},
+    url     = {https://arxiv.org/abs/2301.03207}
+  }
