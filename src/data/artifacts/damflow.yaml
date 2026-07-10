@@ -28,6 +28,102 @@ tags:
   - taint-analysis
   - data-flows
   - machine-learning
+demo:
+  style: terminal
+  intro: >-
+    Pick an app. FlowDroid reports a flood of data flows; DamFlow scores each
+    (source → sink) pair against a model of the app's category and keeps only
+    the relevant leaks.
+  outputLabel: DamFlow output
+  countOutput: false
+  note: >-
+    Precomputed examples on illustrative apps with made-up flows and scores —
+    nothing runs in your browser. DamFlow's real pipeline (FlowDroid backward
+    analysis + OpenAI embeddings + per-category anomaly detection) runs from the
+    repository.
+  scenarios:
+    - label: Calculator
+      query: python run_damflow.py -a com.simplecalc.pro.apk
+      thinking:
+        - Backward taint analysis (FlowDroid)…
+        - Extracting data-flow pairs…
+        - Embedding pairs (source → sink)…
+        - Scoring relevance (CALCULATOR anomaly model)…
+      output:
+        - "FlowDroid reported 12 data flows"
+        - "DamFlow kept 1 relevant · dropped 11 irrelevant"
+        - "Relevant leaks:"
+        - "  [0.97]  getLastKnownLocation()  →  HttpURLConnection.getOutputStream()"
+        - "Dropped (sample):"
+        - "  [0.05]  getString(R.string.theme)  →  Log.d()"
+        - "  [0.08]  getPackageName()            →  TextView.setText()"
+      explanation: >-
+        A calculator has no legitimate reason to read the device location and
+        send it over HTTP. Against the CALCULATOR model — where that flow never
+        appears in benign apps — DamFlow scores it 0.97 and surfaces it, while
+        dropping the harmless theme-read and UI flows. The flood of 12 candidate
+        flows collapses to the one that matters.
+    - label: Weather
+      query: python run_damflow.py -a com.dailymeteo.weather.apk
+      thinking:
+        - Backward taint analysis (FlowDroid)…
+        - Extracting data-flow pairs…
+        - Embedding pairs (source → sink)…
+        - Scoring relevance (WEATHER anomaly model)…
+      output:
+        - "FlowDroid reported 34 data flows"
+        - "DamFlow kept 1 relevant · dropped 33 irrelevant"
+        - "Relevant leaks:"
+        - "  [0.83]  getDeviceId()             →  HttpURLConnection.getOutputStream()"
+        - "Dropped (sample):"
+        - "  [0.38]  getLastKnownLocation()    →  HttpURLConnection.getOutputStream()"
+        - "  [0.06]  getString(R.string.unit)  →  Log.d()"
+      explanation: >-
+        For a weather app, location → network is expected, so DamFlow scores it
+        just 0.38 and drops it — the opposite of the calculator, where the exact
+        same flow was the top leak. The device-id exfiltration still stands out
+        against the WEATHER model and is kept. Same flow, different relevance by
+        category.
+    - label: Finance
+      query: python run_damflow.py -a com.paywallet.bank.apk
+      thinking:
+        - Backward taint analysis (FlowDroid)…
+        - Extracting data-flow pairs…
+        - Embedding pairs (source → sink)…
+        - Scoring relevance (FINANCE anomaly model)…
+      output:
+        - "FlowDroid reported 51 data flows"
+        - "DamFlow kept 3 relevant · dropped 48 irrelevant"
+        - "Relevant leaks:"
+        - "  [0.92]  getDeviceId()            →  HttpURLConnection.getOutputStream()"
+        - "  [0.88]  getSimSerialNumber()     →  SmsManager.sendTextMessage()"
+        - "  [0.81]  getLine1Number()         →  HttpURLConnection.getOutputStream()"
+        - "Dropped (sample):"
+        - "  [0.09]  getString(R.string.locale)  →  Log.d()"
+      explanation: >-
+        A banking app leaking device and SIM identifiers to the network (and one
+        by SMS) is exactly what an analyst wants to see. DamFlow keeps the three
+        identifier leaks that stand out against the FINANCE model and drops the
+        48 ordinary config and UI flows.
+    - label: Messaging
+      query: python run_damflow.py -a com.quickchat.free.apk
+      thinking:
+        - Backward taint analysis (FlowDroid)…
+        - Extracting data-flow pairs…
+        - Embedding pairs (source → sink)…
+        - Scoring relevance (MESSAGING anomaly model)…
+      output:
+        - "FlowDroid reported 40 data flows"
+        - "DamFlow kept 2 relevant · dropped 38 irrelevant"
+        - "Relevant leaks:"
+        - "  [0.87]  getMessageBody()   →  HttpURLConnection.getOutputStream()"
+        - "  [0.80]  query(Contacts)    →  HttpURLConnection.getOutputStream()"
+        - "Dropped (sample):"
+        - "  [0.07]  getPackageName()   →  TextView.setText()"
+      explanation: >-
+        Sending raw message bodies and the contact list to a third-party server
+        is well outside what the MESSAGING model expects. DamFlow surfaces those
+        two leaks and drops the flood of routine flows around them.
 bibtex: |
   @article{10.1145/3772002,
     author  = {Alecci, Marco and Samhi, Jordan and Miltenberger, Marc and Arzt, Steven and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
