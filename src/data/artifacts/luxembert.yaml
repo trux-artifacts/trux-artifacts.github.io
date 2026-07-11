@@ -1,0 +1,96 @@
+name: LuxemBERT
+type: library
+area: Multilingual NLP & LLMs
+description: >-
+  A BERT model for Luxembourgish — a low-resource West Germanic language —
+  trained with a simple, practical data-augmentation trick: partially translate
+  closely-related German text into "pseudo-Luxembourgish" by swapping unambiguous
+  function words, then mix it with real Luxembourgish. LuxemBERT outperforms
+  multilingual mBERT and a Luxembourgish-only baseline across POS, NER and
+  classification tasks, and ships with annotated datasets for the downstream
+  tasks.
+authors:
+  - Cedric Lothritz
+  - Bertrand Lebichot
+  - Kevin Allix
+  - Lisa Veiber
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+  - Andrey Boytsov
+  - Anne Goujon
+  - Clément Lefebvre
+status: stable
+logo: llm
+figure: luxembert.png
+figureCaption: The data-augmentation scheme — German text is preprocessed and its function words translated into pseudo-Luxembourgish, then mixed with Luxembourgish text to pre-train LuxemBERT (paper, Figure 1)
+paper:
+  title: "LuxemBERT: Simple and Practical Data Augmentation in Language Model Pre-Training for Luxembourgish"
+  venue: LREC
+  year: 2022
+  url: https://aclanthology.org/2022.lrec-1.543/
+links:
+  website: https://huggingface.co/lothritz/LuxemBERT
+tags:
+  - nlp
+  - language-model
+  - bert
+  - luxembourgish
+  - low-resource
+dataset:
+  stats:
+    - value: 110000000
+      label: Model parameters (BERT Base)
+    - value: 6100000
+      label: Luxembourgish sentences (pre-training)
+    - value: 130000000
+      label: Words in the Luxembourgish corpus
+    - value: 12
+      label: Transformer layers
+    - value: 768
+      label: Hidden size
+    - value: 50
+      suffix: "%"
+      label: Luxembourgish share in the best corpus mix
+    - value: 120
+      label: Alphabet size (cut from 1000)
+    - value: 529
+      label: Function-word pairs for augmentation (De↔Lb)
+    - value: 20
+      suffix: "%"
+      label: German text pseudo-translated to Luxembourgish
+    - value: 4
+      label: Downstream NLP tasks with released datasets
+  sampleTitle: Luxembourgish pre-training corpus
+  sampleSource: Table 1 · 6.1M sentences total
+  sampleCount: 6
+  sampleNote: >-
+    Sources of the ~6.1M Luxembourgish sentences (hit shuffle for more). An equal
+    amount of German text — about 20% of it pseudo-translated to Luxembourgish —
+    was mixed in for the best-performing 50/50 configuration.
+  samples:
+    - "RTL news articles · 1,640,000 sentences"
+    - "RTL user comments · 1,570,000 sentences"
+    - "Webpages · 1,300,000 sentences"
+    - "RTL radio broadcasts · 572,000 sentences"
+    - "Wikipedia · 500,000 sentences"
+    - "News articles · 300,000 sentences"
+    - "Chatroom logs · 175,000 sentences"
+    - "Luxembourgish Online Dictionary (LOD) · 50,000 sentences"
+  usage:
+    title: Load the model
+    note: The uncased LuxemBERT model is on the Hugging Face Hub.
+    code: |
+      from transformers import AutoTokenizer, AutoModelForMaskedLM
+
+      tok = AutoTokenizer.from_pretrained("lothritz/LuxemBERT")
+      model = AutoModelForMaskedLM.from_pretrained("lothritz/LuxemBERT")
+bibtex: |
+  @inproceedings{lothritz-etal-2022-luxembert,
+    author    = {Lothritz, Cedric and Lebichot, Bertrand and Allix, Kevin and Veiber, Lisa and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques and Boytsov, Andrey and Goujon, Anne and Lefebvre, Cl\'{e}ment},
+    title     = {{LuxemBERT}: Simple and Practical Data Augmentation in Language Model Pre-Training for Luxembourgish},
+    booktitle = {Proceedings of the 13th Language Resources and Evaluation Conference (LREC)},
+    year      = {2022},
+    pages     = {5080--5089},
+    publisher = {European Language Resources Association},
+    url       = {https://aclanthology.org/2022.lrec-1.543/}
+  }
