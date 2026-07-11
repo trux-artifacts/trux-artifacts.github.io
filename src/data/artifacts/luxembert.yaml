@@ -60,22 +60,29 @@ dataset:
       label: German text pseudo-translated to Luxembourgish
     - value: 4
       label: Downstream NLP tasks with released datasets
-  sampleTitle: Luxembourgish pre-training corpus
-  sampleSource: Table 1 · 6.1M sentences total
-  sampleCount: 6
+  sampleTitle: A taste of Luxembourgish
+  sampleCount: 8
   sampleNote: >-
-    Sources of the ~6.1M Luxembourgish sentences (hit shuffle for more). An equal
-    amount of German text — about 20% of it pseudo-translated to Luxembourgish —
-    was mixed in for the best-performing 50/50 configuration.
+    Everyday phrases in Luxembourgish — the language LuxemBERT models — with
+    their English and French equivalents. Illustrative examples, not model
+    outputs; hit shuffle for more.
   samples:
-    - "RTL news articles · 1,640,000 sentences"
-    - "RTL user comments · 1,570,000 sentences"
-    - "Webpages · 1,300,000 sentences"
-    - "RTL radio broadcasts · 572,000 sentences"
-    - "Wikipedia · 500,000 sentences"
-    - "News articles · 300,000 sentences"
-    - "Chatroom logs · 175,000 sentences"
-    - "Luxembourgish Online Dictionary (LOD) · 50,000 sentences"
+    - "EN · Hello  →  Moien"
+    - "FR · Bonjour  →  Moien"
+    - "EN · Good morning  →  Gudde Moien"
+    - "FR · Bonsoir  →  Gudden Owend"
+    - "EN · Good night  →  Gutt Nuecht"
+    - "FR · Merci  →  Merci"
+    - "EN · Please  →  Wann ech gelift"
+    - "FR · Oui / Non  →  Jo / Nee"
+    - "EN · Goodbye  →  Äddi"
+    - "FR · Bienvenue  →  Wëllkomm"
+    - "EN · How are you?  →  Wéi geet et?"
+    - "FR · Je t'aime  →  Ech hunn dech gär"
+    - "EN · The weather is nice  →  D'Wieder ass schéin"
+    - "FR · Je ne comprends pas  →  Ech verstinn net"
+    - "EN · See you tomorrow  →  Bis muer"
+    - "FR · Santé !  →  Prost !"
   usage:
     title: Load the model
     note: The uncased LuxemBERT model is on the Hugging Face Hub.
