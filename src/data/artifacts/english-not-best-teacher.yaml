@@ -1,0 +1,78 @@
+name: When English Isn't the Best Teacher
+type: dataset
+area: Multilingual NLP & LLMs
+description: >-
+  A broad empirical study of cross-lingual in-context learning (ICL): across 7
+  tasks, 6 LLMs and 18 typologically diverse languages, it asks which source
+  language best teaches a given target language in-context. It overturns
+  fine-tuning intuitions — English is often the worst teacher, a target language
+  is rarely its own best source, and low-resource, non-Latin-script languages
+  turn out to be the most effective sources.
+authors:
+  - Fred Philippy
+  - Siwen Guo
+  - Jacques Klein
+  - Tegawendé F. Bissyandé
+status: stable
+logo: llm
+figure: english-not-best-teacher.png
+figureCaption: Donor vs recipient capability across languages — strong targets (e.g. English) are weak sources, and low-resource languages are strong sources (paper, Figure 3)
+paper:
+  title: "When English Isn't the Best Teacher: Source Language Effects in Cross-Lingual In-Context Learning"
+  venue: MeLLM @ ACL
+  year: 2026
+  url: https://aclanthology.org/2026.mellm-1.31/
+tags:
+  - llm
+  - in-context-learning
+  - multilingual
+  - cross-lingual-transfer
+  - nlp
+dataset:
+  stats:
+    - value: 7
+      label: Multilingual benchmarks (tasks)
+    - value: 6
+      label: LLMs evaluated (≤ 4B params)
+    - value: 18
+      label: Typologically diverse languages
+    - value: 4
+      label: In-context demonstrations (4-shot)
+    - value: 24
+      suffix: "%"
+      label: Cases where the target is its own best source
+    - value: 16
+      suffix: "%"
+      label: Experiments where English is the worst source
+    - value: -0.932
+      animate: false
+      label: Donor↔recipient correlation (strong & negative)
+    - value: 15
+      label: Languages in the Language-Confusion benchmark
+    - value: 1000
+      label: Test instances per benchmark (max)
+  sampleTitle: Key findings
+  sampleCount: 6
+  sampleNote: >-
+    A random draw from the study's headline results — hit shuffle for more. All
+    z-scores are normalized per task and model before averaging.
+  samples:
+    - "The target language is its own best source in only ~24% of cases"
+    - "English is the worst source language in ~16% of experiments"
+    - "Strong target languages tend to be weak source languages (r = −0.932)"
+    - "Linguistic similarity does NOT predict ICL transfer — unlike fine-tuning"
+    - "A model's internal cross-lingual alignment predicts transfer better than similarity"
+    - "Low-resource, non-Latin-script languages make the most effective sources"
+    - "High-resource Latin-script languages are the least effective sources"
+    - "Language confusion is a distinct challenge, not just unequal transfer"
+    - "Transfer patterns are highly stable within model families and larger models"
+bibtex: |
+  @inproceedings{philippy2026english,
+    author    = {Philippy, Fred and Guo, Siwen and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
+    title     = {When English Isn't the Best Teacher: Source Language Effects in Cross-Lingual In-Context Learning},
+    booktitle = {Proceedings of the 1st Workshop on Multilinguality in the Era of Large Language Models (MeLLM)},
+    year      = {2026},
+    pages     = {317--326},
+    publisher = {Association for Computational Linguistics},
+    url       = {https://aclanthology.org/2026.mellm-1.31/}
+  }
