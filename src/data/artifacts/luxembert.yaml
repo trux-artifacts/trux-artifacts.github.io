@@ -61,28 +61,24 @@ dataset:
     - value: 4
       label: Downstream NLP tasks with released datasets
   sampleTitle: A taste of Luxembourgish
-  sampleCount: 8
+  sampleCount: 6
   sampleNote: >-
-    Everyday phrases in Luxembourgish — the language LuxemBERT models — with
-    their English and French equivalents. Illustrative examples, not model
-    outputs; hit shuffle for more.
+    Everyday sentences in Luxembourgish — the language LuxemBERT models —
+    alongside their English or French source. Illustrative examples (not model
+    outputs); hit shuffle for more.
   samples:
-    - "EN · Hello  →  Moien"
-    - "FR · Bonjour  →  Moien"
-    - "EN · Good morning  →  Gudde Moien"
-    - "FR · Bonsoir  →  Gudden Owend"
-    - "EN · Good night  →  Gutt Nuecht"
-    - "FR · Merci  →  Merci"
-    - "EN · Please  →  Wann ech gelift"
-    - "FR · Oui / Non  →  Jo / Nee"
-    - "EN · Goodbye  →  Äddi"
-    - "FR · Bienvenue  →  Wëllkomm"
-    - "EN · How are you?  →  Wéi geet et?"
-    - "FR · Je t'aime  →  Ech hunn dech gär"
-    - "EN · The weather is nice  →  D'Wieder ass schéin"
-    - "FR · Je ne comprends pas  →  Ech verstinn net"
-    - "EN · See you tomorrow  →  Bis muer"
-    - "FR · Santé !  →  Prost !"
+    - "EN · Luxembourg is a small country in the heart of Europe.  →  Lëtzebuerg ass e klengt Land am Häerz vun Europa."
+    - "EN · Can you tell me the way to the train station, please?  →  Kënnt Dir mir de Wee op d'Gare soen, wann ech glift?"
+    - "EN · I have been learning Luxembourgish for six months.  →  Ech léieren säit sechs Méint Lëtzebuergesch."
+    - "EN · The weather is beautiful today, let's go for a walk.  →  D'Wieder ass haut schéin, loosst eis spadséieren."
+    - "EN · Could you please speak a little more slowly?  →  Kënnt Dir w.e.g. e bësse méi lues schwätzen?"
+    - "EN · I'd like to order two coffees and a piece of cake.  →  Ech géif gären zwee Kaffien an e Stéck Kuch bestellen."
+    - "FR · Je m'appelle Anna et j'habite au Luxembourg depuis trois ans.  →  Mäin Numm ass Anna an ech wunnen zanter 3 Joer zu Lëtzebuerg."
+    - "FR · Où se trouve l'arrêt de bus le plus proche ?  →  Wou ass déi nootste Busarrêt?"
+    - "FR · Merci beaucoup pour votre aide, c'est très gentil.  →  Villmols Merci fir Är Hëllef, et ass ganz léif."
+    - "FR · Nous allons dîner au restaurant ce soir.  →  Mir ginn den Owend am Restaurant iessen."
+    - "FR · Quel temps fera-t-il demain à Luxembourg-Ville ?  →  Wéi gëtt d'Wieder muer an der Stad?"
+    - "FR · J'aimerais réserver une table pour deux personnes.  →  Ech géif gären en Dësch fir zwee Leit reservéieren."
   usage:
     title: Load the model
     note: The uncased LuxemBERT model is on the Hugging Face Hub.
