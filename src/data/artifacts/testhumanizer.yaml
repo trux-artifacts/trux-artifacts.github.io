@@ -1,0 +1,202 @@
+name: TestHumanizer
+type: tool
+area: LLMs for Software Engineering
+description: >-
+  Treats an LLM as a controlled refactoring layer over EvoSuite-generated unit
+  tests: it rewrites cryptic SBST suites into readable, maintainable ones —
+  adding Given–When–Then structure, descriptive names, and grouping of related
+  logic — while validation gates (CodeBERT similarity + a composite CTSES
+  screening) preserve the tests' behavior and compilation. Evaluated on 350
+  classes (Defects4J + SF110) with 31,500 refactorings across two LLMs.
+authors:
+  - Wendkûuni C. Ouédraogo
+  - Yinghua Li
+  - Xueqi Dang
+  - Paweł Borsukiewicz
+  - Liang Xiao
+  - Lingfeng Bao
+  - Anil Koyuncu
+  - Jacques Klein
+  - David Lo
+  - Tegawendé F. Bissyandé
+status: maintained
+logo: llm
+figure: testhumanizer.png
+figureCaption: Overview of the TestHumanizer workflow (J. ACM 2026 paper, Figure 1)
+paper:
+  title: "Humanizing Automatically Generated Unit Test Suites with LLM-Based Refactoring"
+  venue: J. ACM
+  year: 2026
+  url: https://arxiv.org/abs/2606.28229
+tags:
+  - llm
+  - unit-testing
+  - test-refactoring
+  - evosuite
+  - readability
+demo:
+  style: patch
+  intro: >-
+    EvoSuite produces compilable, high-coverage tests that developers find hard
+    to read. TestHumanizer uses an LLM as a controlled refactoring layer over the
+    suite — adding Given–When–Then structure, descriptive names, and grouping —
+    while validation gates (CodeBERT similarity ≥ 0.8 and a composite CTSES
+    screening) keep behavior and compilation intact. Pick a test to see the
+    before → after. Three context configurations are compared in the paper;
+    the summary-based one is the most robust.
+  note: >-
+    Precomputed, illustrative before/after refactorings in the spirit of the
+    paper's transformations — nothing runs in your browser and no model is
+    called. TestHumanizer was evaluated on 350 classes with 31,500 refactorings,
+    reaching 88–98% compilation while cutting structural smells (e.g. Conditional
+    Logic Test from 36.97% to 5.02% on Defects4J, summary-based).
+  scenarios:
+    - label: Descriptive naming + GWT
+      file: BankAccount · summary-based
+      pattern: descriptive naming + Given–When–Then
+      thinking:
+        - Parsing A_ESTest.java (static elements + test body)…
+        - Building the refactoring prompt (summary-based context)…
+        - LLM refactoring for readability (GWT · renaming · grouping)…
+        - CodeBERT similarity check vs original (≥ 0.8)…
+        - Composite semantic screening (CTSES ≥ 50)…
+      output:
+        - "@@ EvoSuite test → humanized @@"
+        - "-  @Test(timeout = 4000)"
+        - "-  public void test07() throws Throwable {"
+        - "-    BankAccount bankAccount0 = new BankAccount();"
+        - "-    bankAccount0.deposit(100.0);"
+        - "-    double double0 = bankAccount0.getBalance();"
+        - "-    assertEquals(100.0, double0, 0.01);"
+        - "-  }"
+        - "+  @Test"
+        - "+  public void deposit_increasesBalanceByAmount() {"
+        - "+    // Given a new account"
+        - "+    BankAccount account = new BankAccount();"
+        - "+    // When 100 is deposited"
+        - "+    account.deposit(100.0);"
+        - "+    // Then the balance equals 100"
+        - "+    assertEquals(100.0, account.getBalance(), 0.01);"
+        - "+  }"
+      verdictAnswer: Behavior preserved
+      verdictLabel: "CodeBERT 0.95 · CTSES 73 · compiles ✓"
+      verdictKind: correct
+      explanation: >-
+        TestHumanizer renames test07 → deposit_increasesBalanceByAmount, replaces
+        EvoSuite's bankAccount0/double0 with meaningful names, and adds
+        Given–When–Then comments — the same object, calls and assertion, just
+        readable. The CodeBERT similarity and CTSES gates confirm the refactoring
+        stays behavior-faithful and still compiles.
+    - label: Assertion Roulette
+      file: Calculator · code-centric
+      pattern: Assertion Roulette removed
+      thinking:
+        - Parsing A_ESTest.java (static elements + test body)…
+        - Building the refactoring prompt (code-centric context)…
+        - LLM refactoring for readability (GWT · renaming · grouping)…
+        - CodeBERT similarity check vs original (≥ 0.8)…
+        - Composite semantic screening (CTSES ≥ 50)…
+      output:
+        - "@@ EvoSuite test → humanized @@"
+        - "-  @Test(timeout = 4000)"
+        - "-  public void test03() throws Throwable {"
+        - "-    Calculator calculator0 = new Calculator();"
+        - "-    int int0 = calculator0.add(2, 3);"
+        - "-    assertEquals(5, int0);"
+        - "-    int int1 = calculator0.multiply(2, 3);"
+        - "-    assertEquals(6, int1);"
+        - "-  }"
+        - "+  @Test"
+        - "+  public void add_and_multiply_returnExpectedResults() {"
+        - "+    Calculator calculator = new Calculator();"
+        - "+    // When adding 2 and 3, Then the result is 5"
+        - "+    assertEquals(\"2 + 3 should be 5\", 5, calculator.add(2, 3));"
+        - "+    // When multiplying 2 and 3, Then the result is 6"
+        - "+    assertEquals(\"2 * 3 should be 6\", 6, calculator.multiply(2, 3));"
+        - "+  }"
+      verdictAnswer: Behavior preserved
+      verdictLabel: "CodeBERT 0.92 · CTSES 68 · compiles ✓"
+      verdictKind: correct
+      explanation: >-
+        Assertion Roulette — two unlabelled assertions in one test make a failure
+        ambiguous. TestHumanizer keeps both assertions (behavior preserved) but
+        adds explanatory messages and Given–When–Then comments and drops the
+        int0/int1 names, so a failing assertion is immediately identifiable.
+    - label: Conditional Logic Test
+      file: Parser · summary-based
+      pattern: Conditional Logic Test removed
+      thinking:
+        - Parsing A_ESTest.java (static elements + test body)…
+        - Building the refactoring prompt (summary-based context)…
+        - LLM refactoring for readability (GWT · renaming · grouping)…
+        - CodeBERT similarity check vs original (≥ 0.8)…
+        - Composite semantic screening (CTSES ≥ 50)…
+      output:
+        - "@@ EvoSuite test → humanized @@"
+        - "-  @Test(timeout = 4000)"
+        - "-  public void test19() throws Throwable {"
+        - "-    Parser parser0 = new Parser();"
+        - "-    try {"
+        - "-      parser0.parse((String) null);"
+        - "-      fail(\"Expecting exception: NullPointerException\");"
+        - "-    } catch (NullPointerException e) {"
+        - "-      assertNotNull(e);"
+        - "-    }"
+        - "-  }"
+        - "+  @Test"
+        - "+  public void parse_nullInput_throwsNullPointerException() {"
+        - "+    Parser parser = new Parser();"
+        - "+    // Given a null input, When parsing, Then a NPE is thrown"
+        - "+    assertThrows(NullPointerException.class, () -> parser.parse(null));"
+        - "+  }"
+      verdictAnswer: Behavior preserved
+      verdictLabel: "CodeBERT 0.90 · CTSES 64 · compiles ✓"
+      verdictKind: correct
+      explanation: >-
+        A Conditional Logic Test — EvoSuite's try/catch/fail idiom hides intent
+        and inflates cognitive complexity. TestHumanizer collapses it into a
+        single assertThrows, removing the branch while preserving the exact
+        expectation. This is the smell the paper cut from 36.97% to 5.02%
+        (Defects4J, summary-based).
+    - label: Naming from summary
+      file: UrlValidator · summary-based
+      pattern: descriptive naming from class summary
+      thinking:
+        - Parsing A_ESTest.java (static elements + test body)…
+        - Summarizing the class (SIDE-validated, summary-based)…
+        - LLM refactoring for readability (GWT · renaming · grouping)…
+        - CodeBERT similarity check vs original (≥ 0.8)…
+        - Composite semantic screening (CTSES ≥ 50)…
+      output:
+        - "@@ EvoSuite test → humanized @@"
+        - "-  @Test(timeout = 4000)"
+        - "-  public void test05() throws Throwable {"
+        - "-    UrlValidator urlValidator0 = new UrlValidator();"
+        - "-    boolean boolean0 = urlValidator0.isValid(\"http://a.com\");"
+        - "-    assertTrue(boolean0);"
+        - "-  }"
+        - "+  @Test"
+        - "+  public void isValid_acceptsWellFormedHttpUrl() {"
+        - "+    // Given the URL validator, When checking a well-formed HTTP URL,"
+        - "+    // Then it is accepted"
+        - "+    UrlValidator validator = new UrlValidator();"
+        - "+    assertTrue(validator.isValid(\"http://a.com\"));"
+        - "+  }"
+      verdictAnswer: Behavior preserved
+      verdictLabel: "CodeBERT 0.96 · CTSES 75 · compiles ✓"
+      verdictKind: correct
+      explanation: >-
+        In the summary-based configuration, TestHumanizer conditions on a
+        SIDE-validated natural-language summary of UrlValidator rather than its
+        full source. That compact context yields precise names like
+        isValid_acceptsWellFormedHttpUrl while avoiding the "lost-in-the-middle"
+        effect of long-context prompting — the configuration the paper finds most
+        robust.
+bibtex: |
+  @article{ouedraogo2026humanizing,
+    author  = {Ou\'{e}draogo, Wendk\^{u}uni C. and Li, Yinghua and Dang, Xueqi and Borsukiewicz, Pawe\l{} and Xiao, Liang and Bao, Lingfeng and Koyuncu, Anil and Klein, Jacques and Lo, David and Bissyand\'{e}, Tegawend\'{e} F.},
+    title   = {Humanizing Automatically Generated Unit Test Suites with LLM-Based Refactoring},
+    journal = {Journal of the ACM},
+    year    = {2026},
+    url     = {https://arxiv.org/abs/2606.28229}
+  }
