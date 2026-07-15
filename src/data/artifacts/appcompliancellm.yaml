@@ -19,10 +19,10 @@ authors:
 status: maintained
 logo: llm
 figure: appcompliancellm.png
-figureCaption: The AppComplianceLLM approach overview (FSE Companion 2025 paper, Figure 1)
+figureCaption: The AppComplianceLLM approach overview (FSE NIER 2025 paper, Figure 1)
 paper:
   title: "Toward LLM-Driven GDPR Compliance Checking for Android Apps"
-  venue: FSE Companion
+  venue: FSE NIER
   year: 2025
   doi: 10.1145/3696630.3728508
 links:
@@ -149,7 +149,7 @@ bibtex: |
     author    = {Alecci, Marco and Sannier, Nicolas and Ceci, Marcello and Abualhaija, Sallam and Samhi, Jordan and Bianculli, Domenico and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
     title     = {Toward LLM-Driven GDPR Compliance Checking for Android Apps},
     booktitle = {Companion Proceedings of the 33rd ACM International Conference on the Foundations of Software Engineering},
-    series    = {FSE Companion '25},
+    series    = {FSE NIER '25},
     year      = {2025},
     pages     = {606--610},
     publisher = {Association for Computing Machinery},

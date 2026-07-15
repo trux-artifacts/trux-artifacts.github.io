@@ -1,0 +1,78 @@
+name: GapFuzz
+type: tool
+area: Networking & Fuzzing
+description: >-
+  A stateful concurrency fuzzer that uncovers cross-plane divergences in
+  distributed SDN controllers — cases where a controller's control-plane view
+  disagrees with the actual data-plane (switch) state. GapFuzz injects
+  contradictory flow rules against a real ONOS cluster and uses a native switch
+  oracle to catch divergences, finding them in 81.7% of runs, most of which
+  persist well past 30 seconds.
+authors:
+  - Moustapha Awwalou Diouf
+  - Samuel Ouya
+  - Jacques Klein
+  - Tegawendé F. Bissyandé
+status: stable
+logo: network
+tags:
+  - sdn
+  - fuzzing
+  - distributed-systems
+  - networking
+  - testing
+paper:
+  title: "GapFuzz: Cross-Plane Divergence Fuzzing for Distributed SDN Controllers"
+  venue: Internetware
+  year: 2026
+  url: https://conf.researchr.org/details/internetware-2026/internetware-2026-research-track/46/GapFuzz-Cross-Plane-Divergence-Fuzzing-for-Distributed-SDN-Controllers
+links:
+  github: https://github.com/mad975/GapFuzz
+dataset:
+  stats:
+    - value: 81.7
+      animate: false
+      suffix: "%"
+      label: Runs that trigger a cross-plane divergence (N=50)
+    - value: 99
+      suffix: "%"
+      label: Divergences persisting past 30 seconds
+    - value: 7
+      label: Contradictory-flow templates
+    - value: 10.24
+      animate: false
+      suffix: " s"
+      label: Upper divergence window (Δt_max)
+    - value: 46.5
+      animate: false
+      suffix: " pt"
+      label: Hit-rate drop without the native oracle
+    - value: 50
+      label: Fuzzing runs per campaign
+  sampleTitle: Key findings
+  sampleCount: 4
+  sampleNote: >-
+    Headline results from the replication package (hit shuffle for more), all
+    reproducible from the released JSONL campaign data.
+  samples:
+    - "81.7% of runs trigger a cross-plane divergence (95% CI 77.3–85.4%)"
+    - "99% of divergences persist past 30 seconds — they are not transient"
+    - "Δt_max is bimodal: it collapses to either 5 ms or 10.24 s"
+    - "Removing the native switch oracle drops the hit rate by up to 46.5 points"
+    - "7 contradictory-flow templates drive each fuzzing campaign"
+    - "Evaluated on a real ONOS cluster (Atomix, OVS, Mininet, Ryu companion)"
+  usage:
+    title: Reproduce the results
+    note: The released JSONL campaign data reproduces the paper's tables in about five minutes.
+    code: |
+      python -m venv venv && source venv/bin/activate
+      pip install -r requirements.txt
+      python analysis/compute_stats.py
+bibtex: |
+  @inproceedings{diouf2026gapfuzz,
+    author    = {Diouf, Moustapha Awwalou and Ouya, Samuel and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
+    title     = {{GapFuzz}: Cross-Plane Divergence Fuzzing for Distributed {SDN} Controllers},
+    booktitle = {Proceedings of the 17th Asia-Pacific Symposium on Internetware (Internetware)},
+    year      = {2026},
+    publisher = {Association for Computing Machinery}
+  }
