@@ -84,6 +84,9 @@ const embed = links.video ? toEmbed(links.video) : null;
       {links.download && <a class="btn" href={links.download} target="_blank" rel="noopener noreferrer">Download</a>}
       {links.access && <a class="btn" href={links.access} target="_blank" rel="noopener noreferrer">Request access</a>}
       {links.video && !embed && <a class="btn" href={links.video} target="_blank" rel="noopener noreferrer">Watch demo</a>}
+      {links.resources?.map((r) => (
+        <a class="btn" href={r.url} target="_blank" rel="noopener noreferrer">{r.label}</a>
+      ))}
       {bibtex && <button class="btn" id="copy-bibtex">Copy BibTeX</button>}
     </div>
 
@@ -135,16 +138,18 @@ const embed = links.video ? toEmbed(links.video) : null;
             </div>
           ))}
         </div>
-        <div class="ds-sample" id="ds-sample" data-dataset={JSON.stringify(datasetData)}>
-          <div class="ds-sample-head">
-            <span class="ds-sample-title">
-              {datasetData.sampleTitle}{datasetData.sampleSource ? ` · ${datasetData.sampleSource}` : ''}
-            </span>
-            <button class="btn ds-shuffle" id="ds-shuffle">Draw random sample ↻</button>
+        {datasetData.samples?.length > 0 && (
+          <div class="ds-sample" id="ds-sample" data-dataset={JSON.stringify(datasetData)}>
+            <div class="ds-sample-head">
+              <span class="ds-sample-title">
+                {datasetData.sampleTitle}{datasetData.sampleSource ? ` · ${datasetData.sampleSource}` : ''}
+              </span>
+              <button class="btn ds-shuffle" id="ds-shuffle">Draw random sample ↻</button>
+            </div>
+            <div class="ds-sample-body" id="ds-sample-body"></div>
           </div>
-          <div class="ds-sample-body" id="ds-sample-body"></div>
-        </div>
-        {datasetData.sampleNote && <p class="demo-note">{datasetData.sampleNote}</p>}
+        )}
+        {datasetData.samples?.length > 0 && datasetData.sampleNote && <p class="demo-note">{datasetData.sampleNote}</p>}
 
         {datasetData.usage && (
           <div class="ds-usage">

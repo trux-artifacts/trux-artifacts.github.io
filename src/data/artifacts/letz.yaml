@@ -1,0 +1,64 @@
+name: LETZ
+type: dataset
+area: Multilingual NLP & LLMs
+description: >-
+  Dictionary-based topic-relevance classification datasets for Luxembourgish,
+  from the paper "Forget NLI, Use a Dictionary". For zero-shot topic
+  classification, the usual recipe fine-tunes a model on Natural Language
+  Inference (NLI) data — scarce and ill-suited to low-resource languages.
+  Instead, LETZ builds training data from the Luxembourg Online Dictionary (LOD)
+  — synonyms, translations and example sentences — and models trained on it
+  outperform the NLI-based approach.
+authors:
+  - Fred Philippy
+  - Shohreh Haddadan
+  - Siwen Guo
+status: stable
+logo: llm
+paper:
+  title: "Forget NLI, Use a Dictionary: Zero-Shot Topic Classification for Low-Resource Languages with Application to Luxembourgish"
+  venue: SIGUL
+  year: 2024
+  url: https://aclanthology.org/2024.sigul-1.13/
+links:
+  github: https://github.com/fredxlpy/LETZ
+  resources:
+    - label: Dataset (Hugging Face)
+      url: https://huggingface.co/datasets/fredxlpy/LETZ
+tags:
+  - nlp
+  - zero-shot-classification
+  - luxembourgish
+  - dictionary
+  - low-resource
+dataset:
+  stats:
+    - value: 2
+      label: Topic-relevance classification datasets
+    - value: 31000
+      label: Entries in the source dictionary (LOD)
+    - value: 48000
+      label: Example sentences (LOD)
+    - value: 10000
+      label: Synonyms (LOD)
+    - value: 5
+      label: Translation languages in LOD
+    - value: 400000
+      label: Luxembourgish speakers worldwide
+  usage:
+    title: Load the datasets
+    note: LETZ is available on the Hugging Face Hub (source dictionary released by ZLS under CC0).
+    code: |
+      from datasets import load_dataset
+
+      ds = load_dataset("fredxlpy/LETZ")
+bibtex: |
+  @inproceedings{philippy-etal-2024-forget,
+    author    = {Philippy, Fred and Haddadan, Shohreh and Guo, Siwen},
+    title     = {Forget {NLI}, Use a Dictionary: Zero-Shot Topic Classification for Low-Resource Languages with Application to Luxembourgish},
+    booktitle = {Proceedings of the 3rd Annual Meeting of the Special Interest Group on Under-resourced Languages (SIGUL)},
+    year      = {2024},
+    pages     = {97--104},
+    publisher = {ELRA Language Resource Association},
+    url       = {https://aclanthology.org/2024.sigul-1.13/}
+  }

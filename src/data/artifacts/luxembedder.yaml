@@ -1,0 +1,71 @@
+name: LuxEmbedder
+type: library
+area: Multilingual NLP & LLMs
+description: >-
+  An enhanced sentence-embedding model for Luxembourgish, built by further
+  training LaBSE on a small, high-quality, human-verified cross-lingual parallel
+  corpus. It reaches strong cross-lingual performance — beating open-source
+  models on all four evaluation tasks and even proprietary models on three of
+  four. The work also releases LuxAlign (an LB–EN / LB–FR parallel corpus) and
+  ParaLux (a Luxembourgish paraphrase-detection benchmark).
+authors:
+  - Fred Philippy
+  - Siwen Guo
+  - Jacques Klein
+  - Tegawendé F. Bissyandé
+status: stable
+logo: llm
+figure: luxembedder.png
+figureCaption: The data-construction workflow — news articles in LB/EN/FR are aligned into the LuxAlign parallel corpus, and the ParaLux paraphrase benchmark is derived from it (paper, Figure 1)
+paper:
+  title: "LuxEmbedder: A Cross-Lingual Approach to Enhanced Luxembourgish Sentence Embeddings"
+  venue: COLING
+  year: 2025
+  url: https://aclanthology.org/2025.coling-main.753/
+links:
+  github: https://github.com/fredxlpy/LuxEmbedder
+  resources:
+    - label: Model (Hugging Face)
+      url: https://huggingface.co/fredxlpy/LuxEmbedder
+    - label: LuxAlign dataset
+      url: https://huggingface.co/datasets/fredxlpy/LuxAlign
+    - label: ParaLux benchmark
+      url: https://huggingface.co/datasets/fredxlpy/ParaLux
+tags:
+  - nlp
+  - sentence-embeddings
+  - luxembourgish
+  - cross-lingual
+  - low-resource
+dataset:
+  stats:
+    - value: 25996
+      label: LB–EN parallel pairs (LuxAlign)
+    - value: 86293
+      label: LB–FR parallel pairs (LuxAlign)
+    - value: 312
+      label: ParaLux benchmark pairs
+    - value: 4
+      label: Evaluation tasks
+    - value: 3
+      label: Tasks (of 4) where it beats proprietary models
+    - value: 400000
+      label: Luxembourgish speakers worldwide
+  usage:
+    title: Load the model
+    note: LuxEmbedder is a sentence-embedding model on the Hugging Face Hub.
+    code: |
+      from sentence_transformers import SentenceTransformer
+
+      model = SentenceTransformer("fredxlpy/LuxEmbedder")
+      emb = model.encode(["Moien, wéi geet et?"])
+bibtex: |
+  @inproceedings{philippy-etal-2025-luxembedder,
+    author    = {Philippy, Fred and Guo, Siwen and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
+    title     = {{LuxEmbedder}: A Cross-Lingual Approach to Enhanced Luxembourgish Sentence Embeddings},
+    booktitle = {Proceedings of the 31st International Conference on Computational Linguistics (COLING)},
+    year      = {2025},
+    pages     = {11369--11379},
+    publisher = {Association for Computational Linguistics},
+    url       = {https://aclanthology.org/2025.coling-main.753/}
+  }

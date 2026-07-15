@@ -26,6 +26,9 @@ const artifacts = defineCollection({
         download: z.string().optional(),
         access: z.string().optional(),
         video: z.string().optional(),
+        resources: z
+          .array(z.object({ label: z.string(), url: z.string() }))
+          .default([]),
       })
       .default({}),
     logo: z.string().optional(),

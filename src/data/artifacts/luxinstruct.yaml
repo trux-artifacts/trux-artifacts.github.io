@@ -1,0 +1,73 @@
+name: LuxInstruct
+type: dataset
+area: Multilingual NLP & LLMs
+description: >-
+  A cross-lingual instruction-tuning dataset for Luxembourgish, built without
+  machine translation. Instead of translating into Luxembourgish, it leverages
+  aligned English, French and German data — reverse-instruction generation over
+  Luxembourgish Wikipedia, RTL news headline/article tasks, and cross-lingual
+  paraphrasing — to preserve linguistic and cultural nuance while adapting LLMs
+  to Luxembourgish.
+authors:
+  - Fred Philippy
+  - Laura Bernardy
+  - Siwen Guo
+  - Jacques Klein
+  - Tegawendé F. Bissyandé
+status: stable
+logo: llm
+paper:
+  title: "LuxInstruct: A Cross-Lingual Instruction Tuning Dataset For Luxembourgish"
+  venue: arXiv
+  year: 2025
+  url: https://arxiv.org/abs/2510.07074
+links:
+  resources:
+    - label: Dataset (Hugging Face)
+      url: https://huggingface.co/datasets/fredxlpy/LuxInstruct
+tags:
+  - nlp
+  - instruction-tuning
+  - luxembourgish
+  - cross-lingual
+  - low-resource
+dataset:
+  stats:
+    - value: 537344
+      label: Instruction–output pairs
+    - value: 4
+      label: Task types
+    - value: 3
+      label: Aligned source languages (EN · FR · DE)
+    - value: 0
+      animate: false
+      label: Machine-translated pairs in the final dataset
+    - value: 400000
+      label: Luxembourgish speakers worldwide
+  sampleTitle: Task types
+  sampleCount: 4
+  sampleNote: >-
+    The dataset is assembled from these cross-lingual tasks — no Luxembourgish
+    text is machine-translated into the training data.
+  samples:
+    - "Open-Ended · reverse-instruction pairs from Luxembourgish Wikipedia"
+    - "Article-To-Title · generate a headline from an RTL news article"
+    - "Title-To-Article · draft an article from a headline"
+    - "CL-Paraphrase · cross-lingual paraphrasing built on LuxAlign"
+  usage:
+    title: Load the dataset
+    note: LuxInstruct is available on the Hugging Face Hub.
+    code: |
+      from datasets import load_dataset
+
+      ds = load_dataset("fredxlpy/LuxInstruct")
+bibtex: |
+  @misc{philippy2025luxinstruct,
+    author       = {Philippy, Fred and Bernardy, Laura and Guo, Siwen and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
+    title        = {{LuxInstruct}: A Cross-Lingual Instruction Tuning Dataset For Luxembourgish},
+    year         = {2025},
+    eprint       = {2510.07074},
+    archivePrefix = {arXiv},
+    primaryClass = {cs.CL},
+    url          = {https://arxiv.org/abs/2510.07074}
+  }
