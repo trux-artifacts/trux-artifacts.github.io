@@ -31,25 +31,73 @@ tags:
 demo:
   style: terminal
   intro: >-
-    Difuzer++ exposes a Python entry point that takes an application category
-    and a CSV list of APKs to analyze.
-  outputLabel: Documented command
+    Pick a category-aware example. Difuzer++ extracts suspicious hidden
+    sensitive operations, scores them against apps from the same category, and
+    reports whether the trigger is anomalous in that context.
+  outputLabel: Difuzer++ output
   countOutput: false
   note: >-
-    This command is copied from the official repository. The website does not
-    execute the anomaly detector or invent application scores.
+    Simulated preview using representative fictional inputs, applications,
+    anomaly scores and verdicts; nothing runs in the browser. The command shape
+    and category-aware workflow follow the public artifact, but these per-app
+    outputs are illustrative and are not results reported by the paper.
   scenarios:
-    - label: Analyze a category
-      query: python3 Difuzer++.py category apps.csv
+    - label: Time-triggered operation
+      query: python3 Difuzer++.py TOOLS demo-tools.csv
       thinking:
-        - Select the application category used by the detector.
-        - Load the APK list from the supplied CSV file.
+        - Loading the TOOLS category model…
+        - Extracting trigger-dependent sensitive operations…
+        - Encoding the candidate's behavioral context…
+        - Computing a simulated one-class anomaly score…
       output:
-        - "Official repository command — not executed by this website."
-        - "Results depend on the APKs listed in apps.csv."
+        - "Difuzer++ — category-aware analysis"
+        - "app: lab.flashlight · category: TOOLS"
+        - "candidate: time guard in <lab.flashlight.UpdateGate: void check()>"
+        - "predicate: System.currentTimeMillis() > 1767225600000"
+        - "guarded operation: HttpURLConnection.connect()"
+        - "anomaly score: 0.87"
+        - "verdict: POTENTIAL LOGIC BOMB"
       explanation: >-
-        Replace category and apps.csv with real inputs to reproduce the released
-        workflow and obtain evidence-backed scores.
+        The fictional flashlight waits for a hardcoded date before opening a
+        connection. Its simulated score makes the hidden behavior stand out
+        against other TOOLS apps.
+    - label: Weather behavior cleared by context
+      query: python3 Difuzer++.py WEATHER demo-weather.csv
+      thinking:
+        - Loading the WEATHER category model…
+        - Recovering the location-dependent branch…
+        - Comparing it with category peers…
+        - Applying the simulated decision threshold…
+      output:
+        - "Difuzer++ — category-aware analysis"
+        - "app: lab.weather · category: WEATHER"
+        - "candidate: location guard in <lab.weather.ForecastService: void refresh(Location)>"
+        - "predicate: location != null"
+        - "guarded operation: ForecastApi.fetch(latitude, longitude)"
+        - "anomaly score: 0.11"
+        - "verdict: CATEGORY-NORMAL"
+      explanation: >-
+        A location-conditioned network request is expected in this fictional
+        weather app. The mock shows how category context can demote a candidate
+        that a single global model might over-prioritize.
+    - label: SMS trigger in a puzzle game
+      query: python3 Difuzer++.py GAME_PUZZLE demo-games.csv
+      thinking:
+        - Loading the GAME_PUZZLE model…
+        - Tracing the incoming-SMS value into a branch predicate…
+        - Characterizing the guarded identifier access…
+        - Ranking the behavior against game-category peers…
+      output:
+        - "Difuzer++ — category-aware analysis"
+        - "app: lab.puzzler · category: GAME_PUZZLE"
+        - "candidate: SMS guard in <lab.puzzler.MessageGate: boolean unlock(String)>"
+        - "predicate: messageBody.equals(\"ACTIVATE\")"
+        - "guarded operation: TelephonyManager.getDeviceId()"
+        - "anomaly score: 0.79"
+        - "verdict: POTENTIAL LOGIC BOMB"
+      explanation: >-
+        Incoming-SMS content controlling identifier access is unusual for a
+        fictional puzzle game, so the representative output ranks it highly.
 bibtex: |
   @article{10.1109/TDSC.2024.3358979,
     author  = {Alecci, Marco and Samhi, Jordan and Li, Li and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

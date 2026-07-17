@@ -39,19 +39,17 @@ demo:
     MalLoc localizes malicious payloads in Android malware at method level, in
     two LLM phases. Phase 1 identifies which Smali class implements a given
     malicious behavior; Phase 2 pinpoints the exact methods inside it and gives
-    each a plain-language role. The verified example below follows the
-    real-world RuMMs case study documented in the paper.
+    each a plain-language role. Start with the shortened RuMMs paper example,
+    then explore three clearly marked fictional localizations that show how the
+    same interface could behave for other payload types.
   outputLabel: MalLoc localization
   countOutput: false
   note: >-
-    This display is a shortened rendering of the Privacy Stealing example
-    reported for RuMMs; no confidence value is invented and no model is called
-    in the browser. The method-level recall of 1.00 for GPT-4.1, and the zero
-    result for the single-prompt Phi-4 baseline, concern the controlled MalApp
-    benchmark. On RuMMs, MalLoc reported six classes and 17 methods with 100%
-    precision after manual verification and found four of five annotated
-    behaviors; recall and F1 cannot be computed there. Dataset and code are on
-    GitHub.
+    No model runs in the browser. “Privacy Stealing” is a shortened rendering
+    of the RuMMs case documented by the paper and deliberately has no invented
+    confidence score. Every scenario prefixed “Mock” uses fictional packages,
+    methods, confidence values, and explanations; those are interface
+    simulations, not MalLoc results.
   scenarios:
     - label: Privacy Stealing
       query: MalLoc — localize "Privacy Stealing" in the RuMMs sample
@@ -71,6 +69,57 @@ demo:
         a(Context,int,String) forwards harvested data via Intent extras to a
         background service. These are the two method roles documented in the
         published case study.
+    - label: Mock · SMS abuse
+      query: MalLoc — localize "premium SMS abuse" in demo-bank.apk
+      thinking:
+        - Decompiling the fictional APK to Smali…
+        - Phase 1 — ranking classes against the requested behavior…
+        - Selecting the strongest mock candidate class…
+        - Phase 2 — assigning roles to suspicious methods…
+      output:
+        - "[Phase 1]  malicious class:  Ldemo/payload/ChargeWorker;  (mock 0.92)"
+        - "[Phase 2]  methods & roles:"
+        - "  ->sendPremium(String): void        ·  sends a message to a premium-rate destination"
+        - "  ->hideConfirmation(Intent): void  ·  suppresses the delivery-status notification"
+        - "  ->reportCharge(String): void       ·  forwards the transaction result to a remote endpoint"
+      explanation: >-
+        This fictional result demonstrates the intended decomposition: the
+        class-level phase narrows the search, and the method-level phase
+        separates sending, concealment, and reporting responsibilities.
+    - label: Mock · Remote commands
+      query: MalLoc — localize "remote command execution" in demo-sync.apk
+      thinking:
+        - Reading the fictional app's Smali classes…
+        - Phase 1 — comparing class summaries with the behavior query…
+        - Flagging a background synchronization component…
+        - Phase 2 — tracing polling, dispatch, and execution methods…
+      output:
+        - "[Phase 1]  malicious class:  Ldemo/sync/UpdateService;  (mock 0.88)"
+        - "[Phase 2]  methods & roles:"
+        - "  ->poll(): JSONObject       ·  retrieves a pending command from a remote service"
+        - "  ->dispatch(String): void  ·  maps the command name to a local action"
+        - "  ->ack(String): void       ·  reports completion to the operator endpoint"
+      explanation: >-
+        The mock output presents an analyst-friendly chain from command polling
+        to dispatch and acknowledgement. Names and roles are invented solely to
+        make the two-phase interaction concrete.
+    - label: Mock · Credential overlay
+      query: MalLoc — localize "credential-stealing overlay" in demo-wallet.apk
+      thinking:
+        - Decompiling the fictional sample and extracting class summaries…
+        - Phase 1 — matching overlay and accessibility behavior…
+        - Selecting the candidate UI service…
+        - Phase 2 — explaining trigger, capture, and exfiltration methods…
+      output:
+        - "[Phase 1]  malicious class:  Ldemo/access/OverlayService;  (mock 0.90)"
+        - "[Phase 2]  methods & roles:"
+        - "  ->onForegroundApp(String): void  ·  detects a selected app becoming active"
+        - "  ->showLoginOverlay(): void       ·  displays a look-alike credential form"
+        - "  ->submit(byte[]): void           ·  sends captured values to a remote endpoint"
+      explanation: >-
+        This simulated localization shows how MalLoc's output can connect
+        several methods into one behavior narrative without presenting the
+        fictional classes as a paper case study.
 bibtex: |
   @inproceedings{10.1109/ICSME64153.2025.00076,
     author    = {Sun, Tiezhu and Alecci, Marco and Pilgun, Aleksandr and Song, Yewei and Tang, Xunzhu and Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

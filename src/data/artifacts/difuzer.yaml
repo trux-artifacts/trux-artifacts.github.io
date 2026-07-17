@@ -28,25 +28,106 @@ tags:
 demo:
   style: terminal
   intro: >-
-    Run Difuzer on a real APK with the Android platforms directory and the
-    timeout documented by the official repository.
-  outputLabel: Documented command
+    Pick a fictional APK and watch Difuzer build its program model, recover a
+    trigger condition and decide whether the guarded sensitive operation looks
+    anomalous.
+  outputLabel: Simulated Difuzer output
   countOutput: false
   note: >-
-    This is the official repository command, shown as a reproducible entry
-    point. The website does not execute Difuzer or display invented triggers.
+    Interactive mock preview — package names, methods, conditions, counts and
+    verdicts are representative fictional examples, not measurements from the
+    paper. The command shape and analysis stages mirror the public tool; no APK
+    is analyzed in the browser.
   scenarios:
-    - label: Analyze an APK
-      query: java -jar Difuzer/target/Difuzer-0.1-jar-with-dependencies.jar -p PATH_TO_PLATFORMS -a PATH_TO_APK -r -t 60
+    - label: Time-triggered payload
+      query: java -jar Difuzer/target/Difuzer-0.1-jar-with-dependencies.jar -p android-platforms/ -a samples/fittrack-pro.apk -r -t 60
       thinking:
-        - Resolve the selected Android platform and APK.
-        - Run the released logic-bomb analysis with the documented options.
+        - Building the app model with FlowDroid…
+        - Recovering inter-procedural trigger predicates…
+        - Tracking values derived from the system clock…
+        - Scoring guarded sensitive operations as outliers…
       output:
-        - "Official repository command — not executed by this website."
-        - "Replace the placeholder paths with local files."
+        - "Difuzer mock run — analysis completed"
+        - "APK: com.demo.fittrack.pro (fictional)"
+        - "Trigger candidates analyzed: 31"
+        - "Potential logic bomb found:"
+        - "  method:    <com.demo.sync.UpdateGate: void run(android.content.Context)>"
+        - "  condition: currentTimeMillis() > 1767225600000L"
+        - "  guarded:   startService(hiddenSyncIntent)"
+        - "  anomaly:   0.94"
+      verdictAnswer: SUSPICIOUS
+      verdictLabel: Time trigger · simulated
+      verdictKind: malware
       explanation: >-
-        Any suspicious operations and trigger predicates must come from the
-        actual APK analysis, so no illustrative application output is shown.
+        The mock branch remains dormant until a fixed date, then starts a hidden
+        service. Clock-derived guards around unusual sensitive behavior are the
+        kind of trigger/outlier combination Difuzer is designed to surface.
+    - label: SMS-triggered payload
+      query: java -jar Difuzer/target/Difuzer-0.1-jar-with-dependencies.jar -p android-platforms/ -a samples/quicknote-free.apk -r -t 60
+      thinking:
+        - Building the call graph…
+        - Propagating incoming SMS values…
+        - Recovering the string comparison guarding the payload…
+        - Ranking the guarded network operation…
+      output:
+        - "Difuzer mock run — analysis completed"
+        - "APK: com.demo.quicknote.free (fictional)"
+        - "Trigger candidates analyzed: 18"
+        - "Potential logic bomb found:"
+        - "  method:    <com.demo.sms.CommandReceiver: void onReceive(...)>"
+        - '  condition: getMessageBody().equals("sync-now-42")'
+        - "  guarded:   uploadDeviceSnapshot()"
+        - "  anomaly:   0.91"
+      verdictAnswer: SUSPICIOUS
+      verdictLabel: SMS trigger · simulated
+      verdictKind: malware
+      explanation: >-
+        A secret SMS phrase acts as a remote activation channel in this
+        fictional sample. The result illustrates how taint tracking connects
+        the incoming message body to the predicate guarding a sensitive action.
+    - label: Geographic trigger
+      query: java -jar Difuzer/target/Difuzer-0.1-jar-with-dependencies.jar -p android-platforms/ -a samples/photoeditor-lite.apk -r -t 60
+      thinking:
+        - Extracting trigger-dependent branches…
+        - Following the network-country value…
+        - Inspecting the guarded data-access sequence…
+        - Comparing the branch with ordinary app behavior…
+      output:
+        - "Difuzer mock run — analysis completed"
+        - "APK: com.demo.photoeditor.lite (fictional)"
+        - "Trigger candidates analyzed: 24"
+        - "Potential logic bomb found:"
+        - "  method:    <com.demo.region.FeatureGate: void activate()>"
+        - '  condition: getNetworkCountryIso().equals("ru")'
+        - "  guarded:   collectAndSendContacts()"
+        - "  anomaly:   0.88"
+      verdictAnswer: SUSPICIOUS
+      verdictLabel: Location-derived trigger · simulated
+      verdictKind: malware
+      explanation: >-
+        The mock payload activates only for one network country. Geographic
+        gating can hide behavior from analysts running the app elsewhere, while
+        the guarded contacts operation makes the branch unusually sensitive.
+    - label: Benign feature flags
+      query: java -jar Difuzer/target/Difuzer-0.1-jar-with-dependencies.jar -p android-platforms/ -a samples/weather-lite.apk -r -t 60
+      thinking:
+        - Building the app model…
+        - Inspecting permission checks and feature flags…
+        - Scoring guarded operations…
+        - Applying the anomaly threshold…
+      output:
+        - "Difuzer mock run — analysis completed"
+        - "APK: org.demo.weatherlite (fictional)"
+        - "Trigger candidates analyzed: 14"
+        - "Outliers above threshold: 0"
+        - "Result: no suspicious hidden sensitive operation found"
+      verdictAnswer: NO ALERT
+      verdictLabel: Benign guards · simulated
+      verdictKind: goodware
+      explanation: >-
+        Ordinary permission checks and feature flags should not automatically be
+        treated as logic bombs. This negative mock scenario makes the demo show
+        both suspicious and benign outcomes.
 bibtex: |
   @inproceedings{10.1145/3510003.3510135,
     author    = {Samhi, Jordan and Li, Li and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

@@ -28,6 +28,67 @@ paper:
   url: https://conf.researchr.org/details/internetware-2026/internetware-2026-research-track/46/GapFuzz-Cross-Plane-Divergence-Fuzzing-for-Distributed-SDN-Controllers
 links:
   github: https://github.com/mad975/GapFuzz
+demo:
+  style: terminal
+  intro: >-
+    Launch a short GapFuzz campaign, inject concurrent contradictory flow
+    operations, and watch the control-plane view diverge from the native switch
+    oracle. Choose a scenario to replay a representative trace.
+  outputLabel: GapFuzz trace
+  countOutput: false
+  note: >-
+    Interactive simulation — the command-shaped interface, seeds, timings, and
+    per-run traces below are plausible mock outputs; no ONOS cluster is executed
+    in the browser. Aggregate rates shown elsewhere on this page come from the
+    paper and replication package.
+  scenarios:
+    - label: ADD ↔ DELETE race
+      query: gapfuzz run --template add-delete --seed 4182 --duration 60s
+      thinking:
+        - Connecting to the three-node ONOS cluster…
+        - Scheduling contradictory ADD and DELETE operations…
+        - Polling both the controller view and native switch state…
+      output:
+        - "[00:00.000] seed=4182  template=ADD↔DELETE  target=of:0000000000000001"
+        - "[00:00.005] control-plane: flow=absent"
+        - "[00:00.005] switch-oracle: flow=installed  action=OUTPUT:2"
+        - "[DIVERGENCE] cross-plane mismatch detected  Δt=5 ms"
+        - "[00:30.000] status=persistent"
+      explanation: >-
+        This mock trace illustrates GapFuzz's central oracle: a flow can remain
+        installed on the switch even though the distributed controller reports
+        that it has been removed.
+    - label: MODIFY ↔ DELETE race
+      query: gapfuzz run --template modify-delete --seed 9031 --duration 60s
+      thinking:
+        - Installing a baseline forwarding rule…
+        - Racing a priority update against deletion on different controller nodes…
+        - Comparing the converged controller state with the switch table…
+      output:
+        - "[00:00.000] seed=9031  template=MODIFY↔DELETE  priority=40000→50000"
+        - "[00:10.240] control-plane: flow=absent"
+        - "[00:10.240] switch-oracle: priority=50000  action=DROP"
+        - "[DIVERGENCE] mismatch detected  Δt=10.24 s"
+        - "[00:30.000] status=persistent"
+      explanation: >-
+        The simulated 10.24-second window mirrors the upper timing regime
+        studied in the paper while keeping the individual trace explicitly
+        illustrative.
+    - label: Native-oracle ablation
+      query: gapfuzz replay --seed 2718 --compare-oracles
+      thinking:
+        - Replaying the same concurrent event schedule…
+        - Evaluating it first from the controller view alone…
+        - Re-evaluating it against the native switch oracle…
+      output:
+        - "[controller-only] verdict=CONSISTENT  reported_flows=0"
+        - "[native-switch]  verdict=DIVERGENT   installed_flows=1"
+        - "[delta] hidden cross-plane mismatch recovered by native oracle"
+        - "[paper context] removing the native oracle lowers campaign hit rate by up to 46.5 points"
+      explanation: >-
+        A controller-only check can miss the exact failure GapFuzz targets. The
+        final line is the paper's aggregate ablation result; the replay itself
+        is a simulated example.
 dataset:
   stats:
     - value: 81.7

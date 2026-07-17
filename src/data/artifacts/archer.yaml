@@ -37,8 +37,10 @@ demo:
   outputLabel: Archer output
   countOutput: false
   note: >-
-    This is the real, unmodified Scylla output from the paper. Nothing runs in
-    your browser — run Archer from the repository to analyze your own APKs.
+    The Scylla case is real, unmodified output reproduced from the paper. The
+    two shorter cases are Simulated previews using representative fictional
+    inputs, constraints and counts; they are not paper measurements. Nothing
+    runs in the browser — run Archer from the repository for real APKs.
   scenarios:
     - label: Run Archer on Scylla (real malware)
       query: java -jar Archer/target/Archer-1.0-jar-with-dependencies.jar -p platforms/ -a 2D46A76C94DFF80992615354C713E1552A1F55F3EB0C4D5297D52571180D6402.apk -t -r -c SPARK
@@ -171,6 +173,51 @@ demo:
         (onStartJob) kept alive periodically (2000 ms), persistently, and only
         on a given network type — conditional targets a standard call graph
         never reaches.
+    - label: Periodic JobScheduler callback (simulated)
+      query: java -jar Archer/target/Archer-1.0-jar-with-dependencies.jar -p platforms/ -a lab.shopping.apk -t -r -c SPARK
+      thinking:
+        - Building the SPARK call graph for the fictional APK…
+        - Matching JobScheduler executor and callback methods…
+        - Recovering builder constraints from the scheduling call…
+        - Adding the conditional onStartJob edge…
+      output:
+        - 'Results:'
+        - ' - App name: lab.shopping'
+        - ' - Number of new Edges in call graph: 6'
+        - ' - Number of new Nodes in call graph: 4'
+        - ' - Number of extra statements covered: 137'
+        - ' - Reached timeout: no'
+        - ' - Conditional implicit call:'
+        - '   executor: <lab.shopping.SyncManager: void scheduleSync()>'
+        - '   call: JobScheduler.schedule(JobInfo)'
+        - '   target: lab.shopping.SyncService.onStartJob'
+        - '   constraints: periodic=3600000L · networkType=UNMETERED · persisted=true'
+      explanation: >-
+        This fictional preview shows Archer connecting schedule() to the
+        framework-triggered onStartJob() callback while retaining the hourly,
+        unmetered-network and persistence conditions that control execution.
+    - label: Fixed-delay executor callback (simulated)
+      query: java -jar Archer/target/Archer-1.0-jar-with-dependencies.jar -p platforms/ -a lab.reader.apk -t -r -c SPARK
+      thinking:
+        - Finding ScheduledExecutorService calls in reachable methods…
+        - Resolving the Runnable implementation passed to the executor…
+        - Propagating fixed-delay arguments into the constraint model…
+        - Enhancing the graph and recomputing reachability…
+      output:
+        - 'Results:'
+        - ' - App name: lab.reader'
+        - ' - Number of new Edges in call graph: 2'
+        - ' - Number of new Nodes in call graph: 2'
+        - ' - Number of extra statements covered: 61'
+        - ' - Conditional implicit call:'
+        - '   executor: <lab.reader.FeedPoller: void start()>'
+        - '   call: scheduleWithFixedDelay(Runnable,5,30,SECONDS)'
+        - '   target: lab.reader.FeedPoller$RefreshTask.run'
+        - '   constraints: initialDelay=5000L · delay=30000L'
+      explanation: >-
+        The simulated run illustrates a second implicit-call family: the
+        executor hides the callback edge from a conventional call graph, while
+        Archer recovers both the Runnable target and its timing constraints.
 bibtex: |
   @article{10.1145/3729168,
     author  = {Samhi, Jordan and Just, Ren\'{e} and Ernst, Michael D. and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

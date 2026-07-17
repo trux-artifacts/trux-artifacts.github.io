@@ -63,6 +63,18 @@ dataset:
     - com.almworks.integers
     - name.velikodniy.vitaliy
     - de.entrecode
+  usage:
+    title: Filter application code with AndroLibZoo
+    note: >-
+      The official README shows the list wrapped by AndroSpecter's
+      LibrariesManager, which classifies a Soot class from its package prefix.
+    code: |
+      LibrariesManager manager = LibrariesManager.v();
+      SootClass sootClass = /* class extracted from the APK */;
+
+      if (manager.isLibrary(sootClass)) {
+          System.out.println("The class is a library.");
+      }
 bibtex: |
   @inproceedings{10.1145/3643991.3644866,
     author    = {Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

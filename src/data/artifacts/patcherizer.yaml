@@ -46,41 +46,74 @@ tags:
 demo:
   style: terminal
   intro: >-
-    Preview two experiment entry points documented by the public Patcherizer
-    implementation: code-change description generation and patch correctness
-    assessment.
-  outputLabel: Documented workflow
+    Pick a code change to preview a simulated pass through Patcherizer's shared
+    representation and three downstream tasks: change description, patch
+    correctness assessment, and change-intention detection.
+  outputLabel: Mock Patcherizer output
   countOutput: false
   note: >-
-    Documentation preview only — these commands are not executed in the
-    browser and no confidence scores are simulated. The public implementation
-    documents these two tasks; the final journal paper additionally evaluates
-    code-change intention detection.
+    Interactive simulation only — no model runs in the browser. Diffs, generated
+    descriptions, confidence values, correctness labels, and intention labels
+    are fictional examples of the three tasks, not predictions or evaluation
+    results from the paper.
   scenarios:
-    - label: Description-generation evaluation
-      query: |-
-        cd PatchDescriptionGeneration
-        sh evaluate_all_models.sh
+    - label: Add a null guard
+      query: patcherizer --diff mocks/null_guard.diff --tasks description,correctness,intention
       thinking:
-        - Showing the documented evaluation entry point; no model is run.
+        - Parsing the before/after ASTs…
+        - Encoding the token sequence with the intention-aware Transformer…
+        - Encoding graph changes with the GCN…
+        - Fusing both views and running three mock task heads…
       output:
-        - "Evaluate the description-generation models distributed by the implementation."
-        - "The required datasets and pretrained/fine-tuned files are linked from the repository's Zenodo resources."
+        - "file: UserService.java"
+        - "- return user.getProfile().getName();"
+        - "+ if (user == null || user.getProfile() == null) return \"\";"
+        - "+ return user.getProfile().getName();"
+        - ""
+        - "description  add a guard before dereferencing the user profile"
+        - "correctness  CORRECT · mock confidence 0.94"
+        - "intention    ADD · introduces a conditional block"
       explanation: >-
-        This workflow evaluates natural-language descriptions generated from
-        the learned code-change representation.
-    - label: Patch-correctness assessment
-      query: |-
-        cd PatchCorrectness
-        python main.py
+        The simulated graph view captures that the new condition dominates the
+        dereference, while the sequence view retains the concrete null-check
+        vocabulary used by the generated description.
+    - label: Fix an off-by-one loop
+      query: patcherizer --diff mocks/loop_bound.diff --tasks description,correctness,intention
       thinking:
-        - Showing the documented experiment entry point; no model is run.
+        - Parsing a one-token relational-operator update…
+        - Encoding its surrounding loop context…
+        - Combining sequence and AST-change representations…
+        - Producing mock outputs for all downstream tasks…
       output:
-        - "Run the patch-correctness experiment with the configured ASE feature dataset."
-        - "Update PatchCorrectness/config_correctness.py with the downloaded feature path first."
+        - "file: RingBuffer.java"
+        - "- for (int i = 0; i <= size; i++) {"
+        - "+ for (int i = 0; i < size; i++) {"
+        - ""
+        - "description  stop iteration before the end of the buffer"
+        - "correctness  CORRECT · mock confidence 0.91"
+        - "intention    UPDATE · modifies an existing condition"
       explanation: >-
-        The repository explicitly requires the external correctness features
-        linked from Zenodo before this experiment can be reproduced.
+        This fictional example shows the representation preserving a precise
+        boundary change even though the textual diff is only one character.
+    - label: Flag an overfitting patch
+      query: patcherizer --diff mocks/apr_candidate.diff --tasks description,correctness,intention
+      thinking:
+        - Loading an automatically generated candidate patch…
+        - Encoding its branch structure and literal values…
+        - Comparing the change representation with mock correctness signals…
+        - Producing a triage label and explanation…
+      output:
+        - "file: Discount.java"
+        - "+ if (price == 100) return 85;  // candidate generated for one failing test"
+        - "  return price * rate;"
+        - ""
+        - "description  special-case one price to match an expected value"
+        - "correctness  INCORRECT / OVERFITTING · mock confidence 0.88"
+        - "intention    ADD · inserts a special-case branch"
+      explanation: >-
+        The simulated correctness head treats the hard-coded branch as a likely
+        test-specific patch. The verdict is a mock, but it makes the
+        patch-assessment task tangible for visitors.
 bibtex: |
   @article{Tang2025patcherizer,
     author  = {Tang, Xunzhu and Tian, Haoye and Pian, Weiguo and Ezzini, Saad and Kabor\'{e}, Abdoul Kader and Habib, Andrew and Kim, Kisub and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},

@@ -69,6 +69,58 @@ dataset:
 
       tok = AutoTokenizer.from_pretrained("lothritz/LuxemBERT")
       model = AutoModelForMaskedLM.from_pretrained("lothritz/LuxemBERT")
+demo:
+  style: terminal
+  intro: >-
+    Try three Luxembourgish masked-language prompts and preview the top tokens a
+    LuxemBERT fill-mask pipeline could return.
+  outputLabel: Top predictions
+  countOutput: false
+  note: >-
+    Interactive simulation — prompts, token rankings, and probabilities are
+    illustrative mock outputs chosen to demonstrate masked-language modeling.
+    No model inference runs in the browser and these values are not paper
+    measurements.
+  scenarios:
+    - label: Describe Luxembourg
+      query: pipe("Lëtzebuerg ass e [MASK] Land.", top_k=3)
+      thinking:
+        - Loading the LuxemBERT tokenizer…
+        - Locating the masked token in the Luxembourgish sentence…
+        - Ranking vocabulary candidates by simulated probability…
+      output:
+        - "1  klengt   0.431  · Lëtzebuerg ass e klengt Land."
+        - "2  schéint  0.182  · Lëtzebuerg ass e schéint Land."
+        - "3  grousst  0.094  · Lëtzebuerg ass e grousst Land."
+      explanation: >-
+        The preview mimics a standard Hugging Face fill-mask response while
+        keeping all displayed probabilities explicitly simulated.
+    - label: Complete the weather
+      query: pipe("D'Wieder ass haut [MASK].", top_k=3)
+      thinking:
+        - Tokenizing a short everyday Luxembourgish sentence…
+        - Scoring adjectives that fit the masked position…
+        - Decoding the three highest mock candidates…
+      output:
+        - "1  gutt    0.372  · D'Wieder ass haut gutt."
+        - "2  schéin  0.226  · D'Wieder ass haut schéin."
+        - "3  kal     0.108  · D'Wieder ass haut kal."
+      explanation: >-
+        Multiple completions remain linguistically possible; these rankings are
+        a plausible illustration rather than an actual inference trace.
+    - label: Complete a destination
+      query: pipe("Ech fuere muer mam Zuch op [MASK].", top_k=3)
+      thinking:
+        - Encoding the travel context around the mask…
+        - Ranking place-like continuations from the model vocabulary…
+        - Formatting the simulated top-k response…
+      output:
+        - "1  Lëtzebuerg  0.294  · Ech fuere muer mam Zuch op Lëtzebuerg."
+        - "2  Paräis      0.171  · Ech fuere muer mam Zuch op Paräis."
+        - "3  Bréissel    0.113  · Ech fuere muer mam Zuch op Bréissel."
+      explanation: >-
+        This third mock shows how the same library can expose ranked candidates
+        for a context that admits several valid destinations.
 bibtex: |
   @inproceedings{lothritz-etal-2022-luxembert,
     author    = {Lothritz, Cedric and Lebichot, Bertrand and Allix, Kevin and Veiber, Lisa and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques and Boytsov, Andrey and Lefebvre, Cl\'{e}ment and Goujon, Anne},

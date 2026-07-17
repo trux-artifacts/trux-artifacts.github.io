@@ -30,37 +30,77 @@ tags:
 demo:
   style: terminal
   intro: >-
-    The official README documents how an authenticated researcher can configure
-    one AndroBomb run with a trigger type, guarded-code type, Android platform,
-    APK, output directory, apksigner, and zipalign.
-  outputLabel: Documentation
+    Choose a trigger/payload pair. AndroBomb instruments a research APK,
+    injects the guarded behavior, rebuilds and signs the package, and emits the
+    ground-truth record used to evaluate logic-bomb detectors.
+  outputLabel: AndroBomb output
   countOutput: false
   note: >-
-    Documentation preview only — this exact command comes from the official
-    README and is not executed in the browser. The software archive is
-    restricted to authenticated, identified researchers to reduce misuse.
+    Simulated preview using representative fictional inputs and outputs;
+    nothing runs in the browser and no APK is modified. The command shape and
+    trigger/payload vocabulary follow the official artifact, but app names,
+    insertion points and generated filenames below are illustrative and are not
+    results reported by the paper. AndroBomb access remains restricted to
+    identified researchers through Zenodo.
   scenarios:
-    - label: Documented time-trigger example
-      query: |-
-        java -jar AndroBomb/target/AndroBomb-0.1-jar-with-dependencies.jar \
-          -p PATH_TO_PLATFORMS \
-          -a PATH_TO_APK \
-          -o OUTPUT_DIRECTORY \
-          -t time \
-          -g native_write_phone_number \
-          -s PATH_TO_APKSIGNER \
-          -z PATH_TO_ZIPALIGN
+    - label: Time trigger → native phone-number write
+      query: java -jar AndroBomb/target/AndroBomb-0.1-jar-with-dependencies.jar -p platforms/ -a lab.flashlight.apk -o out/ -t time -g native_write_phone_number -s build-tools/apksigner -z build-tools/zipalign
       thinking:
-        - Showing the repository's documented invocation; no APK is processed.
+        - Loading the Android platform and resolving the APK entry points…
+        - Selecting a reachable insertion point in the activity lifecycle…
+        - Generating the time predicate and guarded native bridge…
+        - Rebuilding, aligning and signing the instrumented package…
       output:
-        - "Documented AndroBomb invocation (not executed)."
-        - "Required inputs: restricted AndroBomb archive, Android platforms, an APK, apksigner, and zipalign."
-        - "Access requests: https://doi.org/10.5281/zenodo.5907924"
+        - "AndroBomb — processing lab.flashlight.apk"
+        - "[✓] Call graph ready · 1 reachable insertion point selected"
+        - "[✓] Trigger generated: time"
+        - "[✓] Guarded code generated: native_write_phone_number"
+        - "[✓] Injected at <lab.flashlight.MainActivity: void onCreate(Bundle)>"
+        - "[✓] Rebuilt, aligned and signed: out/lab.flashlight_infected.apk"
+        - "[✓] Ground-truth manifest: out/lab.flashlight_infected.json"
       explanation: >-
-        This is the single concrete example published by the authors. It pairs
-        the time trigger with native_write_phone_number; actual output depends
-        on the researcher-provided APK and environment and is therefore not
-        simulated here.
+        A simulated end-to-end run of the exact trigger/payload pairing shown in
+        the official README. The preview makes the transformation stages and
+        resulting ground-truth record visible without executing the restricted
+        software.
+    - label: Location trigger → HTTP location payload
+      query: java -jar AndroBomb/target/AndroBomb-0.1-jar-with-dependencies.jar -p platforms/ -a lab.weather.apk -o out/ -t location -g http_location -s build-tools/apksigner -z build-tools/zipalign
+      thinking:
+        - Discovering location callbacks and candidate component entry points…
+        - Synthesizing a geofence-style trigger predicate…
+        - Wiring the guarded HTTP payload into the selected callback…
+        - Repackaging the APK and exporting its label…
+      output:
+        - "AndroBomb — processing lab.weather.apk"
+        - "[✓] Trigger generated: location"
+        - "[✓] Guarded code generated: http_location"
+        - "[✓] Injected at <lab.weather.LocationService: void onLocationChanged(Location)>"
+        - "[✓] Added required network permission to the transformed manifest"
+        - "[✓] Rebuilt package: out/lab.weather_infected.apk"
+        - "[✓] Label: trigger=location · payload=http_location"
+      explanation: >-
+        This fictional research APK illustrates a location-dependent hidden
+        operation. The paths and results are simulated; they demonstrate how an
+        injected sample can carry both the transformed APK and an explicit
+        ground-truth label.
+    - label: SMS trigger → device-identifier payload
+      query: java -jar AndroBomb/target/AndroBomb-0.1-jar-with-dependencies.jar -p platforms/ -a lab.notes.apk -o out/ -t sms -g sms_imei -s build-tools/apksigner -z build-tools/zipalign
+      thinking:
+        - Locating the broadcast receiver and its message-handling branch…
+        - Generating the SMS-content trigger…
+        - Injecting the guarded identifier operation…
+        - Verifying the rebuilt package and writing experiment metadata…
+      output:
+        - "AndroBomb — processing lab.notes.apk"
+        - "[✓] Receiver selected: lab.notes.MessageReceiver.onReceive"
+        - "[✓] Trigger generated: sms"
+        - "[✓] Guarded code generated: sms_imei"
+        - "[✓] Rebuilt package: out/lab.notes_infected.apk"
+        - "[✓] Ground truth: reachable=true · insertionDepth=2"
+      explanation: >-
+        This simulated sample shows a remote-message trigger paired with a
+        guarded identifier operation. The fictional output is intended as a UI
+        preview only, not as evidence of a real injected application.
 bibtex: |
   @inproceedings{10.1145/3524842.3528020,
     author    = {Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

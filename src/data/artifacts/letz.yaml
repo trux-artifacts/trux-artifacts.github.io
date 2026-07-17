@@ -45,6 +45,25 @@ dataset:
       label: Translation languages in LOD
     - value: 400000
       label: Luxembourgish speakers worldwide
+  sampleTitle: LETZ-SYN examples
+  sampleSource: Hugging Face Dataset Viewer · LETZ-SYN/train
+  sampleHeader: "text · label · class (1 = relevant, 0 = not relevant)"
+  sampleCount: 6
+  sampleNote: >-
+    Real rows from the public LETZ-SYN split. Each example pairs a
+    Luxembourgish sentence with a candidate topic word; class marks whether
+    that word is relevant to the sentence.
+  samples:
+    - "Dee Roman ass e Chef-d'oeuvre. · Meeschterwierk · 1"
+    - "Wat fir en Hellegen ass däi Patréiner? · Reduzéierung · 0"
+    - "D'Holzheizung an eisem Weekendhaische war eng gutt Investitioun. · Investissement · 1"
+    - "E klengen Auto packt déi grouss Remork net. · Unhänger · 1"
+    - "De Virologen no läit de Replikatiounsfacteur vum Virus den Ament liicht ënner eent. · Reproduktiounswäert · 1"
+    - "Ech hunn e Shortcut op den Desktop gesat, fir datt ech de Programm ka méi séier starten. · Alias · 1"
+    - "D'Participatioun vun eiser Fanfare huet d'Fest verschéinert. · Knaschtsak · 0"
+    - "Et wier besser fir d'Ëmwelt, wa manner Insektizide géife gesprëtzt ginn. · Fils · 0"
+    - "Déi dräi Parteien hu sech kënnen op e Koalitiounsaccord eenegen. · Koalitiounsofkommes · 1"
+    - "An de meeschten Datebanke kann een en Jokerzeeche benotzen, fir eng Sich ze verfeineren. · Platzhalter · 1"
   usage:
     title: Load the datasets
     note: LETZ is available on the Hugging Face Hub (source dictionary released by ZLS under CC0).

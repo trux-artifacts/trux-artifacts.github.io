@@ -174,7 +174,7 @@ const demoSchema = z
     outputLabel: trimmedNonBlank.default('Output'),
     countOutput: z.boolean().default(true),
     note: nonBlank.default('Precomputed example — no live model is called.'),
-    scenarios: z.array(scenarioSchema).min(1).max(100),
+    scenarios: z.array(scenarioSchema).min(2).max(100),
   })
   .strict()
   .superRefine((demo, ctx) => {

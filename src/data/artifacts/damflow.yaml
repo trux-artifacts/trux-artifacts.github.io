@@ -32,48 +32,71 @@ tags:
 demo:
   style: terminal
   intro: >-
-    DamFlow's public artifact is a notebook pipeline. Set up its documented
-    environment, configure the external services, then run the notebooks in the
-    order given by the repository.
-  outputLabel: Documented workflow
+    Pick an app category. DamFlow starts from FlowDroid's candidate source-to-
+    sink paths, embeds each flow, then ranks it against the behavioral context
+    learned for comparable apps so the analyst sees the unusual paths first.
+  outputLabel: DamFlow output
   countOutput: false
   note: >-
-    This preview reproduces the official repository workflow. It does not
-    fabricate taint-flow scores, rankings or application-specific results.
+    Simulated preview using representative fictional inputs, flows, anomaly
+    scores and application names; nothing runs in the browser. These examples
+    illustrate the released Extraction → Embedding → Training → Testing
+    workflow but are not outputs or quantitative results reported by the paper.
   scenarios:
-    - label: Create the environment
-      query: conda env create -f environment.yml
+    - label: Calculator · location leak
+      query: notebooks/Testing.ipynb --apk lab.calculator.apk --category CALCULATOR
       thinking:
-        - Read the pinned dependencies from the released environment file.
-        - Activate the damFlowEnv environment after creation.
+        - Importing FlowDroid's candidate source-to-sink paths…
+        - Encoding each path with the configured embedding model…
+        - Loading the CALCULATOR category anomaly model…
+        - Ranking paths by semantic relevance and rarity…
       output:
-        - "Then run: conda activate damFlowEnv"
-        - "Official setup command — not executed by this website."
+        - "FlowDroid candidates: 12"
+        - "DamFlow ranking"
+        - "  [0.97] getLastKnownLocation() → HttpURLConnection.getOutputStream()  REVIEW"
+        - "  [0.14] getPackageName() → TextView.setText()                         expected"
+        - "  [0.06] getString(R.string.theme) → Log.d()                           expected"
+        - "High-priority flows retained: 1 / 12"
       explanation: >-
-        DamFlow is released as Python notebooks with a Conda environment rather
-        than as a single command-line executable.
-    - label: Configure required services
-      query: Configure .env, then start the Redis service used by the notebooks
+        In this fictional calculator, location-to-network behavior is far from
+        the category norm, so the simulated ranking lifts it above routine UI
+        and configuration flows.
+    - label: Weather · contextual false positive avoided
+      query: notebooks/Testing.ipynb --apk lab.weather.apk --category WEATHER
       thinking:
-        - Provide the model/API configuration expected by the released notebooks.
-        - Make the configured Redis instance available before running the pipeline.
+        - Importing the same style of FlowDroid candidates…
+        - Embedding source, sink and path context…
+        - Comparing the paths with the WEATHER model…
+        - Separating expected location use from unusual identifiers…
       output:
-        - "Configuration step documented by the official repository."
-        - "No credential or secret value is displayed by this catalog."
+        - "FlowDroid candidates: 31"
+        - "DamFlow ranking"
+        - "  [0.86] getDeviceId() → HttpURLConnection.getOutputStream()           REVIEW"
+        - "  [0.32] getLastKnownLocation() → HttpURLConnection.getOutputStream()  category-normal"
+        - "  [0.08] getString(R.string.units) → Log.d()                            expected"
+        - "High-priority flows retained: 1 / 31"
       explanation: >-
-        The exact .env values depend on the researcher's local model and service
-        setup, so the catalog documents the prerequisite without inventing them.
-    - label: Run the notebook pipeline
-      query: Extraction → Embedding → Training → Testing
+        Location-to-network is normal for the fictional weather category and is
+        therefore demoted, while an identifier-to-network path remains unusual.
+        This is the contextual distinction the mock is designed to convey.
+    - label: Finance · several unusual identifiers
+      query: notebooks/Testing.ipynb --apk lab.wallet.apk --category FINANCE
       thinking:
-        - Run the Extraction notebook first.
-        - Continue with Embedding, Training and Testing in that order.
+        - Loading backward taint-analysis paths…
+        - Embedding the semantic roles of sources and sinks…
+        - Scoring against the FINANCE category baseline…
+        - Producing a concise analyst-facing shortlist…
       output:
-        - "Official notebook order — not executed by this website."
-        - "Scores and rankings are produced only by a real configured run."
+        - "FlowDroid candidates: 47"
+        - "DamFlow ranking"
+        - "  [0.93] getSimSerialNumber() → SmsManager.sendTextMessage()            REVIEW"
+        - "  [0.89] getLine1Number() → HttpURLConnection.getOutputStream()         REVIEW"
+        - "  [0.82] getDeviceId() → HttpURLConnection.getOutputStream()            REVIEW"
+        - "  [0.10] getString(R.string.locale) → Log.d()                           expected"
+        - "High-priority flows retained: 3 / 47"
       explanation: >-
-        This order mirrors the released pipeline from flow extraction through
-        representation learning, model training and evaluation.
+        The fictional finance run shows how a long raw list can collapse into a
+        small set of semantically suspicious identifier flows for manual review.
 bibtex: |
   @article{10.1145/3772002,
     author  = {Alecci, Marco and Samhi, Jordan and Miltenberger, Marc and Arzt, Steven and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

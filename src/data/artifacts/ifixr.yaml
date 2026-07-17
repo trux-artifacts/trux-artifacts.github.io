@@ -33,39 +33,74 @@ tags:
   - bug-reports
   - java
 demo:
-  style: terminal
+  style: patch
   intro: >-
-    Preview the repository's Docker setup and its generate-and-validate job for
-    one Defects4J bug after the preceding pipeline stages have been completed.
-  outputLabel: Documented workflow
-  countOutput: false
+    Pick a fictional bug report to preview iFixR's repair loop: retrieve
+    suspicious statements from the report, instantiate fix patterns, validate
+    candidates with regression tests, and rank the surviving patches.
   note: >-
-    Documentation preview only — the commands are derived from the official
-    README and are not executed in the browser. iFixR uses bug reports for
-    localization and regression tests for patch validation.
+    Interactive simulation only — iFixR is not executed in the browser. Bug
+    reports, source files, suspiciousness values, candidates, rankings, and test
+    outcomes below are fictional and are not cases or measurements from the
+    paper.
   scenarios:
-    - label: Start the published environment
-      query: |-
-        docker pull anilkoyuncu/ifixr
-        docker run -v /path/to/iFixR/:/data -it anilkoyuncu/ifixr:latest /bin/bash
+    - label: Empty chart series
+      file: src/chart/SeriesRenderer.java
+      pattern: Bug-report-driven null guard
       thinking:
-        - Showing the official Docker setup; no image is pulled in the browser.
+        - Indexing the mock bug report for code entities and failure terms…
+        - Ranking statements related to empty series and legend rendering…
+        - Instantiating null-check and conditional fix patterns…
+        - Running the failing test, then the regression suite…
       output:
-        - "The cloned repository is mounted at /data inside the container."
-        - "Configure config.yml, then run the ordered startPy.sh jobs."
+        - "@@ -118,6 +118,9 @@ LegendItem createLegend(Series series) {"
+        - "+    if (series == null || series.isEmpty()) {"
+        - "+        return LegendItem.empty();"
+        - "+    }"
+        - "     return new LegendItem(series.getName(), series.getColor());"
       explanation: >-
-        The published image packages iFixR's historical Java, Defects4J, and
-        Python environment requirements.
-    - label: Generate and validate one bug
-      query: bash startPy.sh /data gv Math_34
+        In this mock run, report terms steer localization toward legend
+        creation. Candidate #4 passes 1 previously failing test plus 612
+        simulated regression tests and is ranked first.
+    - label: Endpoint root rejected
+      file: src/math/BracketSolver.java
+      pattern: Conditional-boundary mutation
       thinking:
-        - Showing the documented generate-and-validate job; no repair is run.
+        - Matching the report phrase “root exactly at lower bound”…
+        - Localizing the interval validation condition…
+        - Generating comparison-operator mutations…
+        - Rejecting candidates that break non-bracketing inputs…
       output:
-        - "Job: gv — execute patch generation and regression-test validation for Math_34."
-        - "Generated patches are written under OUTPUT/MIMIC/."
+        - "@@ -74,7 +74,7 @@ double solve(Function f, double min, double max) {"
+        - "     double left = f.value(min);"
+        - "     double right = f.value(max);"
+        - "-    if (left * right >= 0) {"
+        - "+    if (left * right > 0) {"
+        - "         throw new NoBracketingException();"
       explanation: >-
-        The gv stage runs only after the repository's localization and feature
-        extraction stages; it does not replace test-based validation.
+        The simulated candidate preserves the error for same-sign endpoints but
+        accepts zero at either bound. Mock validation reports 824/824 tests
+        passing and ranks it above two overfitting candidates.
+    - label: Wrong fallback value
+      file: src/config/TimeoutParser.java
+      pattern: Mutate Return Statement
+      thinking:
+        - Extracting “invalid timeout resets to zero” from the mock report…
+        - Retrieving the parser and its fallback return statement…
+        - Ranking return-value mutations using report vocabulary…
+        - Validating invalid, missing, and valid timeout inputs…
+      output:
+        - "@@ -39,7 +39,7 @@ int parseTimeout(String value) {"
+        - "     try {"
+        - "         return Integer.parseInt(value);"
+        - "     } catch (NumberFormatException error) {"
+        - "-        return 0;"
+        - "+        return DEFAULT_TIMEOUT;"
+        - "     }"
+      explanation: >-
+        This fictional run uses iFixR's supported Mutate Return Statement
+        pattern. Bug-report terms guide the ranking toward the fallback branch;
+        the top mock patch passes 218/218 simulated tests.
 bibtex: |
   @inproceedings{10.1145/3338906.3338935,
     author    = {Koyuncu, Anil and Liu, Kui and Bissyand\'{e}, Tegawend\'{e} F. and Kim, Dongsun and Monperrus, Martin and Klein, Jacques and Le Traon, Yves},

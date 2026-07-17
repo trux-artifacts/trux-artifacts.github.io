@@ -60,6 +60,15 @@ dataset:
     - com.coronacheck.haugxhaug.testyourcorona
     - com.docandu.checker
     - com.Eha.covid_19
+  usage:
+    title: Explore the released study data
+    note: >-
+      The repository contains package_names.txt, SHA256 lists, tables, figures,
+      and the auxiliary data used to reproduce the empirical study.
+    code: |
+      git clone https://github.com/JordanSamhi/APKCOVID.git
+      cd APKCOVID
+      head package_names.txt
 bibtex: |
   @article{Samhi2021apkcovid,
     author  = {Samhi, Jordan and Allix, Kevin and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

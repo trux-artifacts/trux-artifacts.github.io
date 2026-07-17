@@ -35,38 +35,73 @@ tags:
   - llm
   - vulnerabilities
 demo:
-  style: terminal
+  style: patch
   intro: >-
-    Explore aggregate results published on the official LLMDA project page for
-    PatchDB and SPI-DB, plus the reported contribution of PT-Former.
-  outputLabel: Paper-reported results
-  countOutput: false
+    Inspect fictional commits as LLMDA might: generate a concise explanation of
+    the change, align code and text representations, then classify whether the
+    patch silently addresses a security weakness.
   note: >-
-    Results explorer only — these values are copied from the authors' project
-    page and are not recomputed in the browser. The full dataset and source code
-    are available through the Zenodo links above.
+    Interactive simulation only — no classifier or LLM runs in the browser.
+    Commits, files, explanations, similarity scores, probabilities, and labels
+    are fictional UI examples and are not predictions or results from the
+    paper.
   scenarios:
-    - label: Overall classification
-      query: "RQ1 · silent security-patch identification"
+    - label: Reject path traversal
+      file: src/archive/Extractor.java
+      pattern: Mock verdict · SECURITY PATCH
       thinking:
-        - Reading the aggregate performance reported by the project page.
+        - Encoding the before/after patch context…
+        - Generating a plain-language change explanation…
+        - Aligning code, commit message, and explanation with PT-Former…
+        - Comparing the representation against security-patch prototypes…
       output:
-        - "Overall F1 reported for LLMDA: 78.19%"
-        - "Improvement over GraphSPD: up to ~42% on PatchDB and ~20% on SPI-DB"
+        - "- Path target = output.resolve(entry.getName());"
+        - "+ Path target = output.resolve(entry.getName()).normalize();"
+        - "+ if (!target.startsWith(output)) throw new IOException(\"invalid entry\");"
+        - ""
+        - "generated explanation: constrain archive entries to the destination directory"
+        - "mock security probability: 0.94"
       explanation: >-
-        LLMDA combines generated explanations, code/text alignment, and
-        contrastive learning to distinguish security-relevant patches from
-        ordinary changes.
-    - label: PT-Former ablation
-      query: "RQ2 · remove the PT-Former alignment module"
+        The mock explanation exposes the security intent even though the
+        fictional commit message says only “harden extraction.” The simulated
+        classifier therefore surfaces it for analyst review.
+    - label: Rename cache fields
+      file: src/cache/EntryStore.java
+      pattern: Mock verdict · NON-SECURITY
       thinking:
-        - Reading the ablation result reported by the project page.
+        - Encoding the small refactoring diff…
+        - Generating an explanation of identifier changes…
+        - Checking for behavior-changing security semantics…
+        - Producing a contrastive similarity score…
       output:
-        - "Reported F1 change: approximately -8 percentage points"
-        - "Interpretation: multimodal alignment contributes materially to classification performance."
+        - "- private Map<Key, Value> records;"
+        - "+ private Map<Key, Value> entries;"
+        - ""
+        - "generated explanation: rename the cache backing field for clarity"
+        - "mock security probability: 0.07"
       explanation: >-
-        The ablation isolates the module that aligns patch, explanation, and
-        description embeddings before contrastive classification.
+        This fictional negative example changes vocabulary but not behavior.
+        The mock model keeps it out of the silent-security-patch queue.
+    - label: Bound token lifetime
+      file: src/auth/ResetTokens.java
+      pattern: Mock verdict · SECURITY PATCH
+      thinking:
+        - Reading the token-generation and validation changes…
+        - Generating a behavioral summary…
+        - Aligning expiry-related code with the terse commit description…
+        - Estimating security relevance from the fused representation…
+      output:
+        - "+ Instant expiresAt = clock.instant().plus(Duration.ofMinutes(15));"
+        - "+ store.put(hash(token), new ResetRecord(userId, expiresAt));"
+        - "+ if (record.expiresAt().isBefore(clock.instant())) return INVALID;"
+        - ""
+        - "generated explanation: add creation-time expiry and reject stale reset tokens"
+        - "mock security probability: 0.89"
+      explanation: >-
+        The mock commit contains no vulnerability identifier, yet its code and
+        generated explanation indicate a security-relevant lifetime bound. It
+        illustrates the silent-patch triage use case without claiming a real
+        LLMDA prediction.
 bibtex: |
   @article{10.1145/3749370,
     author  = {Tang, Xunzhu and Kim, Kisub and Ezzini, Saad and Song, Yewei and Tian, Haoye and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},

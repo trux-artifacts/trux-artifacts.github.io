@@ -25,29 +25,72 @@ tags:
   - java
   - fix-patterns
 demo:
-  style: terminal
+  style: patch
   intro: >-
-    Preview TBar's documented runner for the Chart_8 bug from Defects4J using
-    normal spectrum-based fault localization.
-  outputLabel: Documented workflow
-  countOutput: false
+    Pick a fictional Java bug to preview TBar's repair loop: localize a
+    suspicious statement, match its AST context against a fix template,
+    instantiate candidates, and validate them against a test suite.
   note: >-
-    Documentation preview only — this exact runner invocation comes from the
-    official repository and is not executed in the browser. No unsourced patch,
-    suspiciousness score, or test outcome is simulated.
+    Interactive simulation only — TBar and the tests do not run in the browser.
+    Files, defects, suspiciousness scores, generated patches, candidate ranks,
+    and test outcomes are fictional; only the fix-template concepts reflect the
+    tool's workflow, and none of these examples is a paper result.
   scenarios:
-    - label: Normal fault localization
-      query: ./NormalFLTBarRunner.sh D4J/projects/ Chart_8 D4J/defects4j/
+    - label: Insert a null check
+      file: src/chart/PlotRenderer.java
+      pattern: Insert Null Pointer Checker
       thinking:
-        - Showing the official runner example; no repair is run.
+        - "Mock failing test: PlotRendererTest.emptyAnnotations"
+        - Localizing the suspicious dereference…
+        - Matching the AST context against TBar templates…
+        - Instantiating a null-pointer checker and running tests…
       output:
-        - "Target bug: Chart_8"
-        - "Fault localization: normal GZoltar-based configuration"
-        - "Use absolute paths if the configured Defects4J or bug-data paths are not resolved."
+        - "@@ -214,6 +214,9 @@ Range dataRange(Axis axis) {"
+        - "     Collection<Annotation> notes = getAnnotations();"
+        - "+    if (notes == null) {"
+        - "+        return Range.empty();"
+        - "+    }"
+        - "     for (Annotation note : notes) {"
       explanation: >-
-        TBar also provides PerfectFLTBarRunner.sh for experiments with perfect
-        fault localization. Generated patches and evaluation results are
-        distributed in the repository rather than fabricated here.
+        The mock candidate wraps the suspicious dereference with a guard. It is
+        shown as candidate 3/14 with 487/487 simulated tests passing.
+    - label: Mutate a boundary
+      file: src/math/BracketSolver.java
+      pattern: Mutate Conditional Expression
+      thinking:
+        - "Mock failing test: BracketSolverTest.rootAtEndpoint"
+        - Ranking the interval check as the top suspicious statement…
+        - Enumerating comparison-operator mutations…
+        - Validating each candidate against boundary and regression tests…
+      output:
+        - "@@ -128,7 +128,7 @@ double solve(Function f, double min, double max) {"
+        - "     double fa = f.value(min);"
+        - "     double fb = f.value(max);"
+        - "-    if (fa * fb >= 0) {"
+        - "+    if (fa * fb > 0) {"
+        - "         throw new NoBracketingException();"
+      explanation: >-
+        This fictional repair weakens the comparison so an endpoint that is
+        exactly a root is accepted. The demo reports 1 failing and 824 passing
+        tests before repair, then 825/825 after the mock mutation.
+    - label: Guard an index
+      file: src/collections/TokenWindow.java
+      pattern: Insert Range Checker
+      thinking:
+        - "Mock failing test: TokenWindowTest.ignoresOutOfRangeLookahead"
+        - Localizing the indexed list access…
+        - Trying range-check insertion templates…
+        - Compiling candidates and executing the simulated suite…
+      output:
+        - "@@ -91,6 +91,9 @@ String tokenAt(List<String> tokens, int index) {"
+        - "+    if (index < 0 || index >= tokens.size()) {"
+        - "+        return null;"
+        - "+    }"
+        - "     return tokens.get(index);"
+      explanation: >-
+        The fictional repair uses TBar's supported Insert Range Checker pattern
+        to guard the suspicious access. The mock suite reports 146/146 tests
+        passing after rejecting two candidates that changed valid lookups.
 bibtex: |
   @inproceedings{10.1145/3293882.3330577,
     author    = {Liu, Kui and Koyuncu, Anil and Kim, Dongsun and Bissyand\'{e}, Tegawend\'{e} F.},

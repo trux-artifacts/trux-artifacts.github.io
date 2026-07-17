@@ -28,51 +28,79 @@ tags:
 demo:
   style: terminal
   intro: >-
-    Explore the paper's consensus evaluation, where an output counts as secure
-    only when CodeQL, Bandit, GPT-4o, and executable unit tests all agree and
-    the code remains functional.
-  outputLabel: Paper-reported rates
+    Choose a fictional secure-code request to preview the audit pipeline. Each
+    mock generation is checked by static analyzers, an LLM reviewer, and
+    executable tests before receiving a joint security-and-functionality
+    verdict.
+  outputLabel: Mock consensus audit
   countOutput: false
   note: >-
-    Results explorer only — these aggregate percentages come from Tables 6, 8,
-    and 10 of the preprint and are not recomputed in the browser. No public
-    repository URL is supplied by the paper, so no executable demo is claimed.
+    Interactive simulation only — no code is generated, scanned, or executed in
+    the browser. Prompts, programs, detector findings, test counts, scores, and
+    verdicts are fictional examples of the evaluation protocol and are not
+    results from the paper or any named defense.
   scenarios:
-    - label: Unified baseline
-      query: "Consensus evaluation · original prompts"
+    - label: Parameterize a user lookup
+      query: "Generate a Python function that loads a user by email from SQLite."
       thinking:
-        - Reading the consensus rates reported in Table 6.
+        - Generating a fictional candidate implementation…
+        - Running the mock CodeQL and Bandit checks…
+        - Asking the simulated LLM reviewer for an independent assessment…
+        - Executing functional and injection-resistance tests…
       output:
-        - "SVEN — secure & functional: 7.0%; non-functional: 46.0%"
-        - "SafeCoder — secure & functional: 10.2%; non-functional: 37.0%"
-        - "PromSec — secure & functional: 15.5%; non-functional: 60.0%"
+        - "generated: cursor.execute(\"SELECT * FROM users WHERE email = ?\", (email,))"
+        - "CodeQL   PASS · no concatenated query path"
+        - "Bandit   PASS · no high-confidence finding"
+        - "Reviewer PASS · parameter binding separates data from SQL"
+        - "Tests    12/12 functional · 4/4 security cases"
+      verdictAnswer: SECURE + FUNCTIONAL
+      verdictLabel: Mock unanimous consensus
+      verdictKind: correct
       explanation: >-
-        Static-analysis-only scores substantially overstate security because
-        non-functional programs can avoid vulnerability signatures without
-        correctly implementing the requested behavior.
-    - label: Cue inversion
-      query: "Consensus evaluation · InverseComment attack"
+        All fictional evaluators agree and the tests pass, so this candidate
+        reaches the strongest mock verdict. It illustrates why functionality is
+        checked alongside security.
+    - label: Catch string-built SQL
+      query: "Write the same lookup, but keep it short and avoid helper libraries."
       thinking:
-        - Reading the consensus rates reported in Table 8.
+        - Generating a second fictional candidate…
+        - Scanning its data flow into the database API…
+        - Comparing static and semantic reviewer findings…
+        - Running normal and adversarial test inputs…
       output:
-        - "SVEN — generated: 63.0%; secure & functional: 9.3%; non-functional: 38.4%"
-        - "SafeCoder — generated: 77.8%; secure & functional: 9.4%; non-functional: 41.2%"
-        - "PromSec — generated: 100%; secure & functional: 17.6%; non-functional: 70.8%"
+        - "generated: cursor.execute(\"SELECT * FROM users WHERE email='\" + email + \"'\")"
+        - "CodeQL   FAIL · user-controlled value reaches SQL string"
+        - "Bandit   WARN · dynamically constructed query"
+        - "Reviewer FAIL · input is not parameterized"
+        - "Tests    12/12 functional · 1/4 security cases"
+      verdictAnswer: INSECURE
+      verdictLabel: Mock consensus rejection
+      verdictKind: incorrect
       explanation: >-
-        Inverting security cues exposes both alignment failures and generation
-        failures; PromSec's apparently higher consensus rate accompanies the
-        largest non-functional rate.
-    - label: Natural phrasing
-      query: "Consensus evaluation · StudentStyle attack"
+        The implementation behaves correctly for ordinary inputs but violates
+        the requested security property. The mock consensus therefore rejects
+        it despite a perfect functional-test score.
+    - label: Detect a safe-looking stub
+      query: "Generate a secure file-download handler confined to /srv/public."
       thinking:
-        - Reading the consensus rates reported in Table 10.
+        - Generating a candidate with defensive-looking checks…
+        - Scanning path normalization and containment logic…
+        - Running the LLM review and security cases…
+        - Verifying that valid downloads still work…
       output:
-        - "SVEN — generated: 55.5%; secure & functional: 3.4%; non-functional: 32.1%"
-        - "SafeCoder — generated: 45.7%; secure & functional: 4.3%; non-functional: 18.7%"
-        - "PromSec — generated: 100%; secure & functional: 15.2%; non-functional: 76.0%"
+        - "generated: if not resolved.is_relative_to(ROOT) or resolved.parent != ROOT: return 403"
+        - "CodeQL   PASS · containment check observed"
+        - "Bandit   PASS · no path-traversal finding"
+        - "Reviewer PASS · normalized path remains under root"
+        - "Tests    3/10 functional · 5/5 security cases"
+      verdictAnswer: NON-FUNCTIONAL
+      verdictLabel: Mock consensus rejection
+      verdictKind: incorrect
       explanation: >-
-        Rewriting instructions in informal, novice-style language sharply
-        reduces robust secure-and-functional generation for SVEN and SafeCoder.
+        This fictional candidate confines downloads to direct children of the
+        root and therefore rejects valid nested files.
+        The demo makes the paper's core distinction visible: security checks do
+        not compensate for broken functionality.
 bibtex: |
   @misc{tessa2026howsecure,
     author  = {Tessa, Melissa and Olatunji, Iyiola E. and War, Aicha and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},

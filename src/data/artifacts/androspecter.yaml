@@ -21,28 +21,67 @@ tags:
 demo:
   style: terminal
   intro: >-
-    Add the current AndroSpecter release from Maven Central to a Java project's
-    pom.xml, then use the library utilities documented in the project wiki.
-  outputLabel: Maven artifact
+    Add AndroSpecter from Maven Central, then explore three common integration
+    tasks: APK inspection, Soot call-graph setup and FlowDroid-backed data-flow
+    analysis.
+  outputLabel: Client output
   countOutput: false
   note: >-
-    Documentation preview only — this is the official Maven Central dependency
-    snippet, and nothing is installed or executed in the browser.
+    Simulated preview using representative fictional client inputs and outputs;
+    nothing runs in the browser. The Maven coordinates are official, while the
+    APK names, counts, call-graph entries and flow below are illustrative API
+    integration results, not measurements reported by a paper.
   scenarios:
-    - label: Maven dependency
-      query: |-
-        <dependency>
-          <groupId>com.jordansamhi</groupId>
-          <artifactId>androspecter</artifactId>
-          <version>1.1.8</version>
-        </dependency>
+    - label: Inspect an APK
+      query: Java client → load lab.weather.apk and enumerate its manifest components
       thinking:
-        - Showing the published Maven dependency coordinates; no command is executed.
+        - Resolving com.jordansamhi:androspecter:1.1.8 from Maven Central…
+        - Opening the APK and decoding AndroidManifest.xml…
+        - Normalizing component names against the application package…
+        - Building a compact inventory for the client application…
       output:
-        - "Published artifact: com.jordansamhi:androspecter:1.1.8"
-        - "Add this dependency to pom.xml; API examples are documented in the project wiki."
+        - "APK: lab.weather.apk"
+        - "package: lab.weather · minSdk=24 · targetSdk=35"
+        - "activities: 4 · services: 2 · receivers: 3 · providers: 1"
+        - "permissions: ACCESS_FINE_LOCATION, INTERNET, POST_NOTIFICATIONS"
+        - "[✓] Manifest inventory exported to analysis/components.json"
       explanation: >-
-        Version 1.1.8 is the latest release published by the project and bundles
-        utilities for APK handling, Soot and FlowDroid setup, instrumentation,
-        library management, and related static-analysis tasks.
+        This fictional client task previews the APK-handling utilities that save
+        analysis projects from repeatedly rebuilding manifest and package-name
+        plumbing.
+    - label: Configure Soot and build a call graph
+      query: Java client → initialize Soot for lab.reader.apk with SPARK
+      thinking:
+        - Selecting the Android platform matching the APK target SDK…
+        - Registering application and library classes…
+        - Creating lifecycle-aware dummy entry points…
+        - Running SPARK and indexing reachable methods…
+      output:
+        - "Soot configuration: android-35 · whole-program=true · cg.spark=on"
+        - "application classes: 286"
+        - "reachable methods: 3,914"
+        - "call-graph edges: 18,607"
+        - "sample edge: ReaderActivity.onCreate → FeedRepository.refresh"
+        - "[✓] Graph written to analysis/callgraph.graphml"
+      explanation: >-
+        The simulated output illustrates how AndroSpecter can centralize a
+        reproducible Soot setup before a project applies its own analysis.
+    - label: Run a FlowDroid client analysis
+      query: Java client → trace location sources to network sinks in lab.tracker.apk
+      thinking:
+        - Bootstrapping FlowDroid with the selected source/sink specification…
+        - Resolving Android lifecycle and callback edges…
+        - Propagating taint through application methods…
+        - Formatting the discovered path for the client report…
+      output:
+        - "Sources loaded: 18 · sinks loaded: 11"
+        - "Data-flow result #1"
+        - "  source  LocationManager.getLastKnownLocation(String)"
+        - "  via     TrackerService.uploadLastFix()"
+        - "  sink    HttpURLConnection.getOutputStream()"
+        - "  path length: 7 statements"
+      explanation: >-
+        This representative fictional flow shows the kind of common FlowDroid
+        setup and result-handling code that a reusable analysis library can
+        streamline.
 license: LGPL-2.1-only

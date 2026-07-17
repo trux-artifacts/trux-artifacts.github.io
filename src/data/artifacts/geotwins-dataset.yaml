@@ -52,6 +52,15 @@ dataset:
     - "all.language.translator.hub.samoantoturkishtranslator  ↔  all.language.translator.hub.icelandictoyiddishtranslator"
     - "com.americanexpress.android.acctsvcs.fr  ↔  com.americanexpress.android.acctsvcs.de"
     - "all.language.translator.hub.samoantoturkishtranslator  ↔  all.language.translator.hub.somalitozulutranslator"
+  usage:
+    title: Explore pairs and families
+    note: >-
+      The repository releases the pair list, the family grouping, and the
+      notebooks used for the paper's feature comparisons.
+    code: |
+      git clone https://github.com/Trustworthy-Software/GeoTwins.git
+      cd GeoTwins
+      find . -name '4_geoTwins.csv' -print
 bibtex: |
   @inproceedings{10.1145/3745756.3809191,
     author    = {Alecci, Marco and Ruiz Jim\'{e}nez, Pedro Jes\'{u}s and Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

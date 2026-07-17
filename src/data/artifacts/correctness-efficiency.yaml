@@ -30,39 +30,63 @@ tags:
 demo:
   style: terminal
   intro: >-
-    Explore two aggregate results reported in the ICSE-SEIP paper. Both compare
-    multiple functionally correct generations, so the changes below measure
-    runtime-memory stability rather than test correctness.
-  outputLabel: Paper-reported metrics
+    Pick a coding task to watch a simulated profiling run compare several
+    functionally correct solutions. The mock console separates test success
+    from runtime-memory behavior and makes profile divergence visible.
+  outputLabel: Mock profiler output
   countOutput: false
   note: >-
-    Results explorer only — these values are copied from the published study
-    and are not recomputed in the browser. Higher MIS means greater divergence
-    between the shapes of correct solutions' memory profiles.
+    Interactive simulation only — no code is generated or profiled in the
+    browser. Programs, traces, timings, DMPD/MIS values, and interpretations are
+    fictional examples of the paper's analysis workflow, not reported results.
   scenarios:
-    - label: GPT-4o on BigOBench
-      query: "BigOBench · GPT-4o · temperature 0 → 0.95"
+    - label: Deduplicate event IDs
+      query: profile --task deduplicate_ids --model mock-gpt --samples 3
       thinking:
-        - Reading the published BigOBench aggregate at both temperatures.
+        - Running the same hidden tests against three generated solutions…
+        - Sampling resident memory every 10 ms…
+        - Normalizing profile length and computing pairwise DMPD…
+        - Aggregating divergence into an MIS score…
       output:
-        - "pass@1: 0.68 → 0.80"
-        - "MIS_macro: 0.0042 → 0.0072"
-        - "Interpretation: correctness rises, but correct solutions become less runtime-stable."
+        - "tests       sample-01 PASS · sample-02 PASS · sample-03 PASS"
+        - "peak RSS    18.6 MB · 42.1 MB · 19.3 MB"
+        - "strategy    hash set · sorted copy · hash set"
+        - "mock MIS    0.0374  →  runtime profiles diverge despite equal correctness"
       explanation: >-
-        The paper uses this result to show that a higher pass@1 score can hide
-        increased divergence in memory-allocation behavior.
-    - label: o4-mini on BigOBench
-      query: "BigOBench · OpenAI o4-mini · temperature 0 → 0.95"
+        All three mock solutions pass, but the sorting strategy allocates a
+        large copy of the input. Functional correctness alone would hide that
+        operational difference.
+    - label: Sliding-window maximum
+      query: profile --task window_max --temperature 0.95 --samples 4
       thinking:
-        - Reading the published BigOBench aggregate at both temperatures.
+        - Executing four test-passing generations on identical inputs…
+        - Aligning their allocation profiles…
+        - Comparing transient peaks and retained memory…
+        - Flagging the most distant profile pair…
       output:
-        - "pass@1: 0.69 → 0.80"
-        - "MIS_macro: 0.0029 → 0.0126"
-        - "Interpretation: sampling diversity affects execution paths, not only surface syntax."
+        - "correctness 4 / 4 samples pass"
+        - "peak RSS    23.8 MB · 24.0 MB · 87.5 MB · 23.9 MB"
+        - "outlier     sample-03 stores every candidate window"
+        - "mock DMPD   sample-01 ↔ sample-03 = 0.118"
       explanation: >-
-        This second reported example shows a larger increase in instability
-        while the generated programs that enter the comparison still pass the
-        benchmark tests.
+        The simulated outlier returns the right values while retaining far more
+        intermediate state. The demo shows how profile distance can surface an
+        inefficient implementation that a pass/fail benchmark misses.
+    - label: Breadth-first search
+      query: profile --task shortest_path --temperature 0 --samples 3
+      thinking:
+        - Running the generated graph routines under the profiler…
+        - Verifying output equality on every test graph…
+        - Comparing allocation and release phases…
+        - Summarizing stability across correct solutions…
+      output:
+        - "correctness 3 / 3 samples pass"
+        - "peak RSS    31.2 MB · 31.6 MB · 30.9 MB"
+        - "mock MIS    0.0021  →  profiles remain closely aligned"
+        - "verdict     correct and runtime-stable in this simulated batch"
+      explanation: >-
+        This third mock illustrates a low-divergence result: separate
+        generations can be both functionally correct and operationally similar.
 bibtex: |
   @inproceedings{rajput2026correctness,
     author    = {Rajput, Prateek Kumar and Song, Yewei and Bonkoungou, Abdoul Aziz and Olatunji, Iyiola E. and Kabor\'{e}, Abdoul Kader and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},

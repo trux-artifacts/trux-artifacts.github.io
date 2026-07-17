@@ -274,6 +274,13 @@ for (const file of artifactFiles) {
 
   if (artifact.demo) {
     const style = artifact.demo.style ?? 'llm';
+    if (!Array.isArray(artifact.demo.scenarios) || artifact.demo.scenarios.length < 2) {
+      error(file, 'demo must provide at least two scenarios');
+      continue;
+    }
+    if (!/(simulat|mock|precomputed|not executed|nothing runs|no live|does not run)/i.test(artifact.demo.note ?? '')) {
+      error(file, 'demo.note must disclose that the interactive output is not a live execution');
+    }
     for (const [index, scenario] of artifact.demo.scenarios.entries()) {
       if ((style === 'llm' || style === 'terminal') && !scenario.query) {
         error(file, `demo.scenarios[${index}] requires query for ${style} style`);

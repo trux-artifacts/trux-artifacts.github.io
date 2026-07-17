@@ -29,38 +29,67 @@ tags:
   - llm
   - sources-and-sinks
 demo:
-  style: terminal
   intro: >-
-    TaskFlow is released as an ordered notebook pipeline that narrows Android
-    framework methods into task-specific SOURCE lists.
-  outputLabel: Documented workflow
-  countOutput: false
+    Describe an Android taint-analysis task. TaskFlow filters, embeds, clusters
+    and refines framework methods into a focused SOURCE list for that specific
+    question.
+  outputLabel: Task-specific SOURCE methods
   note: >-
-    This preview follows the official repository structure. It does not present
-    manually assembled method lists as if they were TaskFlow outputs.
+    Simulated preview using representative fictional task requests and method
+    lists; no notebook or model runs in the browser. The pipeline stages follow
+    the public artifact, but these exact lists are illustrative and are not
+    outputs or quantitative results reported by the paper.
   scenarios:
-    - label: Prepare the environment
-      query: conda env create -f environment.yml
+    - label: Location tracking
+      query: Generate Android SOURCE methods for tracking precise and coarse location data
       thinking:
-        - Install the dependencies pinned by the released environment file.
-        - Activate the environment documented by the repository.
+        - Filtering documented public Android methods…
+        - Reusing embeddings and cluster labels from the offline stages…
+        - Selecting clusters semantically related to location…
+        - Refining candidates against the requested analysis task…
       output:
-        - "Official setup workflow — not executed by this website."
+        - android.location.Location.getLatitude()
+        - android.location.Location.getLongitude()
+        - android.location.Location.getAltitude()
+        - android.location.LocationManager.getLastKnownLocation(String)
+        - android.location.LocationManager.getCurrentLocation(...)
+        - android.telephony.TelephonyManager.getCellLocation()
       explanation: >-
-        The notebooks require the released Python environment before their
-        preprocessing and refinement stages can run.
-    - label: Run the notebooks in order
-      query: InitialFiltering → MethodsEmbedding → MethodsClustering → ClustersLabelling → TaskSpecificRefining
+        This fictional output narrows the framework to methods that can expose
+        coordinates or location proxies, ready for a task-specific source list.
+    - label: SMS content and metadata
+      query: Generate Android SOURCE methods for reading SMS bodies, senders and inbox records
       thinking:
-        - Filter the documented Android API methods.
-        - Embed and cluster the remaining methods.
-        - Label clusters, then refine them for the target analysis task.
+        - Filtering the Android API inventory…
+        - Retrieving messaging-related semantic clusters…
+        - Distinguishing data-returning methods from messaging actions…
+        - Ranking the remaining SOURCE candidates…
       output:
-        - "Official notebook order — not executed by this website."
-        - "Task-specific SOURCE methods are produced only by a real configured run."
+        - android.telephony.SmsMessage.getMessageBody()
+        - android.telephony.SmsMessage.getDisplayMessageBody()
+        - android.telephony.SmsMessage.getOriginatingAddress()
+        - android.telephony.SmsMessage.getTimestampMillis()
+        - android.content.ContentResolver.query(Telephony.Sms.Inbox.CONTENT_URI,...)
       explanation: >-
-        The ordered stages mirror the public artifact without inventing a result
-        list for location, SMS or device identifiers.
+        The simulated list focuses on methods and providers that reveal message
+        content or metadata, excluding sinks such as sendTextMessage().
+    - label: Persistent device identifiers
+      query: Generate Android SOURCE methods for device, SIM and network identifiers
+      thinking:
+        - Matching the task to identifier-oriented clusters…
+        - Inspecting method documentation and signatures…
+        - Removing generic configuration getters…
+        - Refining a compact set of identifier sources…
+      output:
+        - android.telephony.TelephonyManager.getImei()
+        - android.telephony.TelephonyManager.getSubscriberId()
+        - android.telephony.TelephonyManager.getSimSerialNumber()
+        - android.net.wifi.WifiInfo.getMacAddress()
+        - android.provider.Settings.Secure.getString(ContentResolver, ANDROID_ID)
+      explanation: >-
+        This representative fictional result illustrates how a broad privacy
+        objective becomes a reusable source specification rather than a fixed
+        generic list.
 bibtex: |
   @article{10.1145/3815184,
     author  = {Alecci, Marco and Samhi, Jordan and Miltenberger, Marc and Arzt, Steven and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

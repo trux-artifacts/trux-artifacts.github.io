@@ -34,37 +34,71 @@ tags:
 demo:
   style: terminal
   intro: >-
-    JuCify combines Android bytecode and native code before downstream static
-    analysis. The repository pins the artifact commit and documents a main.sh
-    entry point for APK analysis.
-  outputLabel: Documented workflow
+    Pick a cross-language flow pattern. JuCify imports the native call graph,
+    links JNI transitions to the Android bytecode representation, then lets the
+    downstream taint analysis recover paths that cross Java and native code.
+  outputLabel: JuCify output
   countOutput: false
   note: >-
-    These commands come from the official artifact instructions. No synthetic
-    JNI methods, graph edges or application results are displayed.
+    Simulated preview using representative fictional APKs, JNI methods, graph
+    counts and taint paths; nothing runs in the browser. The getter, leaker and
+    delegation patterns mirror the cross-language scenario families discussed
+    by the work, but the concrete outputs below are not paper results.
   scenarios:
-    - label: Check out the artifact revision
-      query: git checkout 6897c58350773987da0a2c52a99fd4ebf1edc39e
+    - label: Native getter → Java sink
+      query: ./main.sh -f lab.flashlight.apk -p Android-platforms/jars/stubs/ -t
       thinking:
-        - Select the revision identified by the artifact documentation.
-        - Keep the implementation aligned with the evaluated release.
+        - Loading the APK bytecode and native libraries…
+        - Importing binary call-graph nodes and JNI links…
+        - Adding native-to-Java return edges…
+        - Running taint analysis on the unified graph…
       output:
-        - "Official artifact revision."
-        - "Run inside a local clone of the JuCify repository."
+        - "JuCify — unified analysis completed"
+        - "[✓] Cross-language path found"
+        - "  source  nativeGetImei()                                  [NATIVE]"
+        - "  bridge  DeviceBridge.readIdentifier()                     [JAVA]"
+        - "  sink    Log.d(String,String)                              [JAVA]"
+        - "  unified graph: 1,842 nodes · 6,104 edges · 7 JNI edges added"
       explanation: >-
-        Pinning the documented revision helps reproduce the implementation used
-        by the artifact.
-    - label: Analyze an APK
-      query: ./main.sh -f PATH_TO_APK -p PATH_TO_PLATFORMS
+        In this fictional getter pattern, the sensitive value originates inside
+        native code and returns to Java before reaching a sink. Linking the JNI
+        return is what makes the complete path visible.
+    - label: Java source → native network sink
+      query: ./main.sh -f lab.scanner.apk -p Android-platforms/jars/stubs/ -t
       thinking:
-        - Provide a real APK and Android platforms directory.
-        - Let JuCify construct the unified representation for analysis.
+        - Resolving the Java call into nativeSend(String)…
+        - Mapping the native binary's imported networking functions…
+        - Joining Java and binary call-graph fragments…
+        - Propagating the tainted phone number into the native sink…
       output:
-        - "Official artifact command — not executed by this website."
-        - "Results depend on the selected APK and its native code."
+        - "JuCify — unified analysis completed"
+        - "[✓] Cross-language path found"
+        - "  source  TelephonyManager.getLine1Number()                 [JAVA]"
+        - "  bridge  NativeUploader.nativeSend(String)                 [JNI]"
+        - "  sink    connect() → send()                                [NATIVE]"
+        - "  path: 11 statements · 5 Java · 6 native"
       explanation: >-
-        A real run produces the cross-language analysis data; the catalog does
-        not invent paths, nodes or edges.
+        This simulated leaker pattern starts in Java but crosses into native
+        code before the network send, a path a Java-only representation would
+        stop at the JNI method declaration.
+    - label: Entire flow delegated to native code
+      query: ./main.sh -f lab.battery.apk -p Android-platforms/jars/stubs/ -t
+      thinking:
+        - Finding the Java entry point that delegates to nativeRun()…
+        - Recovering native calls to platform sources and sinks…
+        - Connecting imported functions through the binary call graph…
+        - Reporting the path back in Android analysis terms…
+      output:
+        - "JuCify — unified analysis completed"
+        - "[✓] Native-only sensitive flow found"
+        - "  Java entry  NativeWorker.run() → nativeRun()"
+        - "  source      getSimSerialNumber()                          [NATIVE]"
+        - "  sink        sendTextMessage(...)                          [NATIVE]"
+        - "  new binary nodes: 23 · new cross-language edges: 9"
+      explanation: >-
+        Here Java only delegates. The fictional source and sink both live below
+        the JNI boundary, illustrating why native call-graph recovery is needed
+        even when the bytecode itself contains no obvious sensitive flow.
 bibtex: |
   @inproceedings{10.1145/3510003.3512766,
     author    = {Samhi, Jordan and Gao, Jun and Daoudi, Nadia and Graux, Pierre and Hoyez, Henri and Sun, Xiaoyu and Allix, Kevin and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

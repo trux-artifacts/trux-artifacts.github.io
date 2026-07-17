@@ -46,10 +46,12 @@ demo:
   outputLabel: Analyzed method (Smali)
   countOutput: false
   note: >-
-    LLM answers reproduced from the paper's experiments on RegApp (the authors'
-    demo app) and WordPress (10M+ downloads). This is an exploratory proof of
-    concept — nothing runs in your browser and no model is called. Run it from
-    the repository (apktool + Ollama / Llama-3.1 8B).
+    The first three LLM answers are reproduced from the paper's experiments on
+    RegApp (the authors' demo app) and WordPress (10M+ downloads). The final
+    case is a Simulated preview using representative fictional input, included
+    to show how a lexical false positive can look; it is not a paper result.
+    Nothing runs in the browser and no model is called. Run the artifact with
+    apktool and Ollama / Llama-3.1 8B for real applications.
   scenarios:
     - label: RegApp · account deletion
       query: 'RegApp — check MyAccountFragment.delete() against R1 (right to erasure)'
@@ -122,6 +124,26 @@ demo:
         account deletion." — confirmed by manual inspection (the authors
         installed the app and deleted a real account). A true positive on a
         real-world app with 10M+ downloads.
+    - label: Fictional app · cache removal (FP)
+      query: 'DemoShop — check ProfileCache.remove(int) against R1 (right to erasure)'
+      thinking:
+        - Decompiling the fictional APK and restructuring its Smali methods…
+        - Filtering framework and third-party code…
+        - Filling the zero-shot prompt with R1 and the selected method…
+        - Simulating a plausible Llama-3.1 8B response…
+      output:
+        - 'method: lab.demoshop.cache.ProfileCache->remove(I)Ljava/lang/Object;'
+        - '  invoke-interface {v0, p1}, Ljava/util/Map;->remove(Ljava/lang/Object;)Ljava/lang/Object;'
+        - '  # removes one in-memory cache entry; no user account is deleted'
+      verdictAnswer: "LLM answer: YES"
+      verdictLabel: Simulated false positive
+      verdictKind: incorrect
+      explanation: >-
+        Simulated answer: "YES. The method removes a profile entry and therefore
+        enables erasure of user data." The fictional method only evicts an
+        object from a local cache, so the correct answer is NO. It illustrates
+        how words such as “remove” and “profile” can mislead a zero-shot model
+        without presenting the example as an observed paper result.
 bibtex: |
   @inproceedings{10.1145/3696630.3728508,
     author    = {Alecci, Marco and Sannier, Nicolas and Ceci, Marcello and Abualhaija, Sallam and Samhi, Jordan and Bianculli, Domenico and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

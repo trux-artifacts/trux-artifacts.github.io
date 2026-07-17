@@ -28,39 +28,74 @@ tags:
   - fix-patterns
   - mining
 demo:
-  style: terminal
+  style: patch
   intro: >-
-    Preview the documented FixMiner build and the first Java mining job. The
-    complete pipeline then runs its remaining jobs in the order listed by the
-    official repository.
-  outputLabel: Documented workflow
-  countOutput: false
+    Explore mock fix-pattern clusters as if FixMiner had just mined a corpus of
+    bug-fixing commits. Each view combines an abstract edit script, a recurring
+    patch shape, and simulated support across projects.
   note: >-
-    Documentation preview only — these commands come from the official
-    repository and are not executed in the browser. No fabricated cluster
-    counts or pattern rankings are shown.
+    Interactive simulation only — no repository is mined in the browser.
+    Pattern instances, identifiers, rankings, project counts, and support
+    values are fictional demonstrations of FixMiner's output format; they are
+    not empirical results from the paper.
   scenarios:
-    - label: Build FixMiner
-      query: mvn clean install
+    - label: Insert null guard
+      file: "Mock cluster #17 · Null-pointer guard"
+      pattern: 486 simulated changes · 73 simulated projects
       thinking:
-        - Showing the official build step; no command is executed.
+        - Scanning synthetic bug-fixing commits…
+        - Computing AST differences with GumTree…
+        - Building rich edit scripts from shape, actions, and tokens…
+        - Clustering equivalent scripts and abstracting identifiers…
       output:
-        - "Build the FixPatternMiner JAR and project dependencies."
-        - "Before running, configure the paths in src/main/resources/config.yml."
+        - "  actions: INS_IF · INS_INFIX_EXPR(!=) · MOVE_STMT"
+        - ""
+        - "-    $receiver.$method($args);"
+        - "+    if ($receiver != null) {"
+        - "+        $receiver.$method($args);"
+        - "+    }"
       explanation: >-
-        The repository requires JDK 8, its Conda environment, Redis, and a
-        configured YAML file before the mining pipeline can run.
-    - label: Create the Java mining dataset
-      query: bash fixminer.sh /path/to/config.yml dataset4j
+        This mock cluster abstracts many imagined fixes into a reusable guard
+        template. Placeholders preserve what varies while the edit actions keep
+        the common repair structure.
+    - label: Protect an array access
+      file: "Mock cluster #23 · Bounds check"
+      pattern: 358 simulated changes · 62 simulated projects
       thinking:
-        - Showing the first documented pipeline job; no command is executed.
+        - Extracting synthetic Java patches…
+        - Aligning before/after AST nodes…
+        - Detecting a repeated conditional insertion…
+        - Generalizing array, index, and value tokens…
       output:
-        - "Job: dataset4j — create a Java mining dataset from subjects.csv."
-        - "Next documented jobs: richedit, actionSI, compare, cluster, tokenSI, compare, stats, patterns."
+        - "  actions: INS_IF · INS_INFIX_EXPR(<) · MOVE_STMT"
+        - ""
+        - "-    $array[$index] = $value;"
+        - "+    if ($index >= 0 && $index < $array.length) {"
+        - "+        $array[$index] = $value;"
+        - "+    }"
       explanation: >-
-        FixMiner's jobs are intentionally sequential: later comparison,
-        clustering, statistics, and pattern export steps consume the earlier
-        intermediate data.
+        The simulated miner groups structurally similar bounds fixes and emits
+        an abstract pattern that an automated repair system could instantiate.
+    - label: Close a resource safely
+      file: "Mock cluster #41 · Try-with-resources"
+      pattern: 312 simulated changes · 58 simulated projects
+      thinking:
+        - Mining a synthetic stream-handling patch corpus…
+        - Comparing control-flow and resource-lifetime edits…
+        - Clustering equivalent try-with-resources transformations…
+        - Producing a parameterized repair pattern…
+      output:
+        - "  actions: INS_TRY_RESOURCE · MOVE_STMT · DEL_CLOSE_CALL"
+        - ""
+        - "-    $Stream in = new $Stream($path);"
+        - "-    $body;"
+        - "-    in.close();"
+        - "+    try ($Stream in = new $Stream($path)) {"
+        - "+        $body;"
+        - "+    }"
+      explanation: >-
+        This fictional cluster demonstrates a larger structural pattern: move
+        the resource into a managed scope and remove the explicit close call.
 bibtex: |
   @article{Koyuncu2020,
     author  = {Koyuncu, Anil and Liu, Kui and Bissyand\'{e}, Tegawend\'{e} F. and Kim, Dongsun and Klein, Jacques and Monperrus, Martin and Le Traon, Yves},

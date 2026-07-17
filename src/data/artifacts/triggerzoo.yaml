@@ -59,6 +59,17 @@ dataset:
     - "06239084…;com.bcs.marvlis.fle.psapmonitor.MainActivity;Activity;<…: void onCreateContextMenu(…)>;build;set_text;0"
     - "0298F2C4…;com.speedymarks.android.averageFree.Main;Activity;<…: void createAdView()>;music;native_write_phone_number;1|1"
     - "06328181…;com.sportconsulting.ayuntamientoalcantarilla.MainActivity;Activity;<…: void onCreate(Bundle)>;is_screen_off;sms_string;0"
+  usage:
+    title: Resolve a labeled sample through AndroZoo
+    note: >-
+      TriggerZoo publishes SHA256 identifiers rather than redistributing the
+      APKs. Researchers with an AndroZoo API key can resolve an authorized
+      sample by its full hash from the released label file.
+    code: |
+      curl -O --remote-header-name -G \
+        -d apikey=${APIKEY} \
+        -d sha256=${SHA256_FROM_TRIGGERZOO} \
+        https://androzoo.uni.lu/api/download
 license: Apache-2.0
 bibtex: |
   @inproceedings{10.1145/3524842.3528020,

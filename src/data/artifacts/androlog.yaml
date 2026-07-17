@@ -28,38 +28,73 @@ tags:
 demo:
   style: terminal
   intro: >-
-    Follow AndroLog's documented two-step workflow: instrument an APK, exercise
-    the instrumented app, then process its runtime logs into coverage data.
-  outputLabel: Documented workflow
+    Select an instrumentation profile. AndroLog rewrites the APK, collects the
+    runtime probe log after the app is exercised, then reports coverage at
+    class, method, statement and component granularity.
+  outputLabel: AndroLog output
   countOutput: false
   note: >-
-    These are commands from the official repository documentation. They are not
-    executed by this website and no application-specific coverage result is
-    simulated.
+    Simulated preview using representative fictional APKs, probe counts and
+    coverage results; nothing runs in the browser. The two-step workflow and
+    command-line flags follow the official repository, but every application
+    name and number shown below is illustrative and is not reported by the
+    paper.
   scenarios:
-    - label: Instrument an APK
-      query: java -jar AndroLog/target/androlog-0.1-jar-with-dependencies.jar -p ./Androidplatforms/ -l MY_SUPER_LOG -o ./output/ -a my_app.apk -c -m -cp
+    - label: Full four-level coverage
+      query: java -jar AndroLog/target/androlog-0.1-jar-with-dependencies.jar -p platforms/ -l ANDROLOG_DEMO -o out/ -a lab.notes.apk -c -m -s -cp
       thinking:
-        - Select the Android platform directory, log tag, output directory and APK.
-        - Enable class, method and component instrumentation with the documented flags.
+        - Transforming Dalvik bytecode into the analysis representation…
+        - Inserting class, method, statement and component probes…
+        - Rebuilding and signing the instrumented APK…
+        - Processing the captured ANDROLOG_DEMO runtime events…
       output:
-        - "Official repository command — not executed by this website."
-        - "The instrumented APK is written under the selected output directory."
+        - "[✓] Instrumented APK: out/lab.notes-instrumented.apk"
+        - "[✓] Runtime events processed: 4,826"
+        - "Coverage report"
+        - "  classes       118 / 164    72.0%"
+        - "  methods       493 / 918    53.7%"
+        - "  statements  3,742 / 8,604  43.5%"
+        - "  components       8 / 10     80.0%"
       explanation: >-
-        Install and exercise the generated APK so that its probes emit runtime
-        logs tagged with MY_SUPER_LOG.
-    - label: Process collected logs
-      query: java -jar AndroLog/target/androlog-0.1-jar-with-dependencies.jar -p ./Androidplatforms/ -l MY_SUPER_LOG -a my_app.apk -c -m -cp -pa logs
+        The fictional report previews the complete workflow: instrumentation,
+        execution, log processing, then four complementary coverage views.
+    - label: Component-focused smoke test
+      query: java -jar AndroLog/target/androlog-0.1-jar-with-dependencies.jar -p platforms/ -l SMOKE_TEST -o out/ -a lab.weather.apk -c -m -cp
       thinking:
-        - Reuse the same instrumentation configuration.
-        - Point AndroLog at the directory containing the collected runtime logs.
+        - Discovering activities, services and broadcast receivers…
+        - Instrumenting component callbacks and their enclosing methods…
+        - Replaying a short navigation-and-background-service test trace…
+        - Aggregating probe hits by Android component…
       output:
-        - "Official repository workflow — not executed by this website."
-        - "Coverage depends on the APK and on the interactions captured in logs."
+        - "[✓] Instrumented components: 12"
+        - "[✓] Observed components: 9"
+        - "  MainActivity                 covered"
+        - "  ForecastService             covered"
+        - "  LocationReceiver            covered"
+        - "  SettingsActivity            not covered"
+        - "Component coverage: 9 / 12 · 75.0%"
       explanation: >-
-        The -pa option processes the collected logs. AndroLog can then derive
-        coverage at the enabled granularities without this catalog inventing
-        application names, probe rates or percentages.
+        This simulated smoke test emphasizes Android components, making it easy
+        to spot a screen or background entry point that the interaction trace
+        never reached.
+    - label: Process an existing log directory
+      query: java -jar AndroLog/target/androlog-0.1-jar-with-dependencies.jar -p platforms/ -l REGRESSION -a lab.reader.apk -c -m -s -cp -pa logs/regression-run/
+      thinking:
+        - Loading previously collected logcat events…
+        - Matching probe identifiers to the original APK statements…
+        - Discarding duplicate events from repeated UI actions…
+        - Computing a stable regression coverage summary…
+      output:
+        - "[✓] Parsed 11,204 events from logs/regression-run/"
+        - "[✓] Unique probes hit: 6,381"
+        - "Coverage delta versus baseline"
+        - "  methods       +27 newly covered"
+        - "  statements   +214 newly covered"
+        - "  components    unchanged (7 / 9)"
+      explanation: >-
+        The -pa workflow is useful when instrumentation and log processing are
+        separated. Here the fictional output shows the kind of regression delta
+        an analyst could derive from a stored trace.
 bibtex: |
   @inproceedings{10.1145/3663529.3663806,
     author    = {Samhi, Jordan and Zeller, Andreas},

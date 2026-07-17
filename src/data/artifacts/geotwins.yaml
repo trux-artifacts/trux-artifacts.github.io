@@ -29,31 +29,64 @@ tags:
 demo:
   style: terminal
   intro: >-
-    Set up the environment exactly as documented by the GeoTwins repository,
-    then configure the AndroZoo API key and third-party-library path before
-    running the research-question notebooks in 1_Code/.
-  outputLabel: Documented next steps
+    Select two real package-name pairs from the released GeoTwins dataset and
+    preview how the pipeline compares code, permissions, libraries, and privacy
+    disclosures across regional variants.
+  outputLabel: Pairwise analysis
   countOutput: false
   note: >-
-    Documentation preview only — the command is copied from the official
-    README and is not executed in the browser. Reproducing the analysis also
-    requires AndroZoo access and the data described by the authors.
+    Interactive simulation — package-name pairs are real rows from
+    4_geoTwins.csv, while the per-pair feature counts and similarity values are
+    plausible mock results. No APK is downloaded or analyzed in the browser.
   scenarios:
-    - label: Prepare the notebook environment
-      query: |-
-        conda create --name demoEnv python=3.8
-        conda activate demoEnv
-        pip install -r requirements.txt
+    - label: Home Portal · TW ↔ US
+      query: python compare_pair.py com.climax.homeportal.tw com.climax.homeportal.us
       thinking:
-        - Showing the repository's documented environment setup; no command is executed.
+        - Resolving both APKs from the configured AndroZoo index…
+        - Extracting permissions, third-party libraries, and code features…
+        - Computing the pairwise regional-difference report…
       output:
-        - "Set ANDROZOO_API_KEY in .env."
-        - "Set THIRD_PARTY_LIBS_PATH in .env."
-        - "Run the notebooks under 1_Code/ in research-question order."
+        - "pair: com.climax.homeportal.tw ↔ com.climax.homeportal.us"
+        - "branding match ........ yes"
+        - "code similarity ....... 96.8%"
+        - "permissions ........... 18 shared · 1 TW-only · 2 US-only"
+        - "third-party libraries . 11 shared · 1 regional"
+        - "verdict ............... likely geographic variants"
       explanation: >-
-        The repository distributes the analysis primarily as Jupyter notebooks;
-        AppUtils.py extracts APK features and PairwiseAnalysisUtils.py compares
-        regional variants.
+        A representative mock report for one real same-branding pair, shaped
+        around the feature families analyzed by GeoTwins.
+    - label: American Express · FR ↔ UK
+      query: python compare_pair.py com.americanexpress.android.acctsvcs.fr com.americanexpress.android.acctsvcs.uk
+      thinking:
+        - Matching both packages to their GeoFamily…
+        - Comparing manifests and normalized application code…
+        - Summarizing regional-only features…
+      output:
+        - "pair: com.americanexpress.android.acctsvcs.fr ↔ com.americanexpress.android.acctsvcs.uk"
+        - "branding match ........ yes"
+        - "code similarity ....... 98.1%"
+        - "permissions ........... 27 shared · 2 FR-only · 1 UK-only"
+        - "third-party libraries . 16 shared · 2 regional"
+        - "privacy text distance . 0.18"
+      explanation: >-
+        This simulated run demonstrates how a very high code overlap can still
+        coexist with smaller manifest, library, or disclosure differences.
+    - label: Radio FM · Japan ↔ Chile
+      query: python compare_pair.py com.radiosonline.radiofmjapan com.radiosonline.radiofmchile
+      thinking:
+        - Loading a second real pair from the dataset…
+        - Normalizing package-specific identifiers before code comparison…
+        - Ranking the largest feature deltas…
+      output:
+        - "pair: com.radiosonline.radiofmjapan ↔ com.radiosonline.radiofmchile"
+        - "branding match ........ yes"
+        - "code similarity ....... 94.3%"
+        - "permissions ........... 16 shared · 2 JP-only · 2 CL-only"
+        - "third-party libraries . 8 shared · 2 regional"
+        - "verdict ............... likely geographic variants"
+      explanation: >-
+        The mock output illustrates the comparison workflow without claiming
+        that these particular per-app measurements were published in the paper.
 bibtex: |
   @inproceedings{10.1145/3745756.3809191,
     author    = {Alecci, Marco and Ruiz Jim\'{e}nez, Pedro Jes\'{u}s and Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

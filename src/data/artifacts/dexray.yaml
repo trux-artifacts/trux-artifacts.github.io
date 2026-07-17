@@ -30,39 +30,59 @@ tags:
   - deep-learning
   - image-representation
 demo:
-  style: terminal
+  style: image
   intro: >-
-    DexRay first converts APK bytecode into its one-dimensional image
-    representation, then runs the released classifier over a directory of
-    generated images.
-  outputLabel: Documented commands
-  countOutput: false
+    Pick an APK profile. DexRay maps every DEX byte to one grey-scale pixel,
+    resizes the resulting one-dimensional representation, and sends it through
+    the CNN for a malware/goodware verdict.
   note: >-
-    Commands are copied from the official repository README. Nothing runs in
-    the browser and no malware verdict or model score is simulated.
+    Simulated preview using procedurally generated images and representative
+    fictional APKs; nothing runs in the browser and no model is called. The
+    displayed textures, sigmoid scores and verdicts are illustrative UI output,
+    not per-app results or measurements reported by the paper.
   scenarios:
-    - label: Convert an APK to an image
-      query: python3 apktoimage.py APK DESTINATION
+    - label: Banking trojan
+      seed: 419733
       thinking:
-        - Read the APK's DEX bytecode.
-        - Encode its bytes into the representation consumed by DexRay.
-      output:
-        - "Official README command — not executed by this website."
-        - "Replace APK and DESTINATION with local paths."
+        - Extracting classes.dex and classes2.dex from the fictional APK…
+        - Concatenating their raw byte streams…
+        - Mapping each byte to an 8-bit grey pixel…
+        - Resizing the sequence to the classifier input length…
+        - Simulating the released CNN's sigmoid output…
+      verdictAnswer: MALWARE
+      verdictLabel: simulated score 0.98
+      verdictKind: malware
       explanation: >-
-        This preprocessing step creates the model input without claiming a
-        prediction for an invented application.
-    - label: Run the released classifier
-      query: python3 DexRay.py -p "dataset_images" -d "results_dir" -f "results_dir/scores.txt"
+        The generated high-contrast texture and 0.98 score are fictional. The
+        mock demonstrates the simple decision rule: a sigmoid value at or above
+        0.5 is displayed as malware.
+    - label: Weather app
+      seed: 880145
       thinking:
-        - Load image inputs from dataset_images.
-        - Write experiment artifacts and scores to the selected result paths.
-      output:
-        - "Official README command — not executed by this website."
-        - "Predictions depend on the real local dataset and trained model."
+        - Reading the fictional app's DEX bytecode…
+        - Converting the byte sequence to grey-scale pixels…
+        - Normalizing the one-dimensional image…
+        - Simulating inference with the binary classifier…
+      verdictAnswer: GOODWARE
+      verdictLabel: simulated score 0.03
+      verdictKind: goodware
       explanation: >-
-        Researchers can reproduce the classifier workflow locally; the catalog
-        deliberately reports no synthetic verdict.
+        This representative benign app is assigned a fictional 0.03 score,
+        below the 0.5 threshold, so the UI renders a GOODWARE verdict.
+    - label: Obfuscated malware
+      seed: 271828
+      thinking:
+        - Extracting the fictional obfuscated bytecode…
+        - Mapping bytes to pixels after renaming and string-encryption passes…
+        - Resizing the altered texture…
+        - Simulating the CNN prediction…
+      verdictAnswer: MALWARE
+      verdictLabel: simulated score 0.86
+      verdictKind: malware
+      explanation: >-
+        The generated image mimics how obfuscation can alter a byte-level
+        texture while leaving a high mock score. It illustrates the evaluation
+        question without claiming this APK or score appears in the paper.
 bibtex: |
   @inproceedings{daoudi2021dexray,
     author    = {Daoudi, Nadia and Samhi, Jordan and Kabor\'{e}, Abdoul Kader and Allix, Kevin and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

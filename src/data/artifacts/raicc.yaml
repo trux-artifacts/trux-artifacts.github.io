@@ -29,52 +29,97 @@ tags:
 demo:
   style: terminal
   intro: >-
-    Reproduce the paper with RAICC release 1.0, the version explicitly required
-    by the official repository for the ICSE 2021 experiments.
-  outputLabel: Paper-artifact workflow
+    Choose a fictional app and watch the paper-aligned RAICC 1.0 workflow recover
+    atypical inter-component communication, insert equivalent standard ICC
+    statements and expose the resulting links to downstream analysis.
+  outputLabel: Simulated RAICC 1.0 output
   countOutput: false
   note: >-
-    These commands follow the README at tag 1.0. No application name,
-    instrumentation count or runtime is fabricated, and the newer RAICC 2.0
-    workflow is deliberately not presented as the evaluated paper artifact.
+    Interactive mock preview — APK names, statement counts, timings and
+    downstream paths are fictional and are not paper measurements. The commands
+    use the release-1.0 JAR and options required by the official artifact; no APK
+    is instrumented in the browser.
   scenarios:
-    - label: Select release 1.0
-      query: git checkout 1.0
+    - label: PendingIntent.send()
+      query: java -jar RAICC/target/RAICC-0.1-jar-with-dependencies.jar -a samples/bright-events.apk -cp android-platforms/ -model RAICC/artefacts/coal/
       thinking:
-        - Clone the official RAICC repository.
-        - Select the release identified for reproducing the paper.
+        - Loading Soot, IC3 and the Android platform…
+        - Resolving PendingIntent creation sites…
+        - Propagating the target component type…
+        - Injecting equivalent standard ICC statements…
       output:
-        - "Official paper-artifact tag: 1.0."
-        - "A prebuilt RAICC.jar from the same release is also linked above."
+        - "RAICC 1.0 mock run — completed"
+        - "APK: com.demo.brightevents (fictional)"
+        - "Atypical ICC call sites: 3"
+        - "Resolved targets: 3"
+        - "Inserted standard ICC statements: 3"
+        - "Example: PendingIntent.send() → startActivity(EventDetailsActivity)"
+        - "Downstream preview: 1 additional candidate FlowDroid path"
+        - "Elapsed: 8.7 s (simulated)"
       explanation: >-
-        The current default branch documents RAICC 2.0, while the repository
-        explicitly directs paper reproduction to version 1.0.
-    - label: Build the evaluated release
-      query: |-
-        mvn clean install:install-file -Dfile=libs/ic3-0.2.1-full.jar -DgroupId=edu.psu.cse.siis -DartifactId=ic3 -Dversion=0.2.1 -Dpackaging=jar
-        mvn clean install:install-file -Dfile=libs/preprocessIntentSender-0.1.jar -DgroupId=lu.uni.trux -DartifactId=preprocessIntentSender -Dversion=0.1 -Dpackaging=jar
-        mvn clean install
+        The mock app launches an activity through PendingIntent.send(). RAICC
+        makes that hidden component transition explicit so a conventional ICC
+        analyzer can traverse it.
+    - label: AlarmManager.setExact()
+      query: java -jar RAICC/target/RAICC-0.1-jar-with-dependencies.jar -a samples/skytrail-weather.apk -cp android-platforms/ -model RAICC/artefacts/coal/
       thinking:
-        - Install the bundled IC3 dependency into the local Maven repository.
-        - Install the bundled IntentSender preprocessor, then build RAICC.
+        - Recovering the PendingIntent passed to AlarmManager…
+        - Resolving its destination service…
+        - Rewriting the atypical link as standard ICC…
+        - Re-running the downstream link discovery…
       output:
-        - "Official tag-1.0 build sequence — not executed by this website."
+        - "RAICC 1.0 mock run — completed"
+        - "APK: com.demo.skytrail.weather (fictional)"
+        - "Atypical ICC call sites: 1"
+        - "Resolved targets: 1"
+        - "Inserted standard ICC statements: 1"
+        - "Example: AlarmManager.setExact(...) → startService(RefreshService)"
+        - "Downstream preview: delayed component edge now visible"
+        - "Elapsed: 6.3 s (simulated)"
       explanation: >-
-        These are the three installation commands documented by the evaluated
-        release. Its README also recommends increasing MAVEN_OPTS if the build
-        encounters a stack overflow.
-    - label: Analyze an APK with release 1.0
-      query: java -jar RAICC/target/RAICC-0.1-jar-with-dependencies.jar -a PATH_TO_APK -cp PATH_TO_PLATFORMS -model PATH_TO_COAL_MODELS
+        AlarmManager schedules a PendingIntent rather than calling the component
+        directly. The simulated transformation exposes the delayed service edge
+        without claiming that these counts came from the evaluation.
+    - label: Location updates
+      query: java -jar RAICC/target/RAICC-0.1-jar-with-dependencies.jar -a samples/pixelrun-arcade.apk -cp android-platforms/ -model RAICC/artefacts/coal/
       thinking:
-        - Provide a real APK and Android platform directory.
-        - Point version 1.0 at RAICC's released COAL models.
+        - Tracing the PendingIntent registered for location updates…
+        - Inferring receiver targets from the intent…
+        - Generating explicit ICC calls…
+        - Checking newly reachable component paths…
       output:
-        - "Official release-1.0 entry point — not executed by this website."
-        - "Replace the placeholder paths with real local paths."
+        - "RAICC 1.0 mock run — completed"
+        - "APK: com.demo.pixelrun.arcade (fictional)"
+        - "Atypical ICC call sites: 2"
+        - "Resolved targets: 2"
+        - "Inserted standard ICC statements: 2"
+        - "Example: requestLocationUpdates(..., PendingIntent) → sendBroadcast(GeoReceiver)"
+        - "Downstream preview: 2 receiver edges now visible"
+        - "Elapsed: 10.5 s (simulated)"
       explanation: >-
-        Results depend on the selected APK. This preview therefore documents
-        the paper-aligned command without inventing transformed instructions or
-        timings.
+        Registering a PendingIntent with LocationManager creates component
+        transitions that ordinary call-graph construction can miss. This mock
+        shows RAICC translating those links into analyzable broadcasts.
+    - label: IntentSender chain
+      query: java -jar RAICC/target/RAICC-0.1-jar-with-dependencies.jar -a samples/quicknote-pro.apk -cp android-platforms/ -model RAICC/artefacts/coal/
+      thinking:
+        - Locating IntentSender creation and forwarding sites…
+        - Propagating destinations through wrapper methods…
+        - Materializing each inferred component transition…
+        - Summarizing the enriched ICC graph…
+      output:
+        - "RAICC 1.0 mock run — completed"
+        - "APK: com.demo.quicknote.pro (fictional)"
+        - "Atypical ICC call sites: 5"
+        - "Resolved targets: 4"
+        - "Inserted standard ICC statements: 4"
+        - "Example chain: sendIntent() → ShareActivity → UploadService"
+        - "Downstream preview: multi-component path recovered"
+        - "Elapsed: 13.1 s (simulated)"
+      explanation: >-
+        IntentSender can relay an intent through several wrappers. The mock
+        result illustrates RAICC recovering a component chain and exposing it to
+        analyses that only understand standard ICC APIs.
 bibtex: |
   @inproceedings{9402043,
     author    = {Samhi, Jordan and Bartel, Alexandre and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

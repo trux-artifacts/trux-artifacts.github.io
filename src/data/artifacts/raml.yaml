@@ -31,28 +31,71 @@ tags:
   - llm
   - retrieval-augmented
 demo:
-  style: terminal
   intro: >-
-    RAML's released command accepts a Smali folder, one or more behavior
-    identifiers, and an application name, then writes localization results for
-    the configured run.
-  outputLabel: Documented command
-  countOutput: false
+    Pick a behavior. RAML describes Smali classes, retrieves and re-ranks the
+    candidates most related to the behavior, then pinpoints the methods involved
+    and explains each one's role.
+  outputLabel: Localized methods
+  countOutput: true
   note: >-
-    This command is copied from the official repository README. The website does
-    not run the model or invent classes, methods, roles or retrieval scores.
+    Simulated preview using representative fictional Smali inputs, class names,
+    roles and similarity scores; no model or API is called in the browser. The
+    pipeline and behavior categories follow the artifact, but these localized
+    methods are illustrative and are not paper results.
   scenarios:
-    - label: Localize selected behaviors
-      query: python main.py /path/to/smali/folder --behaviors 1 3 4 --app-name "app_name"
+    - label: Privacy stealing
+      query: python main.py ./samples/solitaire/smali --behaviors 1 --app-name "lab.solitaire"
       thinking:
-        - Load the selected application's Smali folder.
-        - Run localization for behavior identifiers 1, 3 and 4.
+        - Generating natural-language descriptions of the fictional Smali classes…
+        - Embedding descriptions and retrieving privacy-related candidates…
+        - Re-ranking the shortlist with the localization model…
+        - Inspecting candidate methods and assigning analyst-readable roles…
       output:
-        - "Official README command — not executed by this website."
-        - "The repository emits run-specific result files from the configured models."
+        - "[0.96] Llab/solitaire/sync/InfoCollector;->readContacts()"
+        - "       role: reads names and phone numbers through ContentResolver"
+        - "[0.93] Llab/solitaire/sync/InboxReader;->collectSms()"
+        - "       role: enumerates incoming-message bodies and senders"
+        - "[0.88] Llab/solitaire/net/Uploader;->post([B)"
+        - "       role: sends the collected records to a remote endpoint"
       explanation: >-
-        Replace the paths, behavior identifiers and app name with real inputs.
-        Exact localized classes and methods must come from that execution.
+        The fictional result reconstructs a small collection-and-upload chain
+        while showing the method-level role explanations RAML is designed to
+        provide.
+    - label: SMS and call abuse
+      query: python main.py ./samples/player/smali --behaviors 2 --app-name "lab.player"
+      thinking:
+        - Describing receiver, service and networking classes…
+        - Retrieving candidates related to SMS and call abuse…
+        - Re-ranking across component boundaries…
+        - Explaining the methods that jointly implement the behavior…
+      output:
+        - "[0.97] Llab/player/service/SmsAgent;->sendPremium(String)"
+        - "       role: sends a text message to a premium-rate destination"
+        - "[0.92] Llab/player/receiver/SmsReceiver;->onReceive(Context,Intent)"
+        - "       role: intercepts incoming carrier confirmation messages"
+        - "[0.87] Llab/player/receiver/SmsReceiver;->hideNotification()"
+        - "       role: suppresses the user-visible confirmation"
+      explanation: >-
+        This representative output shows localization across a background
+        service and broadcast receiver instead of returning one coarse app-level
+        malware label.
+    - label: Remote control
+      query: python main.py ./samples/battery/smali --behaviors 3 --app-name "lab.battery"
+      thinking:
+        - Indexing the fictional app's Smali classes…
+        - Retrieving command-and-control candidates…
+        - Re-ranking polling, dispatch and persistence code…
+        - Producing concise method-level explanations…
+      output:
+        - "[0.95] Llab/battery/net/CommandClient;->poll()"
+        - "       role: periodically requests commands from the remote service"
+        - "[0.91] Llab/battery/net/CommandClient;->dispatch(String)"
+        - "       role: maps response strings to local actions"
+        - "[0.86] Llab/battery/receiver/BootHook;->onReceive(Context,Intent)"
+        - "       role: restarts command polling after device boot"
+      explanation: >-
+        The simulated case groups polling, dispatch and boot persistence into a
+        readable behavioral chain for an analyst.
 bibtex: |
   @inproceedings{10.1109/ASE63991.2025.00351,
     author    = {Sun, Tiezhu and Alecci, Marco and Song, Yewei and Tang, Xunzhu and Kim, Kisub and Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

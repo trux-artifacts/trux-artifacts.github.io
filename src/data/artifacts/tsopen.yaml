@@ -35,9 +35,10 @@ demo:
   outputLabel: TSOpen output
   countOutput: false
   note: >-
-    This result block is real output produced by TSOpen on a ground-truth
-    sample. TSOpen is an open implementation of TriggerScope built on Soot and
-    FlowDroid — nothing runs in your browser.
+    The holycolbert10 result is real output produced by TSOpen on a ground-truth
+    sample. The other two cases are Simulated previews using representative
+    fictional inputs, predicates and timings; they are not paper results.
+    TSOpen is built on Soot and FlowDroid, and nothing runs in the browser.
   scenarios:
     - label: holycolbert10.apk (real)
       query: java -jar TSOpen.jar -p ~/Android-platforms/jars/stubs/ -f holycolbert10.apk
@@ -99,6 +100,60 @@ demo:
         SMS sender matching a number, the SMS body matching "health", and a
         database value matching "endoftheworld". Every guard is marked
         #Suspicious.
+    - label: Hardcoded time trigger (simulated)
+      query: java -jar TSOpen.jar -p ~/Android-platforms/jars/stubs/ -f lab.battery.apk
+      thinking:
+        - Building the fictional APK's call graph…
+        - Extracting block and path predicates…
+        - Symbolically resolving the current-time comparison…
+        - Matching the guarded branch with a sensitive operation…
+      output:
+        - 'Potential Logic Bombs found :'
+        - '----------------------------------------------------------------'
+        - '- Statement                 : if $z1 == 0'
+        - '- Class                     : lab.battery.UpdateGate'
+        - '- Method                    : onResume'
+        - '- Starting Component        : Activity'
+        - '- Ending Component          : Activity'
+        - '- CallStack length          : (3)'
+        - '- Size of formula           : 1'
+        - '- Sensitive method          : <android.telephony.SmsManager: void sendTextMessage(...)>'
+        - '- Reachable                 : Yes'
+        - '- Guarded Blocks Density    : 45'
+        - '- Nested                    : No'
+        - '- Predicate                 : (#now > 1767225600000) (#Suspicious)'
+        - '----------------------------------------------------------------'
+      explanation: >-
+        The fictional output demonstrates TSOpen's time abstraction (#now): a
+        hardcoded date controls reachability of an SMS operation, so the guard
+        is surfaced as a potential logic bomb.
+    - label: Location trigger (simulated)
+      query: java -jar TSOpen.jar -p ~/Android-platforms/jars/stubs/ -f lab.compass.apk
+      thinking:
+        - Discovering the location-service callback…
+        - Recovering nested latitude and longitude predicates…
+        - Symbolically evaluating the guarded network branch…
+        - Formatting the suspicious predicate and sensitive target…
+      output:
+        - 'Potential Logic Bombs found :'
+        - '----------------------------------------------------------------'
+        - '- Statement                 : if $z0 == 0'
+        - '- Class                     : lab.compass.GeoFenceService'
+        - '- Method                    : onLocationChanged'
+        - '- Starting Component        : Service'
+        - '- Ending Component          : Service'
+        - '- CallStack length          : (2)'
+        - '- Size of formula           : 2'
+        - '- Sensitive method          : <java.net.URL: java.net.URLConnection openConnection()>'
+        - '- Reachable                 : Yes'
+        - '- Guarded Blocks Density    : 38'
+        - '- Nested                    : Yes'
+        - '- Predicate                 : (#location/lat > 49.5 && #location/lon < 6.4) (#Suspicious)'
+        - '----------------------------------------------------------------'
+      explanation: >-
+        This simulated location case shows a geofence-like predicate guarding a
+        network connection. The values and class are fictional; the preview
+        illustrates how TSOpen renders recovered location conditions.
 bibtex: |
   @article{9528927,
     author  = {Samhi, Jordan and Bartel, Alexandre},

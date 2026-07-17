@@ -51,6 +51,20 @@ dataset:
       label: Tasks (of 4) where it beats proprietary models
     - value: 400000
       label: Luxembourgish speakers worldwide
+  sampleTitle: LuxAlign and ParaLux examples
+  sampleSource: Official LuxEmbedder README
+  sampleCount: 4
+  sampleNote: >-
+    Real examples published by the authors. LuxAlign rows pair Luxembourgish
+    news sentences with English or French; ParaLux rows contain an anchor, a
+    paraphrase, and a meaning-changing hard negative.
+  samples:
+    - "LuxAlign LB–EN · D’Police sicht no engem Mann, deen an der Stad mat enger geklauter Kreditkaart Suen opgehuewen huet. ↔ The police is looking for a man who withdrew money with a stolen credit card in Luxembourg City."
+    - "LuxAlign LB–EN · D’Temperaturen am Grand-Duché sinn an der Moyenne em 1.3 Grad an d’Luucht gaangen. ↔ Temperatures in the Grand Duchy have risen by 1.3 degrees on average."
+    - "LuxAlign LB–FR · Déi Petitioun ass vun 336.000 Persounen aus 112 Länner ënnerschriwwe ginn. ↔ Cette pétition a été signée par 336.000 personnes originaires de 112 pays."
+    - "LuxAlign LB–FR · Am September 2013 hat fir d’éischte Kéier e Lëtzebuerger den Jackpot gewonnen. ↔ En septembre 2013, un Luxembourgeois avait pour la 1e fois remporté le jackpot."
+    - "ParaLux · Mexiko gewënnt 3-1 géint Kroatien. ↔ Kroatien verléiert 1-3 géint Mexiko. ≠ Kroatien gewënnt 3-1 géint Mexiko."
+    - "ParaLux · De Sträit tëscht Süd- a Nordkorea spëtzt sech weider zou. ↔ D’Verhältnis tëscht Nord- a Südkorea gëtt ëmmer méi schlecht. ≠ De Sträit tëscht Süd- a Nordkorea entspaant sech weider."
   usage:
     title: Load the model
     note: LuxEmbedder is a sentence-embedding model on the Hugging Face Hub.
@@ -59,6 +73,66 @@ dataset:
 
       model = SentenceTransformer("fredxlpy/LuxEmbedder")
       emb = model.encode(["Moien, wéi geet et?"])
+demo:
+  style: terminal
+  intro: >-
+    Encode two sentences with LuxEmbedder and inspect a cosine-similarity score
+    for cross-lingual alignment, paraphrase detection, and a hard negative.
+  outputLabel: Similarity result
+  countOutput: false
+  note: >-
+    Interactive simulation — the sentences are real examples from LuxAlign and
+    ParaLux, but the displayed embeddings, scores, and thresholds are plausible
+    mock outputs. The model is not executed in the browser.
+  scenarios:
+    - label: Luxembourgish ↔ English
+      query: |-
+        luxembedder similarity \
+          "D’Temperaturen am Grand-Duché sinn an der Moyenne em 1.3 Grad an d’Luucht gaangen." \
+          "Temperatures in the Grand Duchy have risen by 1.3 degrees on average."
+      thinking:
+        - Tokenizing the Luxembourgish and English sentences…
+        - Encoding both sentences into the shared LaBSE-derived space…
+        - Computing cosine similarity…
+      output:
+        - "vector dimensions .... 768 × 2"
+        - "cosine similarity .... 0.934"
+        - "alignment ............ strong cross-lingual match"
+      explanation: >-
+        The source pair is real LuxAlign data; the high score is simulated to
+        show the cross-lingual use case for which LuxEmbedder was trained.
+    - label: ParaLux paraphrase
+      query: |-
+        luxembedder similarity \
+          "Mexiko gewënnt 3-1 géint Kroatien." \
+          "Kroatien verléiert 1-3 géint Mexiko."
+      thinking:
+        - Encoding the anchor and candidate paraphrase…
+        - Comparing their normalized sentence vectors…
+        - Applying the demonstration threshold…
+      output:
+        - "cosine similarity .... 0.887"
+        - "demo threshold ....... 0.700"
+        - "prediction ........... PARAPHRASE"
+      explanation: >-
+        These are a real ParaLux anchor and paraphrase. The score and threshold
+        are mock values included solely for the interactive preview.
+    - label: ParaLux hard negative
+      query: |-
+        luxembedder similarity \
+          "Mexiko gewënnt 3-1 géint Kroatien." \
+          "Kroatien gewënnt 3-1 géint Mexiko."
+      thinking:
+        - Encoding a lexically similar but meaning-changing candidate…
+        - Measuring semantic distance in the embedding space…
+        - Comparing the score with the same demonstration threshold…
+      output:
+        - "cosine similarity .... 0.412"
+        - "demo threshold ....... 0.700"
+        - "prediction ........... NOT PARAPHRASE"
+      explanation: >-
+        ParaLux deliberately pairs this hard negative with the same anchor. Its
+        displayed lower score is simulated, not a reported benchmark row.
 bibtex: |
   @inproceedings{philippy-etal-2025-luxembedder,
     author    = {Philippy, Fred and Guo, Siwen and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
