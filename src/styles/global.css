@@ -1621,17 +1621,19 @@ a.tag:hover {
 .demo-llm-response {
   max-height: 460px;
   margin: 0;
-  padding: 12px 13px;
+  padding: 13px 14px;
   overflow: auto;
-  border: 1px solid #30353d;
-  border-radius: 8px;
-  background: #14161b;
-  color: #d8dee9;
+  border: 1px solid color-mix(in srgb, var(--dataset-fg) 18%, var(--border));
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--dataset-bg) 78%, var(--surface));
+  color: var(--text);
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 12px;
-  line-height: 1.6;
+  font-size: 12.5px;
+  line-height: 1.65;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
+  box-shadow: 0 6px 18px rgba(34, 53, 74, 0.06);
 }
 
 .demo-llm-response-line {
