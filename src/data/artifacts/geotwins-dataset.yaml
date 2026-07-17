@@ -2,9 +2,10 @@ name: GeoTwins Dataset
 type: dataset
 area: Android Datasets
 description: >-
-  A dataset of 81,963 GeoTwins (859 GeoFamilies) — functionally similar,
-  same-branding Android apps released under different package names across
-  countries — released to facilitate research on geographic app disparities.
+  A dataset of 81,963 GeoTwin pairs grouped into 859 GeoFamilies. Each pair
+  contains two functionally similar, same-branding Android app variants released
+  under different package names across countries, for research on geographic app
+  disparities.
 authors:
   - Marco Alecci
   - Pedro Jesús Ruiz Jiménez
@@ -29,15 +30,16 @@ tags:
 dataset:
   stats:
     - value: 81963
-      label: GeoTwin pairs
+      label: GeoTwin pairs (two regional variants each)
     - value: 859
       label: GeoFamilies
   sampleTitle: Sample GeoTwin pairs
   sampleSource: 4_geoTwins.csv
   sampleCount: 6
   sampleNote: >-
-    Real pairs from the dataset — the same branded app published under different
-    package names across countries. Download the full pair and family lists
+    Real pairs from the dataset — each row contains two same-branding regional
+    variants published under different package names. An app can occur in
+    several pairs within one GeoFamily. Download the full pair and family lists
     from the repository.
   samples:
     - "com.climax.homeportal.tw  ↔  com.climax.homeportal.us"

@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Page not found — TruX Artifacts"
+  description="The requested page could not be found in the TruX research artifact catalog."
+  noindex
+>
+  <div class="container">
+    <section class="not-found" aria-labelledby="not-found-title">
+      <p class="not-found-code">Error 404</p>
+      <h1 id="not-found-title">Page not found</h1>
+      <p>
+        The page may have moved, or the artifact name may have changed. Return to the catalog
+        to browse all available research artifacts.
+      </p>
+      <a class="btn primary" href="/">Browse all artifacts</a>
+    </section>
+  </div>
+</Base>

@@ -4,9 +4,16 @@ import '../styles/global.css';
 interface Props {
   title: string;
   description?: string;
+  noindex?: boolean;
 }
 
-const { title, description = 'Research artifacts from the TruX group at SnT, University of Luxembourg' } = Astro.props;
+const {
+  title,
+  description = 'Research artifacts from the TruX group at SnT, University of Luxembourg',
+  noindex = false,
+} = Astro.props;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+const socialImageUrl = new URL('/icon-192.png', Astro.site ?? Astro.url);
 ---
 
 <!doctype html>
@@ -15,12 +22,31 @@ const { title, description = 'Research artifacts from the TruX group at SnT, Uni
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#22354a" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="TruX Artifacts" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:width" content="192" />
+    <meta property="og:image:height" content="192" />
+    <meta property="og:image:alt" content="TruX Artifacts" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl} />
+    <meta name="twitter:image:alt" content="TruX Artifacts" />
     <title>{title}</title>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <header class="site-header">
       <div class="container">
         <a href="/" class="brand" aria-label="TruX Artifacts home">
@@ -30,16 +56,22 @@ const { title, description = 'Research artifacts from the TruX group at SnT, Uni
           </span>
           <span class="brand-sub">Artifacts</span>
         </a>
-        <nav>
+        <nav aria-label="Primary navigation">
           <a href="https://www.uni.lu/snt-en/research-groups/trux/" target="_blank" rel="noopener noreferrer">TruX group</a>
-          <a href="https://github.com/Trustworthy-Software" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://github.com/trux-artifacts" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
         <a href="https://www.uni.lu/snt-en/" target="_blank" rel="noopener noreferrer" class="header-logo-link">
-          <img class="header-logo" src="/snt-uni-logo.svg" alt="SnT — Interdisciplinary Centre for Security, Reliability and Trust, University of Luxembourg" />
+          <img
+            class="header-logo"
+            src="/snt-uni-logo.svg"
+            width="280"
+            height="85"
+            alt="SnT — Interdisciplinary Centre for Security, Reliability and Trust, University of Luxembourg"
+          />
         </a>
       </div>
     </header>
-    <main>
+    <main id="main-content" tabindex="-1">
       <slot />
     </main>
     <footer class="site-footer">

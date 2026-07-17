@@ -1,0 +1,22 @@
+{
+  "name": "TruX Artifacts",
+  "short_name": "TruX Artifacts",
+  "description": "Research artifacts from the TruX group at SnT, University of Luxembourg",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f7f4",
+  "theme_color": "#22354a",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

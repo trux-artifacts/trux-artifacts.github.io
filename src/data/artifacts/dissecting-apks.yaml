@@ -50,7 +50,7 @@ dataset:
     - value: 234
       label: Unique MIME types
     - value: 587062
-      label: Dalvik .dex files (over 1 per app)
+      label: Files identified as Dalvik DEX by magic type
     - value: 1124050
       label: Native .so libraries
     - value: 35462
@@ -66,7 +66,9 @@ dataset:
     A random draw from the study's most frequent extensions — hit shuffle for
     more. "Files" counts every occurrence across the 410,125 APKs; "in N% of
     APKs" is the share of apps containing at least one. Note the many non-Android
-    code files (.js, .class, .dll) — code in apps is far from just .dex.
+    code files (.js, .class, .dll) — code in apps is far from just .dex. The
+    586,548 `.dex` extension count is distinct from the magic-type count above:
+    extensions and detected file types do not always agree.
   samples:
     - ".png · 120,035,855 files · in 99% of APKs"
     - ".xml · 88,079,179 files · in 99% of APKs"

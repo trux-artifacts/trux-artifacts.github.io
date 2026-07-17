@@ -2,6 +2,11 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import ArtifactCard from '../components/ArtifactCard.astro';
+import {
+  ARTIFACT_FILTERS,
+  ARTIFACT_TYPE_LABELS,
+  ARTIFACT_TYPE_NOUNS,
+} from '../data/taxonomy';
 
 const artifacts = (await getCollection('artifacts')).sort((a, b) => {
   const ya = a.data.paper?.year ?? 0;
@@ -9,15 +14,8 @@ const artifacts = (await getCollection('artifacts')).sort((a, b) => {
   return yb - ya || a.data.name.localeCompare(b.data.name);
 });
 
-const types = ['all', 'dataset', 'tool', 'library', 'demo', 'benchmark'];
-const labels: Record<string, string> = {
-  all: 'All',
-  dataset: 'Datasets',
-  tool: 'Tools',
-  library: 'Libraries',
-  demo: 'Demos',
-  benchmark: 'Benchmarks',
-};
+const types = ARTIFACT_FILTERS;
+const labels = ARTIFACT_TYPE_LABELS;
 const counts = Object.fromEntries(
   types.map((t) => [
     t,
@@ -50,17 +48,12 @@ const topTags = [...tagCounts.entries()]
   .slice(0, 10)
   .map(([t]) => t);
 
-const plurals: Record<string, [string, string]> = {
-  all: ['artifact', 'artifacts'],
-  dataset: ['dataset', 'datasets'],
-  tool: ['tool', 'tools'],
-  library: ['library', 'libraries'],
-  demo: ['demo', 'demos'],
-  benchmark: ['benchmark', 'benchmarks'],
-};
 const stats = types
   .filter((t) => counts[t] > 0)
-  .map((t) => ({ count: counts[t], label: plurals[t][counts[t] === 1 ? 0 : 1] }));
+  .map((t) => ({
+    count: counts[t],
+    label: ARTIFACT_TYPE_NOUNS[t][counts[t] === 1 ? 0 : 1],
+  }));
 ---
 
 <Base title="TruX Artifacts — Research artifacts for the community">
@@ -75,14 +68,14 @@ const stats = types
         <div class="hero-stats">
           {stats.map((s) => (
             <div class="stat">
-              <span class="stat-num" data-target={s.count}>0</span>
+              <span class="stat-num" data-target={s.count}>{s.count}</span>
               <span class="stat-label">{s.label}</span>
             </div>
           ))}
         </div>
       </div>
       <div class="hero-actions">
-        <a class="btn-hero" href="https://github.com/Trustworthy-Software" target="_blank" rel="noopener noreferrer">
+        <a class="btn-hero" href="https://github.com/trux-artifacts" target="_blank" rel="noopener noreferrer">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.73.083-.73 1.205.084 1.84 1.236 1.84 1.236 1.07 1.835 2.807 1.305 3.492.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/></svg>
           Our GitHub organization
         </a>
@@ -91,75 +84,150 @@ const stats = types
   </div>
 
   <div class="container">
-  <div class="toolbar">
-    <input type="search" id="search" placeholder="Search artifacts, papers, topics…" aria-label="Search artifacts" />
-    {types.map((t) => (
-      <button
-        class={`chip${t === 'all' ? ' active' : ''}`}
-        data-filter={t}
-        style={counts[t] === 0 && t !== 'all' ? 'display:none' : undefined}
-      >
-        {labels[t]} ({counts[t]})
-      </button>
-    ))}
-  </div>
-
-  <div class="tags-row">
-    <span class="tags-row-label">Topics</span>
-    {topTags.map((t) => (
-      <button class="chip chip-tag" data-tag={t}>{t}</button>
-    ))}
-  </div>
-
-  {orderedAreas.map((area) => (
-    <section class="area-section">
-      <h2 class="area-title">{area} <span class="area-count">{byArea.get(area)!.length}</span></h2>
-      <div class="grid">
-        {byArea.get(area)!.map((artifact) => <ArtifactCard artifact={artifact} />)}
+    <div class="toolbar">
+      <input
+        type="search"
+        id="search"
+        placeholder="Search artifacts, papers, topics…"
+        aria-label="Search artifacts"
+        aria-controls="artifact-catalog"
+      />
+      <div class="type-filters" role="group" aria-label="Filter by artifact type">
+        {types.map((t) => (
+          <button
+            type="button"
+            class={`chip chip-type${t === 'all' ? ' active' : ''}`}
+            data-filter={t}
+            data-label={labels[t]}
+            aria-pressed={t === 'all' ? 'true' : 'false'}
+            aria-controls="artifact-catalog"
+            hidden={counts[t] === 0 && t !== 'all'}
+          >
+            {labels[t]} ({counts[t]})
+          </button>
+        ))}
       </div>
-    </section>
-  ))}
+    </div>
 
-  <div class="empty" id="empty">No artifacts match your search.</div>
+    <div class="tags-row" role="group" aria-labelledby="topics-label">
+      <span class="tags-row-label" id="topics-label">Topics</span>
+      {topTags.map((t) => (
+        <button
+          type="button"
+          class="chip chip-tag"
+          data-tag={t}
+          aria-pressed="false"
+          aria-controls="artifact-catalog"
+        >
+          {t}
+        </button>
+      ))}
+    </div>
+
+    <div class="filter-status-row">
+      <p class="result-status" id="result-status" role="status" aria-live="polite" aria-atomic="true">
+        {artifacts.length} {artifacts.length === 1 ? 'artifact' : 'artifacts'} shown
+      </p>
+      <button class="clear-filters" id="clear-filters" type="button" hidden>Clear filters</button>
+    </div>
+
+    <div id="artifact-catalog">
+      {orderedAreas.map((area) => (
+        <section class="area-section">
+          <h2 class="area-title">
+            {area} <span class="area-count">{byArea.get(area)!.length}</span>
+          </h2>
+          <div class="grid">
+            {byArea.get(area)!.map((artifact) => <ArtifactCard artifact={artifact} />)}
+          </div>
+        </section>
+      ))}
+    </div>
+
+    <div class="empty" id="empty" hidden>No artifacts match your search.</div>
   </div>
 
   <script>
     const search = document.getElementById('search') as HTMLInputElement;
-    const chips = document.querySelectorAll<HTMLButtonElement>('.chip');
+    const typeChips = document.querySelectorAll<HTMLButtonElement>('.chip-type');
+    const tagChips = document.querySelectorAll<HTMLButtonElement>('.chip-tag');
     const cards = document.querySelectorAll<HTMLElement>('.card');
     const empty = document.getElementById('empty')!;
-    let activeType = 'all';
-
     const sections = document.querySelectorAll<HTMLElement>('.area-section');
-    const tagChips = document.querySelectorAll<HTMLButtonElement>('.chip-tag');
+    const resultStatus = document.getElementById('result-status')!;
+    const clearFilters = document.getElementById('clear-filters') as HTMLButtonElement;
+    const cardTags = new Map<HTMLElement, string[]>();
+    cards.forEach((card) => {
+      try {
+        const parsed: unknown = JSON.parse(card.dataset.tags ?? '[]');
+        cardTags.set(
+          card,
+          Array.isArray(parsed) ? parsed.filter((tag): tag is string => typeof tag === 'string') : []
+        );
+      } catch {
+        cardTags.set(card, []);
+      }
+    });
+
+    let activeType = 'all';
     let activeTag: string | null = null;
 
+    function setActiveType(type: string) {
+      activeType = type;
+      typeChips.forEach((chip) => {
+        const active = chip.dataset.filter === activeType;
+        chip.classList.toggle('active', active);
+        chip.setAttribute('aria-pressed', String(active));
+      });
+    }
+
+    function setActiveTag(tag: string | null) {
+      activeTag = tag;
+      tagChips.forEach((chip) => {
+        const active = chip.dataset.tag === activeTag;
+        chip.classList.toggle('active', active);
+        chip.setAttribute('aria-pressed', String(active));
+      });
+    }
+
     function apply() {
-      const q = search.value.trim().toLowerCase();
+      const rawQuery = search.value.trim();
+      const q = rawQuery.toLowerCase();
       let visible = 0;
       cards.forEach((card) => {
         const typeOk = activeType === 'all' || card.dataset.type === activeType;
         const textOk = !q || (card.dataset.search ?? '').includes(q);
-        const tagOk = !activeTag || (card.dataset.tags ?? '').split(',').includes(activeTag);
+        const tagOk = !activeTag || (cardTags.get(card) ?? []).includes(activeTag);
         const show = typeOk && textOk && tagOk;
-        card.style.display = show ? '' : 'none';
+        card.hidden = !show;
         if (show) visible++;
       });
+
       sections.forEach((section) => {
-        const any = [...section.querySelectorAll<HTMLElement>('.card')].some(
-          (c) => c.style.display !== 'none'
-        );
-        section.style.display = any ? '' : 'none';
+        const sectionCards = [...section.querySelectorAll<HTMLElement>('.card')];
+        const sectionVisible = sectionCards.filter((card) => !card.hidden).length;
+        section.hidden = sectionVisible === 0;
+        const areaCount = section.querySelector<HTMLElement>('.area-count');
+        if (areaCount) areaCount.textContent = String(sectionVisible);
       });
-      empty.style.display = visible === 0 ? 'block' : 'none';
+
+      empty.hidden = visible !== 0;
+      const constraints: string[] = [];
+      if (activeType !== 'all') {
+        const chip = [...typeChips].find((item) => item.dataset.filter === activeType);
+        constraints.push(chip?.dataset.label ?? activeType);
+      }
+      if (activeTag) constraints.push(`topic: ${activeTag}`);
+      if (rawQuery) constraints.push(`search: “${rawQuery}”`);
+      const suffix = constraints.length ? ` · ${constraints.join(' · ')}` : '';
+      resultStatus.textContent = `${visible} ${visible === 1 ? 'artifact' : 'artifacts'} shown${suffix}`;
+      clearFilters.hidden = constraints.length === 0;
     }
 
     search.addEventListener('input', apply);
-    chips.forEach((chip) => {
+    typeChips.forEach((chip) => {
       chip.addEventListener('click', () => {
-        chips.forEach((c) => c.classList.remove('active'));
-        chip.classList.add('active');
-        activeType = chip.dataset.filter ?? 'all';
+        setActiveType(chip.dataset.filter ?? 'all');
         apply();
       });
     });
@@ -167,27 +235,45 @@ const stats = types
     tagChips.forEach((chip) => {
       chip.addEventListener('click', () => {
         const tag = chip.dataset.tag ?? null;
-        activeTag = activeTag === tag ? null : tag;
-        tagChips.forEach((c) => c.classList.toggle('active', c.dataset.tag === activeTag));
+        setActiveTag(activeTag === tag ? null : tag);
         apply();
       });
+    });
+
+    clearFilters.addEventListener('click', () => {
+      search.value = '';
+      setActiveType('all');
+      setActiveTag(null);
+      apply();
+      search.focus();
     });
 
     const topic = new URLSearchParams(window.location.search).get('topic');
     if (topic) {
       const chip = [...tagChips].find((c) => c.dataset.tag === topic);
       if (chip) {
-        chip.click();
+        setActiveTag(topic);
       } else {
         search.value = topic;
-        apply();
         search.focus();
       }
     }
+    apply();
 
     const fmt = new Intl.NumberFormat('en-US');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function showFinalCount(el: HTMLElement) {
+      el.textContent = fmt.format(Number(el.dataset.target ?? '0'));
+    }
+
     function countUp(el: HTMLElement) {
       const target = Number(el.dataset.target ?? '0');
+      if (reduceMotion) {
+        showFinalCount(el);
+        return;
+      }
+      el.textContent = '0';
       const dur = 1100;
       const start = performance.now();
       function step(now: number) {
@@ -200,7 +286,7 @@ const stats = types
       setTimeout(() => (el.textContent = fmt.format(target)), dur + 400);
     }
     const heroNums = document.querySelectorAll<HTMLElement>('.stat-num');
-    if (heroNums.length) {
+    if (heroNums.length && !reduceMotion && 'IntersectionObserver' in window) {
       const heroStats = document.querySelector('.hero-stats')!;
       let counted = false;
       const io = new IntersectionObserver(
@@ -214,6 +300,8 @@ const stats = types
         { threshold: 0.5 }
       );
       io.observe(heroStats);
+    } else {
+      heroNums.forEach(showFinalCount);
     }
   </script>
 </Base>

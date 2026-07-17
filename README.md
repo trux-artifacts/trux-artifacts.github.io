@@ -15,15 +15,36 @@ and this site is the single place to find them:
 - **Libraries** — reusable building blocks for analysis pipelines, such as AndroSpecter
 - **Demonstrations and benchmarks** — videos and reference material accompanying our papers
 
-Every artifact page provides the accompanying paper, a ready-to-copy BibTeX entry, and
-links to the code or data. Artifacts are released for the research community — if you use
-one in your work, please cite the corresponding paper.
+Every artifact page describes the research output and, when available, provides its
+accompanying paper, a ready-to-copy BibTeX entry, and links to the code or data. Artifacts
+are released for the research community — if you use one in your work, please cite the
+corresponding paper.
 
 ## About this site
 
 The site is a static catalog built with [Astro](https://astro.build) and served by GitHub
 Pages. Each artifact is described by a data file in [`src/data/artifacts/`](src/data/artifacts/);
-the catalog, search, and detail pages are generated from these files on every push.
+the catalog, search, and detail pages are generated from these files on every push to `main`.
+
+The current catalog uses seven areas: Android Datasets; Android Static & Dynamic Analysis;
+Android Security & Malware; Patches & Program Repair; LLMs for Software Engineering;
+Multilingual NLP & LLMs; and Networking & Fuzzing.
+
+## Local development
+
+Use Node.js 22.12 or newer and npm (CI uses Node.js 22). Install the locked dependencies,
+run the same checks as CI, then start the local development server:
+
+```sh
+npm ci
+npm run check
+npm run validate:content
+npm run build
+npm run dev        # open http://localhost:4321
+```
+
+Pull requests run the checks and production build. Merges to `main` are deployed to GitHub
+Pages by the deployment workflow.
 
 ## Contact
 

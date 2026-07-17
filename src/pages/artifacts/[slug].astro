@@ -17,7 +17,7 @@ interface Props {
   artifact: CollectionEntry<'artifacts'>;
 }
 
-const { artifact } = Astro.props;
+const { artifact }: Props = Astro.props;
 const { name, type, description, authors, status, paper, links, badges, tags, license, bibtex, figure, figureCaption, demo, dataset } =
   artifact.data;
 
@@ -25,24 +25,132 @@ const { name, type, description, authors, status, paper, links, badges, tags, li
 // (e.g. thousands of hashes) stay out of the YAML.
 let datasetData = dataset;
 if (dataset?.samplesFile) {
-  const p = path.join(process.cwd(), 'src/data/samples', dataset.samplesFile);
-  const rows = fs.readFileSync(p, 'utf-8').split('\n').map((s) => s.trim()).filter(Boolean);
+  const samplesRoot = path.resolve(process.cwd(), 'src/data/samples');
+  const samplePath = path.resolve(samplesRoot, dataset.samplesFile);
+  const relativePath = path.relative(samplesRoot, samplePath);
+  const isInsideSamples =
+    relativePath !== '' &&
+    relativePath !== '..' &&
+    !relativePath.startsWith(`..${path.sep}`) &&
+    !path.isAbsolute(relativePath);
+
+  if (!isInsideSamples) {
+    throw new Error(
+      `[artifact:${artifact.id}] Invalid samplesFile "${dataset.samplesFile}": it must resolve inside ${samplesRoot}`
+    );
+  }
+  if (!fs.existsSync(samplePath)) {
+    throw new Error(
+      `[artifact:${artifact.id}] samplesFile "${dataset.samplesFile}" does not exist at ${samplePath}`
+    );
+  }
+  const sampleStat = fs.statSync(samplePath);
+  if (!sampleStat.isFile()) {
+    throw new Error(
+      `[artifact:${artifact.id}] samplesFile "${dataset.samplesFile}" is not a regular file: ${samplePath}`
+    );
+  }
+  if (sampleStat.size > 5_000_000) {
+    throw new Error(
+      `[artifact:${artifact.id}] samplesFile "${dataset.samplesFile}" exceeds the 5 MB build limit`
+    );
+  }
+
+  // Resolve symlinks as a second containment check before reading the file.
+  const realSamplesRoot = fs.realpathSync(samplesRoot);
+  const realSamplePath = fs.realpathSync(samplePath);
+  const realRelativePath = path.relative(realSamplesRoot, realSamplePath);
+  if (
+    realRelativePath === '' ||
+    realRelativePath === '..' ||
+    realRelativePath.startsWith(`..${path.sep}`) ||
+    path.isAbsolute(realRelativePath)
+  ) {
+    throw new Error(
+      `[artifact:${artifact.id}] samplesFile "${dataset.samplesFile}" resolves outside ${realSamplesRoot}`
+    );
+  }
+
+  const rows = fs.readFileSync(realSamplePath, 'utf-8').split('\n').map((s) => s.trim()).filter(Boolean);
+  if (rows.length > 10_000) {
+    throw new Error(
+      `[artifact:${artifact.id}] samplesFile "${dataset.samplesFile}" exceeds the 10,000-row limit`
+    );
+  }
   datasetData = { ...dataset, samples: rows };
 }
 
-const site = (name: string): string | undefined => (people as Record<string, string>)[name];
+function safeHttpUrl(value?: string): string | undefined {
+  if (!value) return undefined;
+  try {
+    const url = new URL(value);
+    if (
+      (url.protocol === 'http:' || url.protocol === 'https:') &&
+      url.username === '' &&
+      url.password === ''
+    ) {
+      return url.href;
+    }
+  } catch {
+    // Invalid and non-HTTP(S) URLs are deliberately not rendered.
+  }
+  return undefined;
+}
+
+const site = (authorName: string): string | undefined =>
+  safeHttpUrl((people as Record<string, string>)[authorName]);
+
+const safeLinks = {
+  github: safeHttpUrl(links.github),
+  website: safeHttpUrl(links.website),
+  download: safeHttpUrl(links.download),
+  access: safeHttpUrl(links.access),
+  video: safeHttpUrl(links.video),
+  resources: (links.resources ?? []).flatMap((resource) => {
+    const url = safeHttpUrl(resource.url);
+    return url ? [{ ...resource, url }] : [];
+  }),
+};
 
 const figureSrc = figure
-  ? figure.startsWith('http') || figure.startsWith('/')
-    ? figure
-    : `/figures/${figure}`
+  ? safeHttpUrl(figure) ??
+    (figure.startsWith('/')
+      ? figure
+      : `/figures/${figure.split('/').map(encodeURIComponent).join('/')}`)
   : null;
 
 function toEmbed(url: string): string | null {
-  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
-  return yt ? `https://www.youtube-nocookie.com/embed/${yt[1]}` : null;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
+    const host = parsed.hostname.toLowerCase().replace(/^www\./, '');
+    let videoId: string | null = null;
+
+    if (host === 'youtu.be') {
+      videoId = parsed.pathname.split('/').filter(Boolean)[0] ?? null;
+    } else if (
+      host === 'youtube.com' ||
+      host === 'm.youtube.com' ||
+      host === 'youtube-nocookie.com'
+    ) {
+      const parts = parsed.pathname.split('/').filter(Boolean);
+      if (parsed.pathname === '/watch') videoId = parsed.searchParams.get('v');
+      else if (parts[0] === 'embed' || parts[0] === 'shorts') videoId = parts[1] ?? null;
+    }
+
+    return videoId && /^[A-Za-z0-9_-]{11}$/.test(videoId)
+      ? `https://www.youtube-nocookie.com/embed/${videoId}`
+      : null;
+  } catch {
+    return null;
+  }
 }
-const embed = links.video ? toEmbed(links.video) : null;
+const embed = safeLinks.video ? toEmbed(safeLinks.video) : null;
+const doiHref = paper?.doi
+  ? `https://doi.org/${paper.doi.split('/').map(encodeURIComponent).join('/')}`
+  : null;
+const paperUrl = safeHttpUrl(paper?.url);
+const statNumberFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits: 20 });
 ---
 
 <Base title={`${name} — TruX Artifacts`} description={description}>
@@ -79,22 +187,30 @@ const embed = links.video ? toEmbed(links.video) : null;
     )}
 
     <div class="btn-row">
-      {links.github && <a class="btn primary" href={links.github} target="_blank" rel="noopener noreferrer">View on GitHub</a>}
-      {links.website && <a class="btn" href={links.website} target="_blank" rel="noopener noreferrer">Website</a>}
-      {links.download && <a class="btn" href={links.download} target="_blank" rel="noopener noreferrer">Download</a>}
-      {links.access && <a class="btn" href={links.access} target="_blank" rel="noopener noreferrer">Request access</a>}
-      {links.video && !embed && <a class="btn" href={links.video} target="_blank" rel="noopener noreferrer">Watch demo</a>}
-      {links.resources?.map((r) => (
+      {safeLinks.github && <a class="btn primary" href={safeLinks.github} target="_blank" rel="noopener noreferrer">View on GitHub</a>}
+      {safeLinks.website && <a class="btn" href={safeLinks.website} target="_blank" rel="noopener noreferrer">Website</a>}
+      {safeLinks.download && <a class="btn" href={safeLinks.download} target="_blank" rel="noopener noreferrer">Download</a>}
+      {safeLinks.access && <a class="btn" href={safeLinks.access} target="_blank" rel="noopener noreferrer">Request access</a>}
+      {safeLinks.video && !embed && <a class="btn" href={safeLinks.video} target="_blank" rel="noopener noreferrer">Watch demo</a>}
+      {safeLinks.resources.map((r) => (
         <a class="btn" href={r.url} target="_blank" rel="noopener noreferrer">{r.label}</a>
       ))}
-      {bibtex && <button class="btn" id="copy-bibtex">Copy BibTeX</button>}
+      {bibtex && <button class="btn" id="copy-bibtex" type="button" aria-controls="bibtex">Copy BibTeX</button>}
     </div>
 
     {embed && (
       <div class="section">
         <h2>Demonstration</h2>
         <div class="video-wrap">
-          <iframe src={embed} title={`${name} demonstration video`} allowfullscreen />
+          <iframe
+            src={embed}
+            title={`${name} demonstration video`}
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+            sandbox="allow-scripts allow-same-origin allow-presentation"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          />
         </div>
       </div>
     )}
@@ -103,7 +219,13 @@ const embed = links.video ? toEmbed(links.video) : null;
       <div class="section">
         <h2>How it works</h2>
         <figure class="figure-box">
-          <img src={figureSrc} alt={figureCaption ?? `Overview of the ${name} approach`} loading="lazy" />
+          <img
+            src={figureSrc}
+            alt={figureCaption ?? `Overview of the ${name} approach`}
+            loading="lazy"
+            decoding="async"
+            referrerpolicy="no-referrer"
+          />
           {figureCaption && <figcaption>{figureCaption}</figcaption>}
         </figure>
       </div>
@@ -116,10 +238,25 @@ const embed = links.video ? toEmbed(links.video) : null;
         <div class="demo-box" id="demo" data-demo={JSON.stringify(demo)}>
           <div class="demo-tasks">
             {demo.scenarios.map((s, i) => (
-              <button class="btn demo-task" data-i={i}>{s.label}</button>
+              <button
+                class="btn demo-task"
+                type="button"
+                data-i={i}
+                aria-pressed="false"
+                aria-controls="demo-stage"
+              >{s.label}</button>
             ))}
           </div>
-          <div class="demo-stage" id="demo-stage">
+          <div
+            class="demo-stage"
+            id="demo-stage"
+            role="region"
+            aria-label="Interactive demo output"
+            aria-live="polite"
+            aria-atomic="false"
+            aria-busy="false"
+            tabindex="-1"
+          >
             <p class="demo-hint">Pick a task above to see it in action.</p>
           </div>
         </div>
@@ -133,7 +270,7 @@ const embed = links.video ? toEmbed(links.video) : null;
         <div class="ds-stats">
           {datasetData.stats.map((s) => (
             <div class="ds-stat">
-              <span class="ds-stat-num" data-target={s.value} data-suffix={s.suffix} data-animate={String(s.animate)}>{s.animate ? '0' : `${s.value}${s.suffix}`}</span>
+              <span class="ds-stat-num" data-target={s.value} data-suffix={s.suffix} data-animate={String(s.animate)}>{`${statNumberFormat.format(s.value)}${s.suffix}`}</span>
               <span class="ds-stat-label">{s.label}</span>
             </div>
           ))}
@@ -144,9 +281,9 @@ const embed = links.video ? toEmbed(links.video) : null;
               <span class="ds-sample-title">
                 {datasetData.sampleTitle}{datasetData.sampleSource ? ` · ${datasetData.sampleSource}` : ''}
               </span>
-              <button class="btn ds-shuffle" id="ds-shuffle">Draw random sample ↻</button>
+              <button class="btn ds-shuffle" id="ds-shuffle" type="button" aria-controls="ds-sample-body">Draw random sample ↻</button>
             </div>
-            <div class="ds-sample-body" id="ds-sample-body"></div>
+            <div class="ds-sample-body" id="ds-sample-body" aria-live="polite"></div>
           </div>
         )}
         {datasetData.samples?.length > 0 && datasetData.sampleNote && <p class="demo-note">{datasetData.sampleNote}</p>}
@@ -155,7 +292,7 @@ const embed = links.video ? toEmbed(links.video) : null;
           <div class="ds-usage">
             <div class="ds-usage-head">
               <span class="ds-sample-title">{datasetData.usage.title}</span>
-              <button class="btn" id="ds-copy-usage">Copy</button>
+              <button class="btn" id="ds-copy-usage" type="button" aria-controls="ds-usage-code">Copy</button>
             </div>
             {datasetData.usage.note && <p class="demo-note ds-usage-note">{datasetData.usage.note}</p>}
             <pre class="ds-usage-code" id="ds-usage-code">{datasetData.usage.code.trim()}</pre>
@@ -168,10 +305,10 @@ const embed = links.video ? toEmbed(links.video) : null;
       <div class="section">
         <h2>Paper</h2>
         <div class="paper-box">
-          {paper.doi ? (
-            <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer">{paper.title}</a>
-          ) : paper.url ? (
-            <a href={paper.url} target="_blank" rel="noopener noreferrer">{paper.title}</a>
+          {doiHref ? (
+            <a href={doiHref} target="_blank" rel="noopener noreferrer">{paper.title}</a>
+          ) : paperUrl ? (
+            <a href={paperUrl} target="_blank" rel="noopener noreferrer">{paper.title}</a>
           ) : (
             paper.title
           )}
@@ -191,6 +328,12 @@ const embed = links.video ? toEmbed(links.video) : null;
   </div>
 
   <script>
+    const prefersReducedMotion =
+      window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
+    const sleep = (ms: number) =>
+      prefersReducedMotion ? Promise.resolve() : new Promise((resolve) => setTimeout(resolve, ms));
+    const rand = (min: number, max: number) => min + Math.random() * (max - min);
+
     const btn = document.getElementById('copy-bibtex');
     const bib = document.getElementById('bibtex');
     btn?.addEventListener('click', async () => {
@@ -206,8 +349,6 @@ const embed = links.video ? toEmbed(links.video) : null;
       const taskBtns = demoBox.querySelectorAll<HTMLButtonElement>('.demo-task');
       let run = 0;
 
-      const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-      const rand = (min: number, max: number) => min + Math.random() * (max - min);
       const brainSvg =
         '<svg class="demo-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
         '<path d="M9.5 3.5a2.4 2.4 0 0 0-2.4 2.4 2.3 2.3 0 0 0-1.6 2.2 2.3 2.3 0 0 0 .5 1.4 2.5 2.5 0 0 0-.9 1.9 2.5 2.5 0 0 0 1 2 2.4 2.4 0 0 0 1.4 3.6 2.4 2.4 0 0 0 2.5 2 1.3 1.3 0 0 0 1.3-1.3V4.8a1.4 1.4 0 0 0-1.8-1.3z"/>' +
@@ -365,6 +506,27 @@ const embed = links.video ? toEmbed(links.video) : null;
         '<rect x="3" y="10" width="5" height="5" rx="1" opacity="0.55"/><rect x="10" y="10" width="5" height="5" rx="1"/><rect x="17" y="10" width="4" height="5" rx="1" opacity="0.55"/>' +
         '<rect x="3" y="17" width="5" height="4" rx="1"/><rect x="10" y="17" width="5" height="4" rx="1" opacity="0.55"/><rect x="17" y="17" width="4" height="4" rx="1"/></svg>';
 
+      function createVerdictIcon(bad: boolean): SVGSVGElement {
+        const namespace = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(namespace, 'svg');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor');
+        svg.setAttribute('stroke-width', '2.2');
+        svg.setAttribute('stroke-linecap', 'round');
+        svg.setAttribute('aria-hidden', 'true');
+
+        const path = document.createElementNS(namespace, 'path');
+        if (bad) {
+          path.setAttribute('d', 'M18 6 6 18M6 6l12 12');
+        } else {
+          svg.setAttribute('stroke-linejoin', 'round');
+          path.setAttribute('d', 'M20 6 9 17l-5-5');
+        }
+        svg.appendChild(path);
+        return svg;
+      }
+
       function drawDex(canvas: HTMLCanvasElement, seed: number) {
         const N = 128;
         const ctx = canvas.getContext('2d')!;
@@ -412,7 +574,7 @@ const embed = links.video ? toEmbed(links.video) : null;
 
         const hex = document.createElement('div');
         hex.className = 'demo-image-hex';
-        let hs = (s.seed || 1) >>> 0;
+        let hs = (s.seed ?? 1) >>> 0;
         const nextByte = () => { hs = (hs * 1664525 + 1013904223) >>> 0; return (hs >>> 16) & 0xff; };
         let hexStr = '';
         for (let i = 0; i < 14; i++) hexStr += '0x' + nextByte().toString(16).toUpperCase().padStart(2, '0') + ' ';
@@ -428,9 +590,13 @@ const embed = links.video ? toEmbed(links.video) : null;
         canvas.width = 128;
         canvas.height = 128;
         canvas.className = 'demo-image-canvas';
+        const canvasAlternative = `Generated grayscale DEX bytecode image for ${s.label}.`;
+        canvas.setAttribute('role', 'img');
+        canvas.setAttribute('aria-label', canvasAlternative);
+        canvas.textContent = canvasAlternative;
         card.appendChild(canvas);
         stage.appendChild(card);
-        drawDex(canvas, (s.seed || 1) >>> 0);
+        drawDex(canvas, (s.seed ?? 1) >>> 0);
 
         const arrow = document.createElement('div');
         arrow.className = 'demo-image-cap';
@@ -441,9 +607,14 @@ const embed = links.video ? toEmbed(links.video) : null;
       async function play(i: number) {
         const myRun = ++run;
         const s = demoData.scenarios[i];
-        taskBtns.forEach((b, j) => b.classList.toggle('active', j === i));
+        taskBtns.forEach((button, index) => {
+          const selected = index === i;
+          button.classList.toggle('active', selected);
+          button.setAttribute('aria-pressed', String(selected));
+        });
 
-        stage.innerHTML = '';
+        stage.replaceChildren();
+        stage.setAttribute('aria-busy', 'true');
         if (demoData.style === 'terminal') {
           await playTerminal(myRun, s);
         } else if (demoData.style === 'patch') {
@@ -464,12 +635,12 @@ const embed = links.video ? toEmbed(links.video) : null;
             s.verdictKind === 'memorized';
           const v = document.createElement('div');
           v.className = 'demo-verdict ' + (bad ? 'bad' : 'good');
-          const icon = bad
-            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>'
-            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
           const ans = document.createElement('span');
           ans.className = 'demo-verdict-answer';
-          ans.innerHTML = icon + '<b>' + s.verdictAnswer + '</b>';
+          const answer = document.createElement('b');
+          answer.textContent = s.verdictAnswer;
+          ans.appendChild(createVerdictIcon(bad));
+          ans.appendChild(answer);
           v.appendChild(ans);
           if (s.verdictLabel) {
             const tag = document.createElement('span');
@@ -492,40 +663,84 @@ const embed = links.video ? toEmbed(links.video) : null;
           exp.appendChild(txt);
           stage.appendChild(exp);
         }
+
+        if (run === myRun) stage.setAttribute('aria-busy', 'false');
       }
 
       taskBtns.forEach((b, i) => b.addEventListener('click', () => play(i)));
     }
+
+    function onVisible(el: Element, cb: () => void, threshold = 0.5) {
+      if (!('IntersectionObserver' in window)) {
+        cb();
+        return;
+      }
+
+      let done = false;
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (entries[0]?.isIntersecting && !done) {
+            done = true;
+            cb();
+            io.disconnect();
+          }
+        },
+        { threshold }
+      );
+      io.observe(el);
+    }
+
+    const nums = document.querySelectorAll<HTMLElement>('.ds-stat-num');
+    const fmt = new Intl.NumberFormat('en-US', { maximumFractionDigits: 20 });
+
+    function countUp(el: HTMLElement) {
+      const targetText = el.dataset.target ?? '0';
+      const target = Number(targetText);
+      const suffix = el.dataset.suffix ?? '';
+      const finalValue = fmt.format(target) + suffix;
+      if (!Number.isFinite(target) || el.dataset.animate === 'false' || prefersReducedMotion) {
+        el.textContent = Number.isFinite(target) ? finalValue : '—';
+        return;
+      }
+
+      const precision = Math.min(targetText.split('.')[1]?.length ?? 0, 20);
+      const duration = 1200;
+      const start = performance.now();
+      el.textContent = fmt.format(0) + suffix;
+
+      function step(now: number) {
+        const progress = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const rawValue = target * eased;
+        const value = precision > 0 ? Number(rawValue.toFixed(precision)) : Math.round(rawValue);
+        el.textContent = fmt.format(value) + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+
+      // Guarantee the exact final value if rAF was paused in a background tab.
+      setTimeout(() => {
+        el.textContent = finalValue;
+      }, duration + 400);
+    }
+
+    const statsEl = document.querySelector('.ds-stats');
+    if (statsEl) onVisible(statsEl, () => nums.forEach(countUp), 0.6);
+
+    const copyUsageBtn = document.getElementById('ds-copy-usage');
+    const usageCode = document.getElementById('ds-usage-code');
+    copyUsageBtn?.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(usageCode?.textContent ?? '');
+      copyUsageBtn.textContent = 'Copied';
+      setTimeout(() => (copyUsageBtn.textContent = 'Copy'), 1500);
+    });
 
     const dsBox = document.getElementById('ds-sample');
     if (dsBox) {
       const ds = JSON.parse(dsBox.dataset.dataset ?? '{}');
       const body = document.getElementById('ds-sample-body')!;
       const shuffleBtn = document.getElementById('ds-shuffle');
-      const nums = document.querySelectorAll<HTMLElement>('.ds-stat-num');
-      const fmt = new Intl.NumberFormat('en-US');
-      const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-      const rand = (min: number, max: number) => min + Math.random() * (max - min);
       let drawRun = 0;
-
-      function countUp(el: HTMLElement) {
-        if (el.dataset.animate === 'false') return;
-        const target = Number(el.dataset.target ?? '0');
-        const suffix = el.dataset.suffix ?? '';
-        const dur = 1200;
-        const start = performance.now();
-        function step(now: number) {
-          const t = Math.min(1, (now - start) / dur);
-          const eased = 1 - Math.pow(1 - t, 3);
-          el.textContent = fmt.format(Math.round(target * eased)) + suffix;
-          if (t < 1) requestAnimationFrame(step);
-        }
-        requestAnimationFrame(step);
-        // Safety: guarantee the final value even if rAF was paused (background tab).
-        setTimeout(() => {
-          el.textContent = fmt.format(target) + suffix;
-        }, dur + 400);
-      }
 
       async function draw() {
         const myRun = ++drawRun;
@@ -536,7 +751,7 @@ const embed = links.video ? toEmbed(links.video) : null;
         }
         const rows = pool.slice(0, Math.min(ds.sampleCount ?? 8, pool.length));
 
-        body.innerHTML = '';
+        body.replaceChildren();
         if (ds.sampleHeader) {
           const h = document.createElement('code');
           h.className = 'ds-row ds-row-header';
@@ -554,32 +769,6 @@ const embed = links.video ? toEmbed(links.video) : null;
       }
 
       shuffleBtn?.addEventListener('click', draw);
-
-      const copyUsageBtn = document.getElementById('ds-copy-usage');
-      const usageCode = document.getElementById('ds-usage-code');
-      copyUsageBtn?.addEventListener('click', async () => {
-        await navigator.clipboard.writeText(usageCode?.textContent ?? '');
-        copyUsageBtn.textContent = 'Copied';
-        setTimeout(() => (copyUsageBtn.textContent = 'Copy'), 1500);
-      });
-
-      function onVisible(el: Element, cb: () => void, threshold = 0.5) {
-        let done = false;
-        const io = new IntersectionObserver(
-          (entries) => {
-            if (entries[0].isIntersecting && !done) {
-              done = true;
-              cb();
-              io.disconnect();
-            }
-          },
-          { threshold }
-        );
-        io.observe(el);
-      }
-
-      const statsEl = document.querySelector('.ds-stats');
-      if (statsEl) onVisible(statsEl, () => nums.forEach(countUp), 0.6);
       onVisible(dsBox, draw, 0.2);
     }
   </script>

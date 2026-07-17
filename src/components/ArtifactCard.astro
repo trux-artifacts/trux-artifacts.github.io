@@ -6,9 +6,21 @@ interface Props {
 }
 
 const { artifact } = Astro.props;
-const { name, type, description, paper, status, tags, logo } = artifact.data;
-const logoSrc = logo ? (logo.startsWith('http') ? logo : `/logos/${logo}.svg`) : null;
-const search = [name, description, type, ...(tags ?? []), paper?.venue ?? '']
+const { name, type, area, description, authors, paper, status, tags, badges, logo } = artifact.data;
+const logoSrc = logo ? (/^https?:\/\//i.test(logo) ? logo : `/logos/${logo}.svg`) : null;
+const search = [
+  name,
+  description,
+  type,
+  area,
+  status,
+  ...authors,
+  ...tags,
+  ...badges,
+  paper?.title ?? '',
+  paper?.venue ?? '',
+  paper?.year?.toString() ?? '',
+]
   .join(' ')
   .toLowerCase();
 ---
@@ -18,7 +30,7 @@ const search = [name, description, type, ...(tags ?? []), paper?.venue ?? '']
   href={`/artifacts/${artifact.id}/`}
   data-type={type}
   data-search={search}
-  data-tags={(tags ?? []).join(',')}
+  data-tags={JSON.stringify(tags)}
 >
   <div class="card-head">
     <h3>{name}</h3>
@@ -29,5 +41,5 @@ const search = [name, description, type, ...(tags ?? []), paper?.venue ?? '']
     {paper && <span>{paper.venue} {paper.year}</span>}
     <span class={`status ${status}`}>{status}</span>
   </div>
-  {logoSrc && <img class="card-logo" src={logoSrc} alt="" loading="lazy" />}
+  {logoSrc && <img class="card-logo" src={logoSrc} width="22" height="22" alt="" loading="lazy" />}
 </a>
