@@ -16,7 +16,7 @@ authors:
   - Jordan Samhi
   - Tegawendé F. Bissyandé
   - Jacques Klein
-status: maintained
+addedAt: '2026-07-11'
 logo: android
 figure: malloc.png
 figureCaption: The two-phase MalLoc pipeline — Phase 1 localizes the malicious class, Phase 2 the methods and their roles (ICSME 2025 paper, Figure 4)

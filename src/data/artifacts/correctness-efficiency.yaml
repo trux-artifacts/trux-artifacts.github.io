@@ -14,7 +14,7 @@ authors:
   - Abdoul Kader Kaboré
   - Jacques Klein
   - Tegawendé F. Bissyandé
-status: maintained
+addedAt: '2026-07-07'
 figure: correctness-efficiency.png
 figureCaption: Pipeline for code generation and memory profiling (ICSE-SEIP 2026 paper, Figure 4)
 paper:

@@ -13,7 +13,7 @@ authors:
   - Fred Philippy
   - Shohreh Haddadan
   - Siwen Guo
-status: stable
+addedAt: '2026-07-15'
 logo: llm
 paper:
   title: "Forget NLI, Use a Dictionary: Zero-Shot Topic Classification for Low-Resource Languages with Application to Luxembourgish"

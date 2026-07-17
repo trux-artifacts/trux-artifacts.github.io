@@ -11,7 +11,7 @@ authors:
   - Michael Ernst
   - Tegawendé F. Bissyandé
   - Jacques Klein
-status: maintained
+addedAt: '2026-07-07'
 logo: android
 figure: archer.png
 figureCaption: Overview of the approach to resolving implicit calls and constraints (TOSEM 2026 paper, Figure 1)

@@ -12,7 +12,7 @@ authors:
   - Jordan Samhi
   - Tegawendé F. Bissyandé
   - Jacques Klein
-status: stable
+addedAt: '2026-07-10'
 logo: android
 figure: dissecting-apks.png
 figureCaption: Dataset evolution — from 22.5M AndroZoo APKs down to the 410,125 sampled for the study (paper, Figure 1)

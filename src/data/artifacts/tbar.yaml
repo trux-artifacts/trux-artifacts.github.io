@@ -9,7 +9,7 @@ authors:
   - Anil Koyuncu
   - Dongsun Kim
   - Tegawendé F. Bissyandé
-status: stable
+addedAt: '2026-07-06'
 logo: repair
 figure: tbar.png
 figureCaption: The overall workflow of TBar (ISSTA 2019 paper, Figure 1)

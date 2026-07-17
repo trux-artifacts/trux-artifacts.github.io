@@ -9,7 +9,7 @@ authors:
   - Jordan Samhi
   - Tegawendé F. Bissyandé
   - Jacques Klein
-status: stable
+addedAt: '2026-07-07'
 logo: android
 figure: androbomb.png
 figureCaption: Overview of the AndroBomb approach to infect an Android app (MSR 2022 paper, Figure 1)

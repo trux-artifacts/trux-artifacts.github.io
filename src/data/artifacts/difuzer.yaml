@@ -10,7 +10,7 @@ authors:
   - Tegawendé F. Bissyandé
   - Jacques Klein
 logo: android
-status: stable
+addedAt: '2026-07-06'
 figure: difuzer.png
 figureCaption: Overview of the Difuzer approach (ICSE 2022 paper, Figure 2)
 paper:

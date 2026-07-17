@@ -9,9 +9,10 @@ import {
 } from '../data/taxonomy';
 
 const artifacts = (await getCollection('artifacts')).sort((a, b) => {
+  const added = b.data.addedAt.localeCompare(a.data.addedAt);
   const ya = a.data.paper?.year ?? 0;
   const yb = b.data.paper?.year ?? 0;
-  return yb - ya || a.data.name.localeCompare(b.data.name);
+  return added || yb - ya || a.data.name.localeCompare(b.data.name);
 });
 
 const PAGE_SIZE = 12;
@@ -176,7 +177,7 @@ const stats = types
 
     <div class="filter-status-row">
       <p class="result-status" id="result-status" role="status" aria-live="polite" aria-atomic="true">
-        {artifacts.length} {artifacts.length === 1 ? 'artifact' : 'artifacts'} · sorted by publication year
+        {artifacts.length} {artifacts.length === 1 ? 'artifact' : 'artifacts'} · sorted by recently added
       </p>
       <button class="clear-filters" id="clear-filters" type="button" hidden>Reset all filters</button>
     </div>
@@ -217,10 +218,15 @@ const stats = types
             <span class="catalog-eyebrow">Artifact catalog</span>
             <h2 id="catalog-title" tabindex="-1">All research areas</h2>
           </div>
-          <span class="sort-note">
+          <label class="sort-control" for="sort-select">
             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 5h8v2H4V5Zm0 4h6v2H4V9Zm0 4h4v2H4v-2Zm10-8h2v7.2l1.6-1.6L19 12l-4 4-4-4 1.4-1.4 1.6 1.6V5Z"/></svg>
-            Publication year ↓
-          </span>
+            <span>Sort by</span>
+            <select id="sort-select" aria-label="Sort artifacts by" aria-controls="artifact-catalog">
+              <option value="recent">Recently added</option>
+              <option value="publication">Publication year</option>
+              <option value="name">Name A–Z</option>
+            </select>
+          </label>
         </header>
 
         <div class="grid" id="artifact-catalog" data-page-size={PAGE_SIZE}>
@@ -252,6 +258,7 @@ const stats = types
     const typeChips = document.querySelectorAll<HTMLButtonElement>('.chip-type');
     const areaFilters = document.querySelectorAll<HTMLButtonElement>('.area-filter');
     const areaSelect = document.getElementById('area-select') as HTMLSelectElement;
+    const sortSelect = document.getElementById('sort-select') as HTMLSelectElement;
     const topicPicker = document.getElementById('topic-picker')!;
     const topicTrigger = document.getElementById('topic-trigger') as HTMLButtonElement;
     const topicTriggerValue = document.getElementById('topic-trigger-value')!;
@@ -265,7 +272,7 @@ const stats = types
     const clearTopics = document.getElementById('clear-topics') as HTMLButtonElement;
     const activeTopicsRow = document.getElementById('active-topics-row')!;
     const activeTopics = document.getElementById('active-topics')!;
-    const cards = document.querySelectorAll<HTMLElement>('.card');
+    const cards = [...document.querySelectorAll<HTMLElement>('.card')];
     const empty = document.getElementById('empty')!;
     const emptyReset = document.getElementById('empty-reset') as HTMLButtonElement;
     const catalog = document.getElementById('artifact-catalog')!;
@@ -295,10 +302,17 @@ const stats = types
     const validTypes = new Set([...typeChips].map((chip) => chip.dataset.filter ?? 'all'));
     const validAreas = new Set([...areaFilters].map((filter) => filter.dataset.area ?? ''));
     const validTags = new Set([...topicOptions].map((option) => option.dataset.tag ?? ''));
+    const validSorts = new Set(['recent', 'publication', 'name']);
+    const sortLabels: Record<string, string> = {
+      recent: 'recently added',
+      publication: 'publication year',
+      name: 'name A–Z',
+    };
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     let activeType = 'all';
     let activeArea = '';
+    let activeSort = 'recent';
     let selectedTopics = new Set<string>();
     let currentPage = 1;
 
@@ -386,6 +400,7 @@ const stats = types
         filter.setAttribute('aria-pressed', String(active));
       });
       areaSelect.value = activeArea;
+      sortSelect.value = activeSort;
       topicOptions.forEach((option) => {
         const active = selectedTopics.has(option.dataset.tag ?? '');
         option.classList.toggle('active', active);
@@ -410,6 +425,7 @@ const stats = types
       if (query) params.set('q', query);
       if (activeType !== 'all') params.set('type', activeType);
       if (activeArea) params.set('area', activeArea);
+      if (activeSort !== 'recent') params.set('sort', activeSort);
       [...selectedTopics].sort((a, b) => a.localeCompare(b)).forEach((tag) => params.append('topic', tag));
       if (currentPage > 1) params.set('page', String(currentPage));
       const nextUrl = `${window.location.pathname}${params.size ? `?${params.toString()}` : ''}`;
@@ -460,12 +476,27 @@ const stats = types
       });
     }
 
+    function compareCards(a: HTMLElement, b: HTMLElement) {
+      const nameOrder = (a.dataset.name ?? '').localeCompare(b.dataset.name ?? '', 'en', {
+        sensitivity: 'base',
+      });
+      const addedOrder = (b.dataset.addedAt ?? '').localeCompare(a.dataset.addedAt ?? '');
+      const publicationOrder = Number(b.dataset.paperYear ?? '0') - Number(a.dataset.paperYear ?? '0');
+
+      if (activeSort === 'name') return nameOrder;
+      if (activeSort === 'publication') return publicationOrder || addedOrder || nameOrder;
+      return addedOrder || publicationOrder || nameOrder;
+    }
+
     function apply(historyMode: 'push' | 'replace' | 'none' = 'replace') {
       const rawQuery = search.value.trim();
       const q = normalize(rawQuery);
       const matchingCards: HTMLElement[] = [];
       const availableByArea = new Map<string, number>();
       let availableAcrossAreas = 0;
+
+      cards.sort(compareCards);
+      cards.forEach((card) => catalog.append(card));
 
       cards.forEach((card) => {
         const typeOk = activeType === 'all' || card.dataset.type === activeType;
@@ -514,9 +545,10 @@ const stats = types
       if (selectedTopics.size) constraints.push(`${selectedTopics.size} ${selectedTopics.size === 1 ? 'topic' : 'topics'}`);
       if (rawQuery) constraints.push(`“${rawQuery}”`);
       const suffix = constraints.length ? ` · ${constraints.join(' · ')}` : '';
+      const sortLabel = sortLabels[activeSort] ?? sortLabels.recent;
       resultStatus.textContent = matching === 0
         ? `No artifacts found${suffix}`
-        : `Showing ${firstResult}–${lastResult} of ${matching} ${matching === 1 ? 'artifact' : 'artifacts'}${suffix}`;
+        : `Showing ${firstResult}–${lastResult} of ${matching} ${matching === 1 ? 'artifact' : 'artifacts'}${suffix} · sorted by ${sortLabel}`;
       clearFilters.hidden = constraints.length === 0;
       syncControls();
       renderPagination(pageCount);
@@ -538,8 +570,10 @@ const stats = types
       const params = new URLSearchParams(window.location.search);
       const requestedType = params.get('type') ?? 'all';
       const requestedArea = params.get('area') ?? '';
+      const requestedSort = params.get('sort') ?? 'recent';
       activeType = validTypes.has(requestedType) ? requestedType : 'all';
       activeArea = validAreas.has(requestedArea) ? requestedArea : '';
+      activeSort = validSorts.has(requestedSort) ? requestedSort : 'recent';
       selectedTopics = new Set(params.getAll('topic').filter((tag) => validTags.has(tag)));
       search.value = params.get('q') ?? '';
       const requestedPage = Number.parseInt(params.get('page') ?? '1', 10);
@@ -568,6 +602,12 @@ const stats = types
 
     areaSelect.addEventListener('change', () => {
       activeArea = areaSelect.value;
+      currentPage = 1;
+      apply('push');
+    });
+
+    sortSelect.addEventListener('change', () => {
+      activeSort = validSorts.has(sortSelect.value) ? sortSelect.value : 'recent';
       currentPage = 1;
       apply('push');
     });

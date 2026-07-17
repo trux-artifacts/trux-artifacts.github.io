@@ -13,7 +13,7 @@ authors:
   - Siwen Guo
   - Jacques Klein
   - Tegawendé F. Bissyandé
-status: stable
+addedAt: '2026-07-15'
 logo: llm
 figure: luxembedder.png
 figureCaption: The data-construction workflow — news articles in LB/EN/FR are aligned into the LuxAlign parallel corpus, and the ParaLux paraphrase benchmark is derived from it (paper, Figure 1)

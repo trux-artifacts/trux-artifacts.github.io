@@ -11,7 +11,7 @@ authors:
   - Li Li
   - Tegawendé F. Bissyandé
   - Jacques Klein
-status: stable
+addedAt: '2026-07-07'
 logo: android
 figure: difuzerplusplus.png
 figureCaption: Overview of the Difuzer++ approach on a given APK file (IEEE TDSC 2024 paper, Figure 2)

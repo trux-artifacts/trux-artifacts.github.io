@@ -14,7 +14,7 @@ authors:
   - Martin Monperrus
   - Jacques Klein
   - Yves Le Traon
-status: stable
+addedAt: '2026-07-06'
 logo: repair
 figure: ifixr.png
 figureCaption: The iFixR program repair workflow (ESEC/FSE 2019 paper, Figure 2)

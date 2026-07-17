@@ -10,7 +10,7 @@ authors:
   - Kevin Allix
   - Tegawendé F. Bissyandé
   - Jacques Klein
-status: stable
+addedAt: '2026-07-07'
 logo: android
 figure: apkcovid.png
 figureCaption: Dataset curation process, numbers represent numbers of apps (EMSE 2021 paper, Figure 6)

@@ -12,7 +12,7 @@ authors:
   - Jacques Klein
   - Martin Monperrus
   - Yves Le Traon
-status: stable
+addedAt: '2026-07-06'
 logo: repair
 figure: fixminer.png
 figureCaption: The FixMiner approach (EMSE 2020 paper, Figure 5)

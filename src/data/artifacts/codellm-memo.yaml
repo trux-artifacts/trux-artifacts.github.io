@@ -13,7 +13,7 @@ authors:
   - Earl Barr
   - Jacques Klein
   - Tegawendé F. Bissyandé
-status: maintained
+addedAt: '2026-07-07'
 figure: codellm-memo.png
 figureCaption: Memorization advantage example, impact of prompt perturbation on the outputs of StarCoder and CodeLlama (paper, Figure 2)
 paper:

@@ -16,7 +16,7 @@ authors:
   - Tegawendé F. Bissyandé
   - Jacques Klein
 logo: android
-status: stable
+addedAt: '2026-07-06'
 figure: jucify.png
 figureCaption: Overview of the JuCify approach, from the angle of call-graph construction (ICSE 2022 paper, Figure 2)
 paper:

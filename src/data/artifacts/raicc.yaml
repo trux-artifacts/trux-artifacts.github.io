@@ -11,7 +11,7 @@ authors:
   - Tegawendé F. Bissyandé
   - Jacques Klein
 logo: android
-status: stable
+addedAt: '2026-07-06'
 figure: raicc.png
 figureCaption: Overview of the RAICC instrumentation tool (ICSE 2021 paper, Figure 2)
 paper:

@@ -13,7 +13,7 @@ authors:
   - Steven Arzt
   - Tegawendé F. Bissyandé
   - Jacques Klein
-status: stable
+addedAt: '2026-07-10'
 logo: android
 figure: codoc.png
 figureCaption: Overview of the CoDoC approach (SANER 2023 paper, Figure 3)

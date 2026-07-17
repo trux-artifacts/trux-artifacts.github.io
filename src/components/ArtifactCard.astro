@@ -6,17 +6,56 @@ interface Props {
 }
 
 const { artifact } = Astro.props;
-const { name, type, area, description, authors, paper, status, tags, badges, logo } = artifact.data;
+const { name, type, area, description, authors, paper, addedAt, tags, badges, logo, links, dataset, demo, license } = artifact.data;
 const logoSrc = logo ? (/^https?:\/\//i.test(logo) ? logo : `/logos/${logo}.svg`) : null;
+const addedDate = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+}).format(new Date(`${addedAt}T00:00:00Z`));
+
+type ResourceKind =
+  | 'repository'
+  | 'data'
+  | 'demo'
+  | 'download'
+  | 'access'
+  | 'video'
+  | 'resources'
+  | 'website'
+  | 'paper'
+  | 'license';
+interface CardResource {
+  kind: ResourceKind;
+  label: string;
+}
+
+const resources: CardResource[] = [];
+if (links.github) resources.push({ kind: 'repository', label: 'Repository' });
+if (type === 'dataset' || dataset) resources.push({ kind: 'data', label: 'Data' });
+if (demo) resources.push({ kind: 'demo', label: 'Demo' });
+if (links.download) resources.push({ kind: 'download', label: 'Download' });
+if (links.access) resources.push({ kind: 'access', label: 'Access' });
+if (links.video) resources.push({ kind: 'video', label: 'Video' });
+if (links.resources.length > 0) {
+  resources.push({
+    kind: 'resources',
+    label: links.resources.length === 1 ? 'Resource' : `${links.resources.length} resources`,
+  });
+}
+if (links.website) resources.push({ kind: 'website', label: 'Web page' });
+if (license) resources.push({ kind: 'license', label: 'License' });
+if (paper) resources.push({ kind: 'paper', label: 'Paper' });
 const search = [
   name,
   description,
   type,
   area,
-  status,
   ...authors,
   ...tags,
   ...badges,
+  ...resources.map((resource) => resource.label),
   paper?.title ?? '',
   paper?.venue ?? '',
   paper?.year?.toString() ?? '',
@@ -34,6 +73,9 @@ const search = [
   data-area={area}
   data-search={search}
   data-tags={JSON.stringify(tags)}
+  data-name={name}
+  data-paper-year={paper?.year ?? 0}
+  data-added-at={addedAt}
 >
   <span class="card-area">{area}</span>
   <div class="card-head">
@@ -43,7 +85,29 @@ const search = [
   <p>{description}</p>
   <div class="card-meta">
     {paper && <span class="venue-badge">{paper.venue} {paper.year}</span>}
-    <span class={`status ${status}`}>{status}</span>
+    <time class="added-date" datetime={addedAt}>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 1h2v2h4V1h2v2h2.5A1.5 1.5 0 0 1 18 4.5v12a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 2 16.5v-12A1.5 1.5 0 0 1 3.5 3H6V1Zm10 7H4v8h12V8ZM4 6h12V5H4v1Z"/></svg>
+      Added {addedDate}
+    </time>
   </div>
+  {resources.length > 0 && (
+    <div class="card-resources" aria-label={`Available resources: ${resources.map((resource) => resource.label).join(', ')}`}>
+      {resources.map((resource) => (
+        <span class="card-resource">
+          {resource.kind === 'repository' && <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 3.2 1.6 8l4.8 4.8 1.4-1.4L4.4 8l3.4-3.4-1.4-1.4Zm7.2 0-1.4 1.4L15.6 8l-3.4 3.4 1.4 1.4L18.4 8l-4.8-4.8ZM8.2 16.5l2.9-15 1.9.4-2.9 15-1.9-.4Z"/></svg>}
+          {resource.kind === 'data' && <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2c-4.4 0-7 1.4-7 3.5v9C3 16.6 5.6 18 10 18s7-1.4 7-3.5v-9C17 3.4 14.4 2 10 2Zm0 2c3.4 0 5 .9 5 1.5S13.4 7 10 7s-5-.9-5-1.5S6.6 4 10 4Zm0 12c-3.4 0-5-.9-5-1.5v-1.8c1.2.8 2.9 1.3 5 1.3s3.8-.5 5-1.3v1.8c0 .6-1.6 1.5-5 1.5Zm0-4c-3.4 0-5-.9-5-1.5V8.7c1.2.8 2.9 1.3 5 1.3s3.8-.5 5-1.3v1.8c0 .6-1.6 1.5-5 1.5Z"/></svg>}
+          {resource.kind === 'demo' && <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.8v14.4L17 10 5 2.8Zm2 3.5 6.1 3.7L7 13.7V6.3Z"/></svg>}
+          {resource.kind === 'download' && <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M9 2h2v8.2l2.6-2.6L15 9l-5 5-5-5 1.4-1.4L9 10.2V2ZM3 16h14v2H3v-2Z"/></svg>}
+          {resource.kind === 'access' && <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M8 3a5 5 0 1 0 3.9 8.1L14 13.2V15h2v2h2v-4.6l-4.7-4.7A5 5 0 0 0 8 3Zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"/></svg>}
+          {resource.kind === 'video' && <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h10a2 2 0 0 1 2 2v1.2L19 5v10l-4-2.2V14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v8h10V6H3Z"/></svg>}
+          {resource.kind === 'resources' && <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m10 1 8 4-8 4-8-4 8-4Zm-5.8 8L10 12l5.8-3L18 10.1l-8 4-8-4L4.2 9Zm0 5L10 17l5.8-3 2.2 1.1-8 4-8-4L4.2 14Z"/></svg>}
+          {resource.kind === 'website' && <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm5.8 8h-2.9a14 14 0 0 0-1-5.4A7 7 0 0 1 15.8 9ZM10 3c.7.9 1.5 3 1.8 6H8.2c.3-3 1.1-5.1 1.8-6ZM8.1 3.6A14 14 0 0 0 7.1 9H4.2a7 7 0 0 1 3.9-5.4ZM4.2 11h2.9a14 14 0 0 0 1 5.4A7 7 0 0 1 4.2 11Zm5.8 6c-.7-.9-1.5-3-1.8-6h3.6c-.3 3-1.1 5.1-1.8 6Zm1.9-.6a14 14 0 0 0 1-5.4h2.9a7 7 0 0 1-3.9 5.4Z"/></svg>}
+          {resource.kind === 'paper' && <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 1h8l4 4v14H4V1Zm2 2v14h8V7h-4V3H6Zm6 .8V5h1.2L12 3.8ZM7 9h6v2H7V9Zm0 4h6v2H7v-2Z"/></svg>}
+          {resource.kind === 'license' && <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 3 4v5c0 4.5 2.9 8.1 7 10 4.1-1.9 7-5.5 7-10V4l-7-3Zm0 2.2L15 5v4c0 3.3-1.9 6.1-5 7.7C6.9 15.1 5 12.3 5 9V5l5-1.8Zm-1.1 9.3-2.4-2.4 1.4-1.4 1 1 3.2-3.2 1.4 1.4-4.6 4.6Z"/></svg>}
+          {resource.label}
+        </span>
+      ))}
+    </div>
+  )}
   {logoSrc && <img class="card-logo" src={logoSrc} width="22" height="22" alt="" loading="lazy" />}
 </a>

@@ -13,7 +13,7 @@ authors:
   - Siwen Guo
   - Jacques Klein
   - Tegawendé F. Bissyandé
-status: stable
+addedAt: '2026-07-15'
 logo: llm
 paper:
   title: "LuxInstruct: A Cross-Lingual Instruction Tuning Dataset For Luxembourgish"

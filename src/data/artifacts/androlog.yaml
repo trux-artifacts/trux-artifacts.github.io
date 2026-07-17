@@ -8,7 +8,7 @@ description: >-
 authors:
   - Jordan Samhi
   - Andreas Zeller
-status: maintained
+addedAt: '2026-07-07'
 logo: android
 figure: androlog.png
 figureCaption: AndroLog's architecture, the Instrumenter instruments an app and the Log Processor generates a code coverage report (FSE 2024 paper, Figure 1)

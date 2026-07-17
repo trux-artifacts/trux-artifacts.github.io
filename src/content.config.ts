@@ -220,7 +220,7 @@ const artifactSchema = z
     area: z.enum(ARTIFACT_AREAS),
     description: nonBlank,
     authors: z.array(trimmedNonBlank).min(1).max(100),
-    status: z.enum(['maintained', 'stable', 'archived']).default('stable'),
+    addedAt: z.iso.date(),
     paper: paperSchema.optional(),
     links: linksSchema.default({ resources: [] }),
     logo: z.union([z.enum(['android', 'llm', 'network', 'repair']), httpUrl]).optional(),

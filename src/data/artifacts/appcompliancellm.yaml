@@ -16,7 +16,7 @@ authors:
   - Domenico Bianculli
   - Tegawendé F. Bissyandé
   - Jacques Klein
-status: maintained
+addedAt: '2026-07-10'
 logo: llm
 figure: appcompliancellm.png
 figureCaption: The AppComplianceLLM approach overview (FSE NIER 2025 paper, Figure 1)

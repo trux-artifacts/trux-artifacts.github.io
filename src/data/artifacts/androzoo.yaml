@@ -11,7 +11,7 @@ authors:
   - Jacques Klein
   - Yves Le Traon
 logo: android
-status: maintained
+addedAt: '2026-07-06'
 paper:
   title: "AndroZoo: Collecting Millions of Android Apps for the Research Community"
   venue: MSR

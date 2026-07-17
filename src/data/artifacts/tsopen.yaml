@@ -8,7 +8,7 @@ authors:
   - Jordan Samhi
   - Alexandre Bartel
 logo: android
-status: stable
+addedAt: '2026-07-06'
 figure: tsopen.png
 figureCaption: Overview of the TSOpen analysis pipeline (IEEE TDSC paper, Figure 1)
 paper:

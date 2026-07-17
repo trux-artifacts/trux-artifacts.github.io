@@ -56,6 +56,12 @@ function checkUrl(file, label, value) {
   if (value && !isHttpUrl(value)) error(file, `${label} must be an HTTP(S) URL`);
 }
 
+function isIsoDate(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+}
+
 function bibtexField(bibtex, field) {
   if (typeof bibtex !== 'string') return null;
   const match = bibtex.match(
@@ -135,6 +141,13 @@ for (const file of artifactFiles) {
 
   if (!allowedAreas.has(artifact.area)) {
     error(file, `area must use the controlled taxonomy: ${artifact.area ?? '(missing)'}`);
+  }
+
+  if ('status' in artifact) {
+    error(file, 'status is no longer supported; use the factual addedAt date instead');
+  }
+  if (!isIsoDate(artifact.addedAt)) {
+    error(file, 'addedAt must be a valid ISO date in YYYY-MM-DD format');
   }
 
   for (const author of artifact.authors ?? []) {

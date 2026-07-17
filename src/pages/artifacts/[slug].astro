@@ -18,8 +18,14 @@ interface Props {
 }
 
 const { artifact }: Props = Astro.props;
-const { name, type, description, authors, status, paper, links, badges, tags, license, bibtex, figure, figureCaption, demo, dataset } =
+const { name, type, description, authors, addedAt, paper, links, badges, tags, license, bibtex, figure, figureCaption, demo, dataset } =
   artifact.data;
+const addedDate = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+}).format(new Date(`${addedAt}T00:00:00Z`));
 
 // Load a large sample pool from an external file at build time, so big datasets
 // (e.g. thousands of hashes) stay out of the YAML.
@@ -159,8 +165,8 @@ const statNumberFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits:
     <a class="back-link" href="/">← All artifacts</a>
     <div class="type-row">
       <span class={`badge ${type}`}>{type}</span>
-      <span class={`status ${status}`}>{status}</span>
       {badges.map((b) => <span class="award">{b}</span>)}
+      <time class="artifact-added" datetime={addedAt}>Added to the catalog {addedDate}</time>
     </div>
     <h1>{name}</h1>
     <p class="lead">{description}</p>

@@ -10,7 +10,7 @@ authors:
   - Jordan Samhi
   - Tegawendé F. Bissyandé
   - Jacques Klein
-status: stable
+addedAt: '2026-07-07'
 logo: android
 figure: triggerzoo.png
 figureCaption: Overview of the infection process used to build TriggerZoo (MSR 2022 paper, Figure 1)

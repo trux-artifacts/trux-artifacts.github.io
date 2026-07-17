@@ -12,7 +12,7 @@ authors:
   - Aicha War
   - Jacques Klein
   - Tegawendé F. Bissyandé
-status: maintained
+addedAt: '2026-07-07'
 figure: secure-code-generation.png
 figureCaption: Secure code generation audit pipeline (paper, Figure 1)
 paper:

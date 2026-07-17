@@ -11,7 +11,7 @@ authors:
   - Jordan Samhi
   - Tegawendé F. Bissyandé
   - Jacques Klein
-status: maintained
+addedAt: '2026-07-07'
 logo: android
 figure: geotwins.png
 figureCaption: Overview of the data collection and processing pipeline used to construct the Global Dataset and the GeoTwins Dataset (MobiSys 2026 paper, Figure 2)

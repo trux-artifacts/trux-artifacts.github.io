@@ -13,7 +13,7 @@ authors:
   - Kevin Allix
   - Tegawendé F. Bissyandé
   - Jacques Klein
-status: stable
+addedAt: '2026-07-10'
 logo: android
 figure: dexray.png
 figureCaption: DexRay basic building blocks (MLHat 2021 paper, Figure 1)

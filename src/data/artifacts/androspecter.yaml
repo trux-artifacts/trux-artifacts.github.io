@@ -8,7 +8,7 @@ description: >-
 authors:
   - Jordan Samhi
 logo: android
-status: maintained
+addedAt: '2026-07-06'
 links:
   github: https://github.com/JordanSamhi/AndroSpecter
   website: https://central.sonatype.com/artifact/com.jordansamhi/androspecter

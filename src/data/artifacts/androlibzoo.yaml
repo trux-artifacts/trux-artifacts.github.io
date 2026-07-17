@@ -10,7 +10,7 @@ authors:
   - Tegawendé F. Bissyandé
   - Jacques Klein
 logo: android
-status: maintained
+addedAt: '2026-07-06'
 figure: androlibzoo.png
 figureCaption: Overview of the methodology to construct AndroLibZoo (MSR 2024 paper, Figure 2)
 paper:

@@ -20,7 +20,7 @@ authors:
   - Andrey Boytsov
   - Clément Lefebvre
   - Anne Goujon
-status: stable
+addedAt: '2026-07-11'
 logo: llm
 figure: luxembert.png
 figureCaption: The data-augmentation scheme — German text is preprocessed and its function words translated into pseudo-Luxembourgish, then mixed with Luxembourgish text to pre-train LuxemBERT (paper, Figure 1)
