@@ -14,6 +14,8 @@ const artifacts = (await getCollection('artifacts')).sort((a, b) => {
   return yb - ya || a.data.name.localeCompare(b.data.name);
 });
 
+const INITIAL_VISIBLE_PER_AREA = 3;
+
 const types = ARTIFACT_FILTERS;
 const labels = ARTIFACT_TYPE_LABELS;
 const counts = Object.fromEntries(
@@ -131,15 +133,25 @@ const stats = types
       <button class="clear-filters" id="clear-filters" type="button" hidden>Clear filters</button>
     </div>
 
-    <div id="artifact-catalog">
-      {orderedAreas.map((area) => (
-        <section class="area-section">
+    <div id="artifact-catalog" data-preview-limit={INITIAL_VISIBLE_PER_AREA}>
+      {orderedAreas.map((area, sectionIndex) => (
+        <section class="area-section" data-expanded="false">
           <h2 class="area-title">
             {area} <span class="area-count">{byArea.get(area)!.length}</span>
           </h2>
-          <div class="grid">
+          <div class="grid" id={`area-grid-${sectionIndex + 1}`}>
             {byArea.get(area)!.map((artifact) => <ArtifactCard artifact={artifact} />)}
           </div>
+          <button
+            class="area-toggle"
+            type="button"
+            aria-controls={`area-grid-${sectionIndex + 1}`}
+            aria-expanded="false"
+            data-area-label={area}
+            hidden
+          >
+            Show all artifacts
+          </button>
         </section>
       ))}
     </div>
@@ -154,6 +166,8 @@ const stats = types
     const cards = document.querySelectorAll<HTMLElement>('.card');
     const empty = document.getElementById('empty')!;
     const sections = document.querySelectorAll<HTMLElement>('.area-section');
+    const catalog = document.getElementById('artifact-catalog')!;
+    const previewLimit = Math.max(1, Number(catalog.dataset.previewLimit ?? '3') || 3);
     const resultStatus = document.getElementById('result-status')!;
     const clearFilters = document.getElementById('clear-filters') as HTMLButtonElement;
     const cardTags = new Map<HTMLElement, string[]>();
@@ -193,25 +207,55 @@ const stats = types
     function apply() {
       const rawQuery = search.value.trim();
       const q = rawQuery.toLowerCase();
-      let visible = 0;
+      const matches = new Map<HTMLElement, boolean>();
+      let matching = 0;
+      let displayed = 0;
+
       cards.forEach((card) => {
         const typeOk = activeType === 'all' || card.dataset.type === activeType;
         const textOk = !q || (card.dataset.search ?? '').includes(q);
         const tagOk = !activeTag || (cardTags.get(card) ?? []).includes(activeTag);
-        const show = typeOk && textOk && tagOk;
-        card.hidden = !show;
-        if (show) visible++;
+        const match = typeOk && textOk && tagOk;
+        matches.set(card, match);
+        if (match) matching++;
       });
 
       sections.forEach((section) => {
         const sectionCards = [...section.querySelectorAll<HTMLElement>('.card')];
-        const sectionVisible = sectionCards.filter((card) => !card.hidden).length;
-        section.hidden = sectionVisible === 0;
+        const matchingCards = sectionCards.filter((card) => matches.get(card));
+        const expanded = section.dataset.expanded === 'true';
+
+        sectionCards.forEach((card) => (card.hidden = true));
+        matchingCards.forEach((card, index) => {
+          const show = expanded || index < previewLimit;
+          card.hidden = !show;
+          if (show) displayed++;
+        });
+
+        section.hidden = matchingCards.length === 0;
         const areaCount = section.querySelector<HTMLElement>('.area-count');
-        if (areaCount) areaCount.textContent = String(sectionVisible);
+        if (areaCount) areaCount.textContent = String(matchingCards.length);
+
+        const toggle = section.querySelector<HTMLButtonElement>('.area-toggle');
+        if (toggle) {
+          const canExpand = matchingCards.length > previewLimit;
+          const hiddenCount = Math.max(0, matchingCards.length - previewLimit);
+          const areaLabel = toggle.dataset.areaLabel ?? 'this area';
+          toggle.hidden = !canExpand;
+          toggle.setAttribute('aria-expanded', String(expanded));
+          toggle.textContent = expanded
+            ? 'Show fewer'
+            : `Show ${hiddenCount} more ${hiddenCount === 1 ? 'artifact' : 'artifacts'}`;
+          toggle.setAttribute(
+            'aria-label',
+            expanded
+              ? `Show fewer artifacts in ${areaLabel}`
+              : `Show ${hiddenCount} more ${hiddenCount === 1 ? 'artifact' : 'artifacts'} in ${areaLabel}`
+          );
+        }
       });
 
-      empty.hidden = visible !== 0;
+      empty.hidden = matching !== 0;
       const constraints: string[] = [];
       if (activeType !== 'all') {
         const chip = [...typeChips].find((item) => item.dataset.filter === activeType);
@@ -220,7 +264,9 @@ const stats = types
       if (activeTag) constraints.push(`topic: ${activeTag}`);
       if (rawQuery) constraints.push(`search: “${rawQuery}”`);
       const suffix = constraints.length ? ` · ${constraints.join(' · ')}` : '';
-      resultStatus.textContent = `${visible} ${visible === 1 ? 'artifact' : 'artifacts'} shown${suffix}`;
+      resultStatus.textContent = displayed < matching
+        ? `Showing ${displayed} of ${matching} artifacts${suffix} · newest in each area`
+        : `${matching} ${matching === 1 ? 'artifact' : 'artifacts'} shown${suffix}`;
       clearFilters.hidden = constraints.length === 0;
     }
 
@@ -237,6 +283,21 @@ const stats = types
         const tag = chip.dataset.tag ?? null;
         setActiveTag(activeTag === tag ? null : tag);
         apply();
+      });
+    });
+
+    sections.forEach((section) => {
+      const toggle = section.querySelector<HTMLButtonElement>('.area-toggle');
+      toggle?.addEventListener('click', () => {
+        const expanding = section.dataset.expanded !== 'true';
+        section.dataset.expanded = String(expanding);
+        apply();
+        if (expanding) {
+          const firstRevealedCard = section.querySelectorAll<HTMLAnchorElement>('.card:not([hidden])')[
+            previewLimit
+          ];
+          firstRevealedCard?.focus();
+        }
       });
     });
 

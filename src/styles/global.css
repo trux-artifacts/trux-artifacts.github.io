@@ -494,6 +494,26 @@ a:hover {
   color: var(--text-3);
 }
 
+.area-toggle {
+  display: block;
+  min-height: 40px;
+  margin: 14px auto 0;
+  padding: 8px 18px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--accent);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.area-toggle:hover {
+  border-color: var(--coral);
+  background: var(--surface-1);
+}
+
 .card {
   display: flex;
   flex-direction: column;
@@ -1388,6 +1408,11 @@ a.tag:hover {
 
   .card {
     padding: 17px;
+  }
+
+  .area-toggle {
+    width: 100%;
+    min-height: 44px;
   }
 
   .detail {
