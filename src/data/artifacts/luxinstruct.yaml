@@ -2,12 +2,11 @@ name: LuxInstruct
 type: dataset
 area: Multilingual NLP & LLMs
 description: >-
-  A cross-lingual instruction-tuning dataset for Luxembourgish, built without
-  machine translation. Instead of translating into Luxembourgish, it leverages
-  aligned English, French and German data — reverse-instruction generation over
-  Luxembourgish Wikipedia, RTL news headline/article tasks, and cross-lingual
-  paraphrasing — to preserve linguistic and cultural nuance while adapting LLMs
-  to Luxembourgish.
+  A cross-lingual instruction-tuning dataset built without machine translation
+  into Luxembourgish. It combines reverse-instruction generation over
+  Luxembourgish Wikipedia, aligned RTL news tasks, cross-lingual paraphrasing,
+  and dictionary-derived lexical tasks to preserve linguistic and cultural
+  nuance while adapting LLMs to Luxembourgish.
 authors:
   - Fred Philippy
   - Laura Bernardy
@@ -18,9 +17,9 @@ status: stable
 logo: llm
 paper:
   title: "LuxInstruct: A Cross-Lingual Instruction Tuning Dataset For Luxembourgish"
-  venue: arXiv
-  year: 2025
-  url: https://arxiv.org/abs/2510.07074
+  venue: KONVENS
+  year: 2026
+  url: https://openreview.net/forum?id=b2JHITDlzU
 links:
   resources:
     - label: Dataset (Hugging Face)
@@ -34,18 +33,20 @@ tags:
 dataset:
   stats:
     - value: 537344
-      label: Instruction–output pairs
-    - value: 4
+      label: Total pairs described, including RTL-restricted tasks
+    - value: 400029
+      label: Publicly released pairs (paper/model-card table)
+    - value: 7
       label: Task types
     - value: 3
       label: Aligned source languages (EN · FR · DE)
     - value: 0
       animate: false
-      label: Machine-translated pairs in the final dataset
+      label: Luxembourgish outputs created by machine translation
     - value: 400000
       label: Luxembourgish speakers worldwide
   sampleTitle: Task types
-  sampleCount: 4
+  sampleCount: 7
   sampleNote: >-
     The dataset is assembled from these cross-lingual tasks — no Luxembourgish
     text is machine-translated into the training data.
@@ -54,20 +55,26 @@ dataset:
     - "Article-To-Title · generate a headline from an RTL news article"
     - "Title-To-Article · draft an article from a headline"
     - "CL-Paraphrase · cross-lingual paraphrasing built on LuxAlign"
+    - "Word-To-Example · generate a Luxembourgish example sentence from a word and translation"
+    - "Colloquial-To-Standard · rewrite colloquial Luxembourgish in standard form"
+    - "Word-Translation · translate a source-language word into Luxembourgish"
   usage:
     title: Load the dataset
-    note: LuxInstruct is available on the Hugging Face Hub.
+    note: >-
+      The public Hub release excludes Article-To-Title and Title-To-Article
+      because the RTL news data must be obtained from the original provider.
+      The paper/model-card table counts 400,029 public pairs; the Hub row counter
+      may differ slightly as the hosted dataset evolves.
     code: |
       from datasets import load_dataset
 
       ds = load_dataset("fredxlpy/LuxInstruct")
 bibtex: |
-  @misc{philippy2025luxinstruct,
-    author       = {Philippy, Fred and Bernardy, Laura and Guo, Siwen and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
-    title        = {{LuxInstruct}: A Cross-Lingual Instruction Tuning Dataset For Luxembourgish},
-    year         = {2025},
-    eprint       = {2510.07074},
-    archivePrefix = {arXiv},
-    primaryClass = {cs.CL},
-    url          = {https://arxiv.org/abs/2510.07074}
+  @inproceedings{philippy2026luxinstruct,
+    author    = {Philippy, Fred and Bernardy, Laura and Guo, Siwen and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
+    title     = {{LuxInstruct}: A Cross-Lingual Instruction Tuning Dataset For Luxembourgish},
+    booktitle = {Proceedings of KONVENS 2026},
+    year      = {2026},
+    note      = {To appear},
+    url       = {https://openreview.net/forum?id=b2JHITDlzU}
   }

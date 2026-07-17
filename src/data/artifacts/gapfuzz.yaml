@@ -34,7 +34,7 @@ dataset:
       animate: false
       suffix: "%"
       label: Runs that trigger a cross-plane divergence (N=50)
-    - value: 99
+    - value: 99.4
       suffix: "%"
       label: Divergences persisting past 30 seconds
     - value: 7
@@ -56,7 +56,7 @@ dataset:
     reproducible from the released JSONL campaign data.
   samples:
     - "81.7% of runs trigger a cross-plane divergence (95% CI 77.3–85.4%)"
-    - "99% of divergences persist past 30 seconds — they are not transient"
+    - "99.4% of divergences persist past 30 seconds — they are not transient"
     - "Δt_max is bimodal: it collapses to either 5 ms or 10.24 s"
     - "Removing the native switch oracle drops the hit rate by up to 46.5 points"
     - "7 contradictory-flow templates drive each fuzzing campaign"
@@ -72,7 +72,8 @@ bibtex: |
   @inproceedings{diouf2026gapfuzz,
     author    = {Diouf, Moustapha Awwalou and Ouya, Samuel and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
     title     = {{GapFuzz}: Cross-Plane Divergence Fuzzing for Distributed {SDN} Controllers},
-    booktitle = {Proceedings of the 17th Asia-Pacific Symposium on Internetware (Internetware)},
+    booktitle = {Proceedings of the 17th International Conference on Internetware (Internetware '26)},
     year      = {2026},
     publisher = {Association for Computing Machinery}
   }
+license: MIT

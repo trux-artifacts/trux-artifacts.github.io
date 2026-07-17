@@ -25,19 +25,58 @@ paper:
   doi: 10.1145/3749370
 links:
   website: https://llmda.github.io
+  resources:
+    - label: Dataset (Zenodo)
+      url: https://zenodo.org/records/11652295
+    - label: Source code (Zenodo)
+      url: https://zenodo.org/records/11636137
 tags:
   - security-patches
   - llm
   - vulnerabilities
+demo:
+  style: terminal
+  intro: >-
+    Explore aggregate results published on the official LLMDA project page for
+    PatchDB and SPI-DB, plus the reported contribution of PT-Former.
+  outputLabel: Paper-reported results
+  countOutput: false
+  note: >-
+    Results explorer only — these values are copied from the authors' project
+    page and are not recomputed in the browser. The full dataset and source code
+    are available through the Zenodo links above.
+  scenarios:
+    - label: Overall classification
+      query: "RQ1 · silent security-patch identification"
+      thinking:
+        - Reading the aggregate performance reported by the project page.
+      output:
+        - "Overall F1 reported for LLMDA: 78.19%"
+        - "Improvement over GraphSPD: up to ~42% on PatchDB and ~20% on SPI-DB"
+      explanation: >-
+        LLMDA combines generated explanations, code/text alignment, and
+        contrastive learning to distinguish security-relevant patches from
+        ordinary changes.
+    - label: PT-Former ablation
+      query: "RQ2 · remove the PT-Former alignment module"
+      thinking:
+        - Reading the ablation result reported by the project page.
+      output:
+        - "Reported F1 change: approximately -8 percentage points"
+        - "Interpretation: multimodal alignment contributes materially to classification performance."
+      explanation: >-
+        The ablation isolates the module that aligns patch, explanation, and
+        description embeddings before contrastive classification.
 bibtex: |
   @article{10.1145/3749370,
-    author  = {Tang, Xunzhu and Kim, Kisub and Ezzini, Saad and Song, Yewei and Tian, Haoye and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e}},
+    author  = {Tang, Xunzhu and Kim, Kisub and Ezzini, Saad and Song, Yewei and Tian, Haoye and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
     title   = {Just-in-Time Detection of Silent Security Patches},
     journal = {ACM Transactions on Software Engineering and Methodology},
     year    = {2026},
     volume  = {35},
     number  = {6},
-    pages   = {1--34},
+    articleno = {156},
+    numpages = {34},
     publisher = {Association for Computing Machinery},
     doi     = {10.1145/3749370},
     url     = {https://doi.org/10.1145/3749370}

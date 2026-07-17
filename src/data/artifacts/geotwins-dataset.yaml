@@ -47,8 +47,8 @@ dataset:
     - "com.americanexpress.android.acctsvcs.us  ↔  com.americanexpress.android.acctsvcs.japan"
     - "com.bddroid.android.verbnepali  ↔  com.bddroid.android.verbkorean"
     - "com.bddroid.android.verbnepali  ↔  com.bddroid.android.verbjapanese"
-    - "com.radiosonline.radiofmchile  ↔  com.radiosonline.radiofmargentina"
-    - "com.radiosonline.radiofmchile  ↔  com.radiosonline.radiofmnewzealand"
+    - "com.radiosonline.radiofmjapan  ↔  com.radiosonline.radiofmchile"
+    - "com.radiosonline.radiofmiceland  ↔  com.radiosonline.radiofmnewzealand"
     - "all.language.translator.hub.samoantoturkishtranslator  ↔  all.language.translator.hub.icelandictoyiddishtranslator"
     - "com.americanexpress.android.acctsvcs.fr  ↔  com.americanexpress.android.acctsvcs.de"
     - "all.language.translator.hub.samoantoturkishtranslator  ↔  all.language.translator.hub.somalitozulutranslator"
@@ -59,6 +59,10 @@ bibtex: |
     booktitle = {Proceedings of the 24th Annual International Conference on Mobile Systems, Applications and Services},
     year      = {2026},
     pages     = {83--95},
+    series    = {MobiSys '26},
+    month     = {June},
+    location  = {Cambridge, United Kingdom},
+    numpages  = {13},
     publisher = {Association for Computing Machinery},
     address   = {New York, NY, USA},
     doi       = {10.1145/3745756.3809191},

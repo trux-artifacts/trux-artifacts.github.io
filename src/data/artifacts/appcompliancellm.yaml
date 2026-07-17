@@ -46,11 +46,10 @@ demo:
   outputLabel: Analyzed method (Smali)
   countOutput: false
   note: >-
-    Real LLM answers reproduced from the paper's experiments on RegApp (the
-    authors' demo app) and WordPress (10M+ downloads); the two false-positive
-    wordings are illustrative. This is an exploratory proof of concept — nothing
-    runs in your browser and no model is called. Run it from the repository
-    (apktool + Ollama / Llama-3.1 8B).
+    LLM answers reproduced from the paper's experiments on RegApp (the authors'
+    demo app) and WordPress (10M+ downloads). This is an exploratory proof of
+    concept — nothing runs in your browser and no model is called. Run it from
+    the repository (apktool + Ollama / Llama-3.1 8B).
   scenarios:
     - label: RegApp · account deletion
       query: 'RegApp — check MyAccountFragment.delete() against R1 (right to erasure)'
@@ -106,7 +105,7 @@ demo:
         - Filling the zero-shot prompt (requirement + method Smali)…
         - Querying the LLM (Llama-3.1 8B)…
       output:
-        - 'method: org.wordpress.android.ui.accounts.-> onClick(View)'
+        - 'method: onClick(View)  # account-settings handler; class name omitted'
         - '  invoke-static {v0, v1}, Lorg/wordpress/android/models/WordPressDB;->deleteAccount(Landroid/content/Context;Ljava/lang/String;)Z'
         - '  # on success: toast + finish() ;  else: alert dialog'
       verdictAnswer: "LLM answer: YES"
@@ -123,27 +122,6 @@ demo:
         account deletion." — confirmed by manual inspection (the authors
         installed the app and deleted a real account). A true positive on a
         real-world app with 10M+ downloads.
-    - label: WordPress · IntHashMap (FP)
-      query: 'WordPress — check IntHashMap.remove(int) against R1 (right to erasure)'
-      thinking:
-        - Decompiling the APK with apktool…
-        - Restructuring Smali into classes & methods (380 classes → 1296 methods)…
-        - Filtering system & third-party libraries…
-        - Filling the zero-shot prompt (requirement + method Smali)…
-        - Querying the LLM (Llama-3.1 8B)…
-      output:
-        - 'method: org.wordpress.android.util.IntHashMap->remove(I)Ljava/lang/Object;'
-        - '  # custom hash-map entry removal — no account data involved'
-      verdictAnswer: "LLM answer: YES"
-      verdictLabel: False positive
-      verdictKind: incorrect
-      explanation: >-
-        LLM answer: "YES. The remove method deletes an entry identified by its
-        key, which points to removal of stored user data as required for account
-        deletion." — in reality this is a custom IntHashMap data-structure
-        implementation with nothing to do with accounts; the word "remove"
-        misleads the model. A false positive (wording illustrative; the paper
-        reports this method among WordPress's false positives).
 bibtex: |
   @inproceedings{10.1145/3696630.3728508,
     author    = {Alecci, Marco and Sannier, Nicolas and Ceci, Marcello and Abualhaija, Sallam and Samhi, Jordan and Bianculli, Domenico and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

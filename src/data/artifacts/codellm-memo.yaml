@@ -17,10 +17,10 @@ status: maintained
 figure: codellm-memo.png
 figureCaption: Memorization advantage example, impact of prompt perturbation on the outputs of StarCoder and CodeLlama (paper, Figure 2)
 paper:
-  title: "Learned or Memorized? Quantifying Memorization Advantage in Code LLMs"
-  venue: arXiv
+  title: "Quantifying Memorization Advantage in Code LLMs"
+  venue: ICSE
   year: 2026
-  url: https://arxiv.org/abs/2604.13997
+  url: https://conf.researchr.org/details/icse-2026/icse-2026-research-track/37/Quantifying-Memorization-Advantage-in-Code-LLMs
 links:
   github: https://github.com/Berickal/CodeLLM_Memo
 tags:
@@ -29,109 +29,70 @@ tags:
   - code-generation
   - benchmarks
 demo:
-  style: patch
+  style: terminal
+  outputLabel: Documented behavior
+  countOutput: false
   intro: >-
-    CodeLLM-Memo tests the Perturbation Sensitivity Hypothesis: if a code LLM
-    truly learned a task, a small meaning-preserving change to the input
-    shouldn't hurt it; if it merely memorized the benchmark, its score collapses.
-    Each example applies such a perturbation, then compares the model's score
-    before and after. A large drop reveals a memorization advantage.
+    CodeLLM-Memo tests the Perturbation Sensitivity Hypothesis by applying
+    meaning-preserving perturbations and comparing model performance before and
+    after the change. These examples expose the repository's documented command
+    line workflow without presenting simulated model results.
   note: >-
-    Illustrative runs with representative scores — nothing runs in your browser
-    and no model is called. The real framework (pipeline.py) perturbs benchmark
-    inputs, generates answers with Ollama-hosted models (CodeLlama, StarCoder, …)
-    over several iterations, and scores them with Levenshtein / Cosine / NCD /
-    ROUGE.
+    Commands are copied from the official repository README. They are shown as
+    reproducible entry points and are not executed by this website; no model
+    output or evaluation score is fabricated.
   scenarios:
-    - label: CodeLlama · code generation
-      file: Code Generation · CodeLlama · ROUGE
-      pattern: meaning-preserving perturbation
+    - label: End-to-end code-generation pipeline
+      query: python pipeline.py --task code_generation --model codellama --output output --metric ncd --iter 3
       thinking:
-        - Loading benchmark item…
-        - Applying meaning-preserving perturbation…
-        - Generating answers with CodeLlama (×5 iterations)…
-        - Scoring original vs perturbed (ROUGE)…
+        - The repository README documents pipeline.py as the end-to-end entry point.
+        - This command selects code generation, CodeLlama, three iterations and normalized compression distance.
       output:
-        - "# NL prompt — same task, reworded"
-        - "- Write a Python function to check whether a number is prime."
-        - "+ Write a Python function that determines if an integer is a prime number."
-      verdictAnswer: MEMORIZED
-      verdictLabel: "ROUGE 0.96 → 0.37  (Δ 0.59)"
-      verdictKind: memorized
+        - "Official README command — not executed by this website."
+        - "Run it locally after installing the repository requirements and configuring the required model runtime."
       explanation: >-
-        The original prompt likely appeared verbatim in training data: CodeLlama
-        reproduces the reference solution (ROUGE 0.96). A trivial reword that
-        keeps the exact same task collapses the score to 0.37. This sensitivity
-        to meaning-preserving changes is the signature of memorization, not
-        understanding — the advantage the framework quantifies.
-    - label: CodeLlama · program repair
-      file: Program Repair · CodeLlama · NCD
-      pattern: variables renamed (obfuscation)
+        The command delegates dataset preparation, perturbation, generation and
+        evaluation to the official pipeline. Results depend on the chosen local
+        datasets and models, so this catalog does not predict them.
+    - label: Load the XLCoST benchmark
+      query: python data/load_dataset.py --dataset xlcost --output output/xlcost
       thinking:
-        - Loading benchmark item…
-        - Renaming identifiers (meaning-preserving)…
-        - Generating answers with CodeLlama (×5 iterations)…
-        - Scoring original vs perturbed (NCD)…
+        - The repository README also documents each pipeline stage separately.
+        - This first stage selects XLCoST and the output/xlcost destination.
       output:
-        - "# buggy input — same off-by-one bug, identifiers renamed"
-        - "- for (int i = 0; i <= n; i++)"
-        - "+ for (int idx = 0; idx <= count; idx++)"
-      verdictAnswer: MEMORIZED
-      verdictLabel: "NCD sim 0.93 → 0.34  (Δ 0.59)"
-      verdictKind: memorized
+        - "Official README command — not executed by this website."
+        - "It prepares the selected dataset under output/xlcost."
       explanation: >-
-        Renaming the loop variables preserves the bug and its required fix
-        exactly. Yet the repair quality (normalized compression distance to the
-        reference patch) drops from 0.93 to 0.34 — CodeLlama had memorized the
-        specific benchmark instance rather than learning to repair the pattern.
-    - label: StarCoder · code generation
-      file: Code Generation · StarCoder · ROUGE
-      pattern: meaning-preserving perturbation
+        Dataset preparation can be run independently before generation and
+        evaluation, exactly as documented by the project.
+    - label: Generate three CodeLlama iterations
+      query: python generation.py --model codellama --folder output/xlcost --task code_generation --output gen/xlcost --iteration 3
       thinking:
-        - Loading benchmark item…
-        - Applying meaning-preserving perturbation…
-        - Generating answers with StarCoder (×5 iterations)…
-        - Scoring original vs perturbed (ROUGE)…
+        - This stage consumes the prepared XLCoST folder.
+        - It requests the code-generation task, CodeLlama and three iterations.
       output:
-        - "# NL prompt — same task, reworded"
-        - "- Implement bubble sort in Java."
-        - "+ Implement the bubble-sort algorithm in Java."
-      verdictAnswer: LEARNED
-      verdictLabel: "ROUGE 0.86 → 0.82  (Δ 0.04)"
-      verdictKind: learned
+        - "Official README command — not executed by this website."
+        - "The requested output destination is gen/xlcost."
       explanation: >-
-        Here the same kind of perturbation barely moves the score (0.86 → 0.82).
-        StarCoder produces an equally good sort regardless of the wording —
-        evidence of genuine capability on this item, with little to no
-        memorization advantage. Not every model/benchmark pair is memorized; the
-        framework tells them apart.
-    - label: CodeLlama · summarization
-      file: Code Summarization · CodeLlama · ROUGE
-      pattern: variables renamed (obfuscation)
+        Generation is exposed as a separate official command so researchers can
+        inspect or reuse its outputs before evaluation.
+    - label: Evaluate generated outputs with NCD
+      query: python evaluation.py --folder gen/ --metric ncd --output xlcost_codellama
       thinking:
-        - Loading benchmark item…
-        - Renaming identifiers (meaning-preserving)…
-        - Generating answers with CodeLlama (×5 iterations)…
-        - Scoring original vs perturbed (ROUGE)…
+        - This stage points the evaluator at the generated-output folder.
+        - It selects normalized compression distance and the documented output name.
       output:
-        - "# code input — same trivial function, identifiers renamed"
-        - "- public int add(int a, int b) { return a + b; }"
-        - "+ public int sum(int x, int y) { return x + y; }"
-      verdictAnswer: MEMORIZED
-      verdictLabel: "ROUGE 0.90 → 0.45  (Δ 0.45)"
-      verdictKind: memorized
+        - "Official README command — not executed by this website."
+        - "Exact scores are produced only by a real local run."
       explanation: >-
-        A pure rename of a trivial function should not change its summary. But
-        CodeLlama's summary quality nearly halves (0.90 → 0.45), revealing that
-        its high score on the original came from having seen that exact snippet —
-        a memorization advantage rather than summarization skill.
+        The catalog deliberately reports no precomputed score for this command;
+        model, dataset and runtime choices determine the result.
 bibtex: |
-  @misc{euraste2026memorization,
-    author  = {Euraste, Djir\'{e} Alb\'{e}rick and Kabor\'{e}, Abdoul Kader and Samhi, Jordan and Barr, Earl T. and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
-    title   = {Learned or Memorized? Quantifying Memorization Advantage in Code LLMs},
-    year    = {2026},
-    eprint  = {2604.13997},
-    archivePrefix = {arXiv},
-    primaryClass  = {cs.SE},
-    url     = {https://arxiv.org/abs/2604.13997}
+  @inproceedings{djire2026quantifying,
+    author    = {Djir\'{e}, Alb\'{e}rick Euraste and Kabor\'{e}, Abdoul Kader and Samhi, Jordan and Barr, Earl T. and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
+    title     = {Quantifying Memorization Advantage in Code LLMs},
+    booktitle = {Proceedings of the 48th IEEE/ACM International Conference on Software Engineering},
+    year      = {2026},
+    publisher = {Association for Computing Machinery},
+    url       = {https://conf.researchr.org/details/icse-2026/icse-2026-research-track/37/Quantifying-Memorization-Advantage-in-Code-LLMs}
   }

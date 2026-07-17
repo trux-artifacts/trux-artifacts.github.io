@@ -18,3 +18,31 @@ tags:
   - java
   - static-analysis
   - soot
+demo:
+  style: terminal
+  intro: >-
+    Add the current AndroSpecter release from Maven Central to a Java project's
+    pom.xml, then use the library utilities documented in the project wiki.
+  outputLabel: Maven artifact
+  countOutput: false
+  note: >-
+    Documentation preview only — this is the official Maven Central dependency
+    snippet, and nothing is installed or executed in the browser.
+  scenarios:
+    - label: Maven dependency
+      query: |-
+        <dependency>
+          <groupId>com.jordansamhi</groupId>
+          <artifactId>androspecter</artifactId>
+          <version>1.1.8</version>
+        </dependency>
+      thinking:
+        - Showing the published Maven dependency coordinates; no command is executed.
+      output:
+        - "Published artifact: com.jordansamhi:androspecter:1.1.8"
+        - "Add this dependency to pom.xml; API examples are documented in the project wiki."
+      explanation: >-
+        Version 1.1.8 is the latest release published by the project and bundles
+        utilities for APK handling, Soot and FlowDroid setup, instrumentation,
+        library management, and related static-analysis tasks.
+license: LGPL-2.1-only

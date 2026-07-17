@@ -20,7 +20,7 @@ figure: raml.png
 figureCaption: The overview of the RAML pipeline (ASE 2025 paper, Figure 2)
 paper:
   title: "RAML: Toward Retrieval-Augmented Localization of Malicious Payloads in Android Apps"
-  venue: ASE
+  venue: ASE NIER
   year: 2025
   doi: 10.1109/ASE63991.2025.00351
 links:
@@ -31,89 +31,28 @@ tags:
   - llm
   - retrieval-augmented
 demo:
+  style: terminal
   intro: >-
-    Pick a malicious behavior. RAML generates natural-language descriptions of
-    the app's Smali classes, retrieves the relevant ones by semantic search,
-    re-ranks them with an LLM, and pinpoints the exact methods — each with a
-    plain-language role.
-  outputLabel: Localized malicious methods
-  countOutput: true
+    RAML's released command accepts a Smali folder, one or more behavior
+    identifiers, and an application name, then writes localization results for
+    the configured run.
+  outputLabel: Documented command
+  countOutput: false
   note: >-
-    Precomputed illustrative example — no live model is called and no API key is
-    used here. RAML's real pipeline (LLM class descriptions + text-embedding-ada-002
-    vector search + LLM re-ranking + method-level analysis) runs from the
-    repository against a Smali folder.
+    This command is copied from the official repository README. The website does
+    not run the model or invent classes, methods, roles or retrieval scores.
   scenarios:
-    - label: Privacy Stealing
-      query: python main.py ./smali/ --behaviors 1 --app-name com.puzzle.solitaire
+    - label: Localize selected behaviors
+      query: python main.py /path/to/smali/folder --behaviors 1 3 4 --app-name "app_name"
       thinking:
-        - Generating class-level descriptions (LLM over Smali)…
-        - Embedding descriptions (text-embedding-ada-002)…
-        - Semantic retrieval for the "Privacy Stealing" behavior…
-        - LLM re-ranking of candidate classes…
-        - Method-level analysis + role explanation…
+        - Load the selected application's Smali folder.
+        - Run localization for behavior identifiers 1, 3 and 4.
       output:
-        - "[0.96]  Lcom/puzzle/solitaire/sync/InfoCollector;->grabContacts()  ·  reads the full contact list via ContentResolver"
-        - "[0.94]  Lcom/puzzle/solitaire/sync/InfoCollector;->readSms()  ·  dumps inbox SMS bodies and senders"
-        - "[0.90]  Lcom/puzzle/solitaire/sync/LocReader;->lastFix()  ·  captures the last known GPS location"
-        - "[0.88]  Lcom/puzzle/solitaire/net/Uploader;->post(String)  ·  exfiltrates harvested data to the C&C endpoint"
+        - "Official README command — not executed by this website."
+        - "The repository emits run-specific result files from the configured models."
       explanation: >-
-        A solitaire game has no reason to read contacts, SMS and location and
-        ship them off-device. RAML skips the thousands of benign game and UI
-        classes and lands on the four methods that form the exfiltration chain —
-        each with a role an analyst can read at a glance.
-    - label: SMS/CALL Abuse
-      query: python main.py ./smali/ --behaviors 2 --app-name com.freeflix.player
-      thinking:
-        - Generating class-level descriptions (LLM over Smali)…
-        - Embedding descriptions (text-embedding-ada-002)…
-        - Semantic retrieval for the "SMS/CALL Abuse" behavior…
-        - LLM re-ranking of candidate classes…
-        - Method-level analysis + role explanation…
-      output:
-        - "[0.97]  Lcom/freeflix/player/svc/SmsBot;->sendPremium(String)  ·  silently sends SMS to premium (WAP-billing) numbers"
-        - "[0.93]  Lcom/freeflix/player/svc/SmsBot;->interceptOtp(Landroid/content/Intent;)  ·  forwards incoming one-time-password SMS"
-        - "[0.89]  Lcom/freeflix/player/recv/SmsReceiver;->onReceive(Landroid/content/Context;Landroid/content/Intent;)  ·  aborts carrier confirmation messages so the victim never sees them"
-      explanation: >-
-        The premium-SMS fraud is spread across a background service and a
-        broadcast receiver. RAML ties the send, the OTP interception and the
-        message-hiding together as one behavior and points at the precise
-        methods responsible.
-    - label: Remote Control
-      query: python main.py ./smali/ --behaviors 3 --app-name com.batterysaver.max
-      thinking:
-        - Generating class-level descriptions (LLM over Smali)…
-        - Embedding descriptions (text-embedding-ada-002)…
-        - Semantic retrieval for the "Remote Control" behavior…
-        - LLM re-ranking of candidate classes…
-        - Method-level analysis + role explanation…
-      output:
-        - "[0.95]  Lcom/batterysaver/max/net/CncClient;->poll()  ·  polls the C&C server for commands over HTTPS"
-        - "[0.92]  Lcom/batterysaver/max/net/CncClient;->exec(String)  ·  dispatches remote commands (install / sendSms / wipe)"
-        - "[0.87]  Lcom/batterysaver/max/core/Bootstrap;->onBoot()  ·  re-registers the client on every device boot for persistence"
-      explanation: >-
-        Behind a "battery saver" facade sits a full command-and-control loop.
-        RAML localizes the polling, the command dispatcher and the boot
-        persistence — the three methods that let an operator drive the device
-        remotely.
-    - label: Bank/Financial Stealing
-      query: python main.py ./smali/ --behaviors 4 --app-name com.wallet.securepay
-      thinking:
-        - Generating class-level descriptions (LLM over Smali)…
-        - Embedding descriptions (text-embedding-ada-002)…
-        - Semantic retrieval for the "Bank/Financial Stealing" behavior…
-        - LLM re-ranking of candidate classes…
-        - Method-level analysis + role explanation…
-      output:
-        - "[0.96]  Lcom/wallet/securepay/a11y/Watcher;->onAccessibilityEvent(Landroid/view/accessibility/AccessibilityEvent;)  ·  detects when a targeted banking app comes to the foreground"
-        - "[0.94]  Lcom/wallet/securepay/ui/Overlay;->show(String)  ·  draws a fake login screen on top of the real bank app"
-        - "[0.92]  Lcom/wallet/securepay/ui/Overlay;->capture()  ·  captures the credentials typed into the overlay"
-        - "[0.88]  Lcom/wallet/securepay/net/Drop;->send([B)  ·  ships the stolen credentials to the operator"
-      explanation: >-
-        A classic overlay banking trojan: watch for the target app, cover it
-        with a fake login, harvest the credentials, exfiltrate. RAML
-        reconstructs that four-step attack at method level from a single
-        behavior query.
+        Replace the paths, behavior identifiers and app name with real inputs.
+        Exact localized classes and methods must come from that execution.
 bibtex: |
   @inproceedings{10.1109/ASE63991.2025.00351,
     author    = {Sun, Tiezhu and Alecci, Marco and Song, Yewei and Tang, Xunzhu and Kim, Kisub and Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

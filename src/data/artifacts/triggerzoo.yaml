@@ -2,8 +2,9 @@ name: TriggerZoo
 type: dataset
 area: Android Datasets
 description: >-
-  A dataset of Android apps from Google Play automatically infected with
-  logic bombs using AndroBomb, with labeled ground truth to evaluate
+  A labeled dataset of 406 Google Play apps instrumented with one
+  trigger-based behavior using AndroBomb: 240 contain logic bombs and 166
+  contain benign trigger-based behavior, providing ground truth for evaluating
   logic bomb detectors.
 authors:
   - Jordan Samhi
@@ -20,8 +21,10 @@ paper:
   doi: 10.1145/3524842.3528020
 links:
   github: https://github.com/JordanSamhi/TriggerZoo
-  website: https://doi.org/10.5281/zenodo.5907916
   access: https://androzoo.uni.lu/access
+  resources:
+    - label: Archived dataset (Zenodo)
+      url: https://doi.org/10.5281/zenodo.5907916
 tags:
   - android
   - logic-bombs
@@ -29,11 +32,17 @@ tags:
 dataset:
   stats:
     - value: 406
-      label: infected apps
+      label: apps with labeled trigger-based behavior
+    - value: 240
+      label: apps containing logic bombs
+    - value: 166
+      label: apps containing benign trigger-based behavior
     - value: 2000
       label: apps processed
     - value: 10
       label: trigger types
+    - value: 14
+      label: guarded-code types
   sampleTitle: Labeled entries
   sampleSource: triggerzoo_labeled_dataset
   sampleHeader: "sha256_original_app;class_infected;component;method_infected;trigger_type;guarded_code_type;depths"
@@ -58,6 +67,10 @@ bibtex: |
     booktitle = {Proceedings of the 19th International Conference on Mining Software Repositories},
     year      = {2022},
     pages     = {459--463},
+    series    = {MSR '22},
+    isbn      = {978-1-4503-9303-4},
+    location  = {Pittsburgh, Pennsylvania},
+    numpages  = {5},
     publisher = {Association for Computing Machinery},
     address   = {New York, NY, USA},
     doi       = {10.1145/3524842.3528020},

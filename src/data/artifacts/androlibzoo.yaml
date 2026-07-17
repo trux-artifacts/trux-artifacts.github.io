@@ -21,6 +21,9 @@ paper:
 links:
   github: https://github.com/JordanSamhi/AndroLibZoo
   download: https://raw.githubusercontent.com/JordanSamhi/AndroLibZoo/main/AndroLibZoo.lst
+  resources:
+    - label: Archived release (Zenodo)
+      url: https://doi.org/10.5281/zenodo.10072709
 tags:
   - android
   - libraries
@@ -67,8 +70,14 @@ bibtex: |
     booktitle = {Proceedings of the 21st International Conference on Mining Software Repositories},
     year      = {2024},
     pages     = {32--36},
+    series    = {MSR '24},
+    month     = {April},
+    isbn      = {979-8-4007-0587-8},
+    location  = {Lisbon, Portugal},
+    numpages  = {5},
     publisher = {Association for Computing Machinery},
     address   = {New York, NY, USA},
     doi       = {10.1145/3643991.3644866},
     url       = {https://doi.org/10.1145/3643991.3644866}
   }
+license: MIT

@@ -18,9 +18,9 @@ figure: dissecting-apks.png
 figureCaption: Dataset evolution — from 22.5M AndroZoo APKs down to the 410,125 sampled for the study (paper, Figure 1)
 paper:
   title: "Dissecting APKs from Google Play: Trends, Insights and Security Implications"
-  venue: Preprint
-  year: 2024
-  url: https://jordansamhi.com/static/files/papers/dissection_androzoo.pdf
+  venue: SANER
+  year: 2025
+  doi: 10.1109/SANER64311.2025.00074
 links:
   github: https://github.com/Trustworthy-Software/DissectingAPKs
 tags:
@@ -73,14 +73,14 @@ dataset:
     - ".png · 120,035,855 files · in 99% of APKs"
     - ".xml · 88,079,179 files · in 99% of APKs"
     - ".js · 5,343,040 files · in 21% of APKs"
-    - ".jpg · 4,283,765 files · in 44% of APKs"
+    - ".jpg · 4,283,785 files · in 44% of APKs"
     - ".properties · 3,656,582 files · in 49% of APKs"
     - ".svg · 3,037,053 files · in 8% of APKs"
     - ".class · 3,036,890 files · in 1% of APKs"
-    - ".html · 2,727,661 files · in 32% of APKs"
+    - ".html · 2,727,683 files · in 32% of APKs"
     - ".txt · 1,965,585 files · in 30% of APKs"
     - ".json · 1,633,817 files · in 24% of APKs"
-    - ".mp3 · 1,435,960 files · in 4% of APKs"
+    - ".mp3 · 1,435,960 files · in 14% of APKs"
     - ".so · 1,124,050 files · in 28% of APKs"
     - ".webp · 1,024,007 files · in 2% of APKs"
     - ".ttf · 889,255 files · in 33% of APKs"
@@ -88,7 +88,7 @@ dataset:
     - ".dll · 527,728 files · in 5% of APKs"
     - ".gif · 432,944 files · in 20% of APKs"
     - ".arsc · 412,112 files · in 99% of APKs"
-    - ".java · 407,196 files · in 98% of APKs"
+    - ".java · 335,800 files · in 2% of APKs"
     - ".ogg · 328,717 files · in 7% of APKs"
     - ".bin · 176,040 files · in 12% of APKs"
     - ".zip · 169,454 files · in 5% of APKs"
@@ -97,9 +97,14 @@ dataset:
     note: The dataset, analysis scripts, and additional data are released on GitHub.
     code: git clone https://github.com/Trustworthy-Software/DissectingAPKs
 bibtex: |
-  @misc{ruizjimenez2024dissecting,
-    author       = {Ruiz Jim\'{e}nez, Pedro Jes\'{u}s and Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
-    title        = {Dissecting APKs from Google Play: Trends, Insights and Security Implications},
-    year         = {2024},
-    howpublished = {\url{https://github.com/Trustworthy-Software/DissectingAPKs}}
+  @inproceedings{ruizjimenez2025dissecting,
+    author    = {Ruiz Jim\'{e}nez, Pedro Jes\'{u}s and Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
+    title     = {Dissecting APKs from Google Play: Trends, Insights and Security Implications},
+    booktitle = {2025 IEEE International Conference on Software Analysis, Evolution and Reengineering (SANER)},
+    year      = {2025},
+    month     = {March},
+    pages     = {728--739},
+    publisher = {IEEE},
+    doi       = {10.1109/SANER64311.2025.00074},
+    url       = {https://doi.org/10.1109/SANER64311.2025.00074}
   }

@@ -7,7 +7,7 @@ description: >-
   that functionally correct LLM-generated solutions can diverge widely in
   runtime memory behavior — correctness does not imply efficiency.
 authors:
-  - Prateek Rajput
+  - Prateek Kumar Rajput
   - Yewei Song
   - Abdoul Aziz Bonkoungou
   - Iyiola E. Olatunji
@@ -21,17 +21,56 @@ paper:
   title: "Correctness isn't Efficiency: Runtime Memory Divergence in LLM-Generated Code"
   venue: ICSE-SEIP
   year: 2026
-  url: https://arxiv.org/abs/2601.01215
+  doi: 10.1145/3786583.3786908
 tags:
   - llm
   - code-generation
   - memory
   - benchmarks
+demo:
+  style: terminal
+  intro: >-
+    Explore two aggregate results reported in the ICSE-SEIP paper. Both compare
+    multiple functionally correct generations, so the changes below measure
+    runtime-memory stability rather than test correctness.
+  outputLabel: Paper-reported metrics
+  countOutput: false
+  note: >-
+    Results explorer only — these values are copied from the published study
+    and are not recomputed in the browser. Higher MIS means greater divergence
+    between the shapes of correct solutions' memory profiles.
+  scenarios:
+    - label: GPT-4o on BigOBench
+      query: "BigOBench · GPT-4o · temperature 0 → 0.95"
+      thinking:
+        - Reading the published BigOBench aggregate at both temperatures.
+      output:
+        - "pass@1: 0.68 → 0.80"
+        - "MIS_macro: 0.0042 → 0.0072"
+        - "Interpretation: correctness rises, but correct solutions become less runtime-stable."
+      explanation: >-
+        The paper uses this result to show that a higher pass@1 score can hide
+        increased divergence in memory-allocation behavior.
+    - label: o4-mini on BigOBench
+      query: "BigOBench · OpenAI o4-mini · temperature 0 → 0.95"
+      thinking:
+        - Reading the published BigOBench aggregate at both temperatures.
+      output:
+        - "pass@1: 0.69 → 0.80"
+        - "MIS_macro: 0.0029 → 0.0126"
+        - "Interpretation: sampling diversity affects execution paths, not only surface syntax."
+      explanation: >-
+        This second reported example shows a larger increase in instability
+        while the generated programs that enter the comparison still pass the
+        benchmark tests.
 bibtex: |
   @inproceedings{rajput2026correctness,
-    author    = {Rajput, Prateek and Song, Yewei and Bonkoungou, Abdoul Aziz and Olatunji, Iyiola E. and Kabor\'{e}, Abdoul Kader and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
+    author    = {Rajput, Prateek Kumar and Song, Yewei and Bonkoungou, Abdoul Aziz and Olatunji, Iyiola E. and Kabor\'{e}, Abdoul Kader and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
     title     = {Correctness isn't Efficiency: Runtime Memory Divergence in LLM-Generated Code},
-    booktitle = {Proceedings of the 48th International Conference on Software Engineering: Software Engineering in Practice (ICSE-SEIP)},
+    booktitle = {Proceedings of the IEEE/ACM 48th International Conference on Software Engineering: Software Engineering in Practice},
     year      = {2026},
-    url       = {https://arxiv.org/abs/2601.01215}
+    pages     = {693--703},
+    publisher = {Association for Computing Machinery},
+    doi       = {10.1145/3786583.3786908},
+    url       = {https://doi.org/10.1145/3786583.3786908}
   }

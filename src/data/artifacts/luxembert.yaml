@@ -6,9 +6,10 @@ description: >-
   trained with a simple, practical data-augmentation trick: partially translate
   closely-related German text into "pseudo-Luxembourgish" by swapping unambiguous
   function words, then mix it with real Luxembourgish. LuxemBERT outperforms
-  multilingual mBERT and a Luxembourgish-only baseline across POS, NER and
-  classification tasks, and ships with annotated datasets for the downstream
-  tasks.
+  a Luxembourgish-only baseline and multilingual mBERT on most evaluated task
+  variants; the paper reports five of six wins over mBERT, with the cased model
+  winning all six. The study also creates four annotated downstream datasets,
+  available from the authors on request.
 authors:
   - Cedric Lothritz
   - Bertrand Lebichot
@@ -17,8 +18,8 @@ authors:
   - Tegawendé F. Bissyandé
   - Jacques Klein
   - Andrey Boytsov
-  - Anne Goujon
   - Clément Lefebvre
+  - Anne Goujon
 status: stable
 logo: llm
 figure: luxembert.png
@@ -59,26 +60,7 @@ dataset:
       suffix: "%"
       label: German text pseudo-translated to Luxembourgish
     - value: 4
-      label: Downstream NLP tasks with released datasets
-  sampleTitle: A taste of Luxembourgish
-  sampleCount: 6
-  sampleNote: >-
-    Everyday sentences in Luxembourgish — the language LuxemBERT models —
-    alongside their English or French source. Illustrative examples (not model
-    outputs); hit shuffle for more.
-  samples:
-    - "EN · Luxembourg is a small country in the heart of Europe.  →  Lëtzebuerg ass e klengt Land am Häerz vun Europa."
-    - "EN · Can you tell me the way to the train station, please?  →  Kënnt Dir mir de Wee op d'Gare soen, wann ech glift?"
-    - "EN · I have been learning Luxembourgish for six months.  →  Ech léieren säit sechs Méint Lëtzebuergesch."
-    - "EN · The weather is beautiful today, let's go for a walk.  →  D'Wieder ass haut schéin, loosst eis spadséieren."
-    - "EN · Could you please speak a little more slowly?  →  Kënnt Dir w.e.g. e bësse méi lues schwätzen?"
-    - "EN · I'd like to order two coffees and a piece of cake.  →  Ech géif gären zwee Kaffien an e Stéck Kuch bestellen."
-    - "FR · Je m'appelle Anna et j'habite au Luxembourg depuis trois ans.  →  Mäin Numm ass Anna an ech wunnen zanter 3 Joer zu Lëtzebuerg."
-    - "FR · Où se trouve l'arrêt de bus le plus proche ?  →  Wou ass déi nootste Busarrêt?"
-    - "FR · Merci beaucoup pour votre aide, c'est très gentil.  →  Villmols Merci fir Är Hëllef, et ass ganz léif."
-    - "FR · Nous allons dîner au restaurant ce soir.  →  Mir ginn den Owend am Restaurant iessen."
-    - "FR · Quel temps fera-t-il demain à Luxembourg-Ville ?  →  Wéi gëtt d'Wieder muer an der Stad?"
-    - "FR · J'aimerais réserver une table pour deux personnes.  →  Ech géif gären en Dësch fir zwee Leit reservéieren."
+      label: Downstream datasets created (available on request)
   usage:
     title: Load the model
     note: The uncased LuxemBERT model is on the Hugging Face Hub.
@@ -89,7 +71,7 @@ dataset:
       model = AutoModelForMaskedLM.from_pretrained("lothritz/LuxemBERT")
 bibtex: |
   @inproceedings{lothritz-etal-2022-luxembert,
-    author    = {Lothritz, Cedric and Lebichot, Bertrand and Allix, Kevin and Veiber, Lisa and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques and Boytsov, Andrey and Goujon, Anne and Lefebvre, Cl\'{e}ment},
+    author    = {Lothritz, Cedric and Lebichot, Bertrand and Allix, Kevin and Veiber, Lisa and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques and Boytsov, Andrey and Lefebvre, Cl\'{e}ment and Goujon, Anne},
     title     = {{LuxemBERT}: Simple and Practical Data Augmentation in Language Model Pre-Training for Luxembourgish},
     booktitle = {Proceedings of the 13th Language Resources and Evaluation Conference (LREC)},
     year      = {2022},

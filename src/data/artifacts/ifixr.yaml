@@ -2,9 +2,10 @@ name: iFixR
 type: tool
 area: Patches & Program Repair
 description: >-
-  Bug-report-driven automated program repair — generates patches from user
-  bug reports instead of test suites, closing the gap with real-world
-  maintenance workflows.
+  Bug-report-driven automated program repair: iFixR uses bug reports for
+  information-retrieval-based fault localization, generates candidate patches
+  from fix patterns, validates them with regression tests, and ranks the
+  resulting patches for developers.
 authors:
   - Anil Koyuncu
   - Kui Liu
@@ -24,10 +25,47 @@ paper:
   doi: 10.1145/3338906.3338935
 links:
   github: https://github.com/TruX-DTF/iFixR
+  resources:
+    - label: Replication package (Zenodo)
+      url: https://doi.org/10.5281/zenodo.3257172
 tags:
   - program-repair
   - bug-reports
   - java
+demo:
+  style: terminal
+  intro: >-
+    Preview the repository's Docker setup and its generate-and-validate job for
+    one Defects4J bug after the preceding pipeline stages have been completed.
+  outputLabel: Documented workflow
+  countOutput: false
+  note: >-
+    Documentation preview only — the commands are derived from the official
+    README and are not executed in the browser. iFixR uses bug reports for
+    localization and regression tests for patch validation.
+  scenarios:
+    - label: Start the published environment
+      query: |-
+        docker pull anilkoyuncu/ifixr
+        docker run -v /path/to/iFixR/:/data -it anilkoyuncu/ifixr:latest /bin/bash
+      thinking:
+        - Showing the official Docker setup; no image is pulled in the browser.
+      output:
+        - "The cloned repository is mounted at /data inside the container."
+        - "Configure config.yml, then run the ordered startPy.sh jobs."
+      explanation: >-
+        The published image packages iFixR's historical Java, Defects4J, and
+        Python environment requirements.
+    - label: Generate and validate one bug
+      query: bash startPy.sh /data gv Math_34
+      thinking:
+        - Showing the documented generate-and-validate job; no repair is run.
+      output:
+        - "Job: gv — execute patch generation and regression-test validation for Math_34."
+        - "Generated patches are written under OUTPUT/MIMIC/."
+      explanation: >-
+        The gv stage runs only after the repository's localization and feature
+        extraction stages; it does not replace test-based validation.
 bibtex: |
   @inproceedings{10.1145/3338906.3338935,
     author    = {Koyuncu, Anil and Liu, Kui and Bissyand\'{e}, Tegawend\'{e} F. and Kim, Dongsun and Monperrus, Martin and Klein, Jacques and Le Traon, Yves},

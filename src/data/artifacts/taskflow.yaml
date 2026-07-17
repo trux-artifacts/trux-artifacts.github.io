@@ -29,56 +29,38 @@ tags:
   - llm
   - sources-and-sinks
 demo:
+  style: terminal
   intro: >-
-    Pick an analysis task: TaskFlow generates a task-specific list of Android
-    SOURCE methods, tailored to that goal.
-  outputLabel: Task-specific SOURCE methods
+    TaskFlow is released as an ordered notebook pipeline that narrows Android
+    framework methods into task-specific SOURCE lists.
+  outputLabel: Documented workflow
+  countOutput: false
   note: >-
-    Precomputed example for illustration — no live model is called. Run
-    TaskFlow from the repository to generate lists for your own tasks.
+    This preview follows the official repository structure. It does not present
+    manually assembled method lists as if they were TaskFlow outputs.
   scenarios:
-    - label: Track location data
-      query: Generate SOURCE methods for tracking location-based data
+    - label: Prepare the environment
+      query: conda env create -f environment.yml
       thinking:
-        - Filtering 46,034 documented Android API methods…
-        - Reusing preprocessing labels (offline phase)…
-        - Label-driven filtering for the location task…
-        - Task-driven refinement of candidate methods…
+        - Install the dependencies pinned by the released environment file.
+        - Activate the environment documented by the repository.
       output:
-        - android.location.Location.getLatitude()
-        - android.location.Location.getLongitude()
-        - android.location.LocationManager.getLastKnownLocation(String)
-        - android.telephony.TelephonyManager.getCellLocation()
-        - android.location.Location.getAltitude()
-        - android.location.LocationManager.getCurrentLocation(...)
-        - android.telephony.gsm.GsmCellLocation.getCid()
-    - label: Track SMS & messaging
-      query: Generate SOURCE methods for tracking SMS and messaging data
+        - "Official setup workflow — not executed by this website."
+      explanation: >-
+        The notebooks require the released Python environment before their
+        preprocessing and refinement stages can run.
+    - label: Run the notebooks in order
+      query: InitialFiltering → MethodsEmbedding → MethodsClustering → ClustersLabelling → TaskSpecificRefining
       thinking:
-        - Filtering 46,034 documented Android API methods…
-        - Reusing preprocessing labels (offline phase)…
-        - Label-driven filtering for the messaging task…
-        - Task-driven refinement of candidate methods…
+        - Filter the documented Android API methods.
+        - Embed and cluster the remaining methods.
+        - Label clusters, then refine them for the target analysis task.
       output:
-        - android.telephony.SmsMessage.getMessageBody()
-        - android.telephony.SmsMessage.getOriginatingAddress()
-        - android.telephony.SmsMessage.getDisplayMessageBody()
-        - android.telephony.SmsManager.getDefault()
-        - android.provider.Telephony.Sms.Inbox.CONTENT_URI
-    - label: Track device identifiers
-      query: Generate SOURCE methods for tracking device and network identifiers
-      thinking:
-        - Filtering 46,034 documented Android API methods…
-        - Reusing preprocessing labels (offline phase)…
-        - Label-driven filtering for the identifier task…
-        - Task-driven refinement of candidate methods…
-      output:
-        - android.telephony.TelephonyManager.getDeviceId()
-        - android.telephony.TelephonyManager.getImei()
-        - android.telephony.TelephonyManager.getSubscriberId()
-        - android.telephony.TelephonyManager.getSimSerialNumber()
-        - android.net.wifi.WifiInfo.getMacAddress()
-        - android.provider.Settings.Secure.getString(ContentResolver, String)
+        - "Official notebook order — not executed by this website."
+        - "Task-specific SOURCE methods are produced only by a real configured run."
+      explanation: >-
+        The ordered stages mirror the public artifact without inventing a result
+        list for location, SMS or device identifiers.
 bibtex: |
   @article{10.1145/3815184,
     author  = {Alecci, Marco and Samhi, Jordan and Miltenberger, Marc and Arzt, Steven and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},

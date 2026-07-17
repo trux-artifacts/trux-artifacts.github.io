@@ -21,16 +21,23 @@ authors:
 status: maintained
 logo: repair
 figure: patcherizer.png
-figureCaption: Overview of Patcherizer (EMSE 2026 paper, Figure 1)
+figureCaption: Overview of Patcherizer (EMSE 2025 paper, Figure 1)
 paper:
   title: "Learning to Represent Code Changes"
   venue: EMSE
-  year: 2026
+  year: 2025
   doi: 10.1007/s10664-025-10763-6
 links:
+  github: https://github.com/Daniel4SE/Patcherizer-OS
   resources:
-    - label: Code and dataset
-      url: https://anonymous.4open.science/r/Patcherizer-1E04
+    - label: Patch-description dataset (Zenodo)
+      url: https://zenodo.org/records/7317318
+    - label: Patch-correctness data (Zenodo)
+      url: https://zenodo.org/records/7029808
+    - label: Pre-training and fine-tuning data (Zenodo)
+      url: https://zenodo.org/records/7317990
+    - label: Robustness data (Zenodo)
+      url: https://zenodo.org/records/7320397
 tags:
   - code-changes
   - patches
@@ -39,149 +46,50 @@ tags:
 demo:
   style: terminal
   intro: >-
-    Pick a code change. Patcherizer encodes the diff with its sequence-intention
-    (Transformer) and graph-intention (GCN) encoders, then feeds the single
-    learned representation to three downstream heads: one writes a natural-language
-    patch description, one assesses whether the change is correct, and one detects
-    the change's intention (add / remove / update).
-  outputLabel: Patcherizer output
+    Preview two experiment entry points documented by the public Patcherizer
+    implementation: code-change description generation and patch correctness
+    assessment.
+  outputLabel: Documented workflow
   countOutput: false
   note: >-
-    Precomputed illustrative examples — nothing runs in your browser.
-    Patcherizer is a representation-learning model (not an LLM); its real
-    pipeline encodes AST diffs and runs the three task-specific heads
-    (description, correctness, intention) from the repository.
+    Documentation preview only — these commands are not executed in the
+    browser and no confidence scores are simulated. The public implementation
+    documents these two tasks; the final journal paper additionally evaluates
+    code-change intention detection.
   scenarios:
-    - label: Null-check fix
-      query: python patcherizer.py --diff patches/null_check.diff --tasks describe,correctness,intention
+    - label: Description-generation evaluation
+      query: |-
+        cd PatchDescriptionGeneration
+        sh evaluate_all_models.sh
       thinking:
-        - Parsing the AST diff…
-        - Sequence-intention encoding (token stream)…
-        - Graph-intention encoding (AST graph)…
-        - Fusing into a change representation…
-        - Running downstream heads (describe + correctness + intention)…
+        - Showing the documented evaluation entry point; no model is run.
       output:
-        - "Patcherizer — encoding code change (UserService.java)"
-        - "Input diff:"
-        - "  @@ -42,6 +42,9 @@ public String getName(User user)"
-        - "  -    return user.getProfile().getName();"
-        - "  +    if (user == null || user.getProfile() == null) {"
-        - "  +      return \"\";"
-        - "  +    }"
-        - "  +    return user.getProfile().getName();"
-        - ""
-        - "[Task 1] Patch description:"
-        - "  Add a null check on the user and its profile before"
-        - "  accessing the name, preventing a NullPointerException."
-        - ""
-        - "[Task 2] Correctness assessment:"
-        - "  CORRECT  ✓   (confidence 0.94)"
-        - ""
-        - "[Task 3] Intention detection:"
-        - "  ADD   — introduces a new null-guard block"
+        - "Evaluate the description-generation models distributed by the implementation."
+        - "The required datasets and pretrained/fine-tuned files are linked from the repository's Zenodo resources."
       explanation: >-
-        The graph-intention encoder sees that a guard now dominates the
-        dereference, so the description names the intent — a null check — rather
-        than just echoing the added tokens, and the correctness head rates the
-        fix as sound.
-    - label: Off-by-one fix
-      query: python patcherizer.py --diff patches/off_by_one.diff --tasks describe,correctness,intention
+        This workflow evaluates natural-language descriptions generated from
+        the learned code-change representation.
+    - label: Patch-correctness assessment
+      query: |-
+        cd PatchCorrectness
+        python main.py
       thinking:
-        - Parsing the AST diff…
-        - Sequence-intention encoding (token stream)…
-        - Graph-intention encoding (AST graph)…
-        - Fusing into a change representation…
-        - Running downstream heads (describe + correctness + intention)…
+        - Showing the documented experiment entry point; no model is run.
       output:
-        - "Patcherizer — encoding code change (RingBuffer.java)"
-        - "Input diff:"
-        - "  @@ -18 +18 @@ void drain()"
-        - "  -    for (int i = 0; i <= size; i++) {"
-        - "  +    for (int i = 0; i < size; i++) {"
-        - ""
-        - "[Task 1] Patch description:"
-        - "  Fix an off-by-one error in the loop bound so iteration"
-        - "  stops before the end of the buffer."
-        - ""
-        - "[Task 2] Correctness assessment:"
-        - "  CORRECT  ✓   (confidence 0.91)"
-        - ""
-        - "[Task 3] Intention detection:"
-        - "  UPDATE   — modifies an existing loop bound"
+        - "Run the patch-correctness experiment with the configured ASE feature dataset."
+        - "Update PatchCorrectness/config_correctness.py with the downloaded feature path first."
       explanation: >-
-        A one-character change (<= becomes <) carries a precise intent.
-        Patcherizer's representation captures the boundary shift and produces a
-        description an analyst could drop straight into a commit message.
-    - label: Overfitting APR patch
-      query: python patcherizer.py --diff patches/apr_candidate.diff --tasks describe,correctness,intention
-      thinking:
-        - Parsing the AST diff…
-        - Sequence-intention encoding (token stream)…
-        - Graph-intention encoding (AST graph)…
-        - Fusing into a change representation…
-        - Running downstream heads (describe + correctness + intention)…
-      output:
-        - "Patcherizer — encoding code change (Discount.java)"
-        - "Input diff (auto-generated by an APR tool):"
-        - "  @@ -12,2 +12,3 @@ double finalPrice(double price)"
-        - "  +    if (price == 100) return 85;   // makes the failing test pass"
-        - "       return price * rate;"
-        - ""
-        - "[Task 1] Patch description:"
-        - "  Special-case a price of 100 to return 85, matching the"
-        - "  failing test's expected value."
-        - ""
-        - "[Task 2] Correctness assessment:"
-        - "  INCORRECT  ✗   overfitting  (confidence 0.88)"
-        - ""
-        - "[Task 3] Intention detection:"
-        - "  ADD   — inserts a special-case branch"
-      explanation: >-
-        The patch passes the failing test but hardcodes one input — a classic
-        overfitting fix from automated program repair. Patcherizer's correctness
-        head flags it as incorrect, exactly the kind of plausible-but-wrong patch
-        this task is meant to catch.
-    - label: Resource-leak fix
-      query: python patcherizer.py --diff patches/resource_leak.diff --tasks describe,correctness,intention
-      thinking:
-        - Parsing the AST diff…
-        - Sequence-intention encoding (token stream)…
-        - Graph-intention encoding (AST graph)…
-        - Fusing into a change representation…
-        - Running downstream heads (describe + correctness + intention)…
-      output:
-        - "Patcherizer — encoding code change (FileLoader.java)"
-        - "Input diff:"
-        - "  @@ -25,3 +25,3 @@ byte[] load(String path)"
-        - "  -    FileInputStream in = new FileInputStream(path);"
-        - "  -    byte[] data = in.readAllBytes();"
-        - "  -    return data;"
-        - "  +    try (FileInputStream in = new FileInputStream(path)) {"
-        - "  +      return in.readAllBytes();"
-        - "  +    }"
-        - ""
-        - "[Task 1] Patch description:"
-        - "  Wrap the file stream in a try-with-resources block so it"
-        - "  is always closed, fixing a resource leak."
-        - ""
-        - "[Task 2] Correctness assessment:"
-        - "  CORRECT  ✓   (confidence 0.89)"
-        - ""
-        - "[Task 3] Intention detection:"
-        - "  UPDATE   — restructures the resource handling"
-      explanation: >-
-        The change restructures control flow rather than adding a line. The
-        graph-intention encoder recognises the try-with-resources pattern and
-        the description states the fixed defect — a resource leak — instead of
-        merely listing the edited statements.
+        The repository explicitly requires the external correctness features
+        linked from Zenodo before this experiment can be reproduced.
 bibtex: |
-  @article{Tang2026patcherizer,
+  @article{Tang2025patcherizer,
     author  = {Tang, Xunzhu and Tian, Haoye and Pian, Weiguo and Ezzini, Saad and Kabor\'{e}, Abdoul Kader and Habib, Andrew and Kim, Kisub and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},
     title   = {Learning to Represent Code Changes},
     journal = {Empirical Software Engineering},
-    year    = {2026},
+    year    = {2025},
     volume  = {31},
     number  = {3},
+    pages   = {50},
     publisher = {Springer},
     doi     = {10.1007/s10664-025-10763-6},
     url     = {https://doi.org/10.1007/s10664-025-10763-6}

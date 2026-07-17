@@ -15,14 +15,15 @@ authors:
 status: maintained
 logo: android
 figure: damflow.png
-figureCaption: DamFlow approach overview (TOSEM 2025 paper, Figure 2)
+figureCaption: DamFlow approach overview (TOSEM 2026 paper, Figure 2)
 paper:
   title: "DamFlow: Preventing a Flood of Irrelevant Data Flows in Android Apps"
   venue: TOSEM
-  year: 2025
+  year: 2026
   doi: 10.1145/3772002
 links:
   github: https://github.com/Trustworthy-Software/DamFlow
+  website: https://doi.org/10.1145/3772002
 tags:
   - android
   - taint-analysis
@@ -31,105 +32,58 @@ tags:
 demo:
   style: terminal
   intro: >-
-    Pick an app. FlowDroid reports a flood of data flows; DamFlow scores each
-    (source → sink) pair against a model of the app's category and keeps only
-    the relevant leaks.
-  outputLabel: DamFlow output
+    DamFlow's public artifact is a notebook pipeline. Set up its documented
+    environment, configure the external services, then run the notebooks in the
+    order given by the repository.
+  outputLabel: Documented workflow
   countOutput: false
   note: >-
-    Precomputed examples on illustrative apps with made-up flows and scores —
-    nothing runs in your browser. DamFlow's real pipeline (FlowDroid backward
-    analysis + OpenAI embeddings + per-category anomaly detection) runs from the
-    repository.
+    This preview reproduces the official repository workflow. It does not
+    fabricate taint-flow scores, rankings or application-specific results.
   scenarios:
-    - label: Calculator
-      query: python run_damflow.py -a com.simplecalc.pro.apk
+    - label: Create the environment
+      query: conda env create -f environment.yml
       thinking:
-        - Backward taint analysis (FlowDroid)…
-        - Extracting data-flow pairs…
-        - Embedding pairs (source → sink)…
-        - Scoring relevance (CALCULATOR anomaly model)…
+        - Read the pinned dependencies from the released environment file.
+        - Activate the damFlowEnv environment after creation.
       output:
-        - "FlowDroid reported 12 data flows"
-        - "DamFlow kept 1 relevant · dropped 11 irrelevant"
-        - "Relevant leaks:"
-        - "  [0.97]  getLastKnownLocation()  →  HttpURLConnection.getOutputStream()"
-        - "Dropped (sample):"
-        - "  [0.05]  getString(R.string.theme)  →  Log.d()"
-        - "  [0.08]  getPackageName()            →  TextView.setText()"
+        - "Then run: conda activate damFlowEnv"
+        - "Official setup command — not executed by this website."
       explanation: >-
-        A calculator has no legitimate reason to read the device location and
-        send it over HTTP. Against the CALCULATOR model — where that flow never
-        appears in benign apps — DamFlow scores it 0.97 and surfaces it, while
-        dropping the harmless theme-read and UI flows. The flood of 12 candidate
-        flows collapses to the one that matters.
-    - label: Weather
-      query: python run_damflow.py -a com.dailymeteo.weather.apk
+        DamFlow is released as Python notebooks with a Conda environment rather
+        than as a single command-line executable.
+    - label: Configure required services
+      query: Configure .env, then start the Redis service used by the notebooks
       thinking:
-        - Backward taint analysis (FlowDroid)…
-        - Extracting data-flow pairs…
-        - Embedding pairs (source → sink)…
-        - Scoring relevance (WEATHER anomaly model)…
+        - Provide the model/API configuration expected by the released notebooks.
+        - Make the configured Redis instance available before running the pipeline.
       output:
-        - "FlowDroid reported 34 data flows"
-        - "DamFlow kept 1 relevant · dropped 33 irrelevant"
-        - "Relevant leaks:"
-        - "  [0.83]  getDeviceId()             →  HttpURLConnection.getOutputStream()"
-        - "Dropped (sample):"
-        - "  [0.38]  getLastKnownLocation()    →  HttpURLConnection.getOutputStream()"
-        - "  [0.06]  getString(R.string.unit)  →  Log.d()"
+        - "Configuration step documented by the official repository."
+        - "No credential or secret value is displayed by this catalog."
       explanation: >-
-        For a weather app, location → network is expected, so DamFlow scores it
-        just 0.38 and drops it — the opposite of the calculator, where the exact
-        same flow was the top leak. The device-id exfiltration still stands out
-        against the WEATHER model and is kept. Same flow, different relevance by
-        category.
-    - label: Finance
-      query: python run_damflow.py -a com.paywallet.bank.apk
+        The exact .env values depend on the researcher's local model and service
+        setup, so the catalog documents the prerequisite without inventing them.
+    - label: Run the notebook pipeline
+      query: Extraction → Embedding → Training → Testing
       thinking:
-        - Backward taint analysis (FlowDroid)…
-        - Extracting data-flow pairs…
-        - Embedding pairs (source → sink)…
-        - Scoring relevance (FINANCE anomaly model)…
+        - Run the Extraction notebook first.
+        - Continue with Embedding, Training and Testing in that order.
       output:
-        - "FlowDroid reported 51 data flows"
-        - "DamFlow kept 3 relevant · dropped 48 irrelevant"
-        - "Relevant leaks:"
-        - "  [0.92]  getDeviceId()            →  HttpURLConnection.getOutputStream()"
-        - "  [0.88]  getSimSerialNumber()     →  SmsManager.sendTextMessage()"
-        - "  [0.81]  getLine1Number()         →  HttpURLConnection.getOutputStream()"
-        - "Dropped (sample):"
-        - "  [0.09]  getString(R.string.locale)  →  Log.d()"
+        - "Official notebook order — not executed by this website."
+        - "Scores and rankings are produced only by a real configured run."
       explanation: >-
-        A banking app leaking device and SIM identifiers to the network (and one
-        by SMS) is exactly what an analyst wants to see. DamFlow keeps the three
-        identifier leaks that stand out against the FINANCE model and drops the
-        48 ordinary config and UI flows.
-    - label: Messaging
-      query: python run_damflow.py -a com.quickchat.free.apk
-      thinking:
-        - Backward taint analysis (FlowDroid)…
-        - Extracting data-flow pairs…
-        - Embedding pairs (source → sink)…
-        - Scoring relevance (MESSAGING anomaly model)…
-      output:
-        - "FlowDroid reported 40 data flows"
-        - "DamFlow kept 2 relevant · dropped 38 irrelevant"
-        - "Relevant leaks:"
-        - "  [0.87]  getMessageBody()   →  HttpURLConnection.getOutputStream()"
-        - "  [0.80]  query(Contacts)    →  HttpURLConnection.getOutputStream()"
-        - "Dropped (sample):"
-        - "  [0.07]  getPackageName()   →  TextView.setText()"
-      explanation: >-
-        Sending raw message bodies and the contact list to a third-party server
-        is well outside what the MESSAGING model expects. DamFlow surfaces those
-        two leaks and drops the flood of routine flows around them.
+        This order mirrors the released pipeline from flow extraction through
+        representation learning, model training and evaluation.
 bibtex: |
   @article{10.1145/3772002,
     author  = {Alecci, Marco and Samhi, Jordan and Miltenberger, Marc and Arzt, Steven and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
     title   = {DamFlow: Preventing a Flood of Irrelevant Data Flows in Android Apps},
     journal = {ACM Transactions on Software Engineering and Methodology},
-    year    = {2025},
+    year    = {2026},
+    volume  = {35},
+    number  = {7},
+    articleno = {208},
+    numpages  = {25},
     publisher = {Association for Computing Machinery},
     doi     = {10.1145/3772002},
     url     = {https://doi.org/10.1145/3772002}

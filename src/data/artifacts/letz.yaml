@@ -56,9 +56,11 @@ bibtex: |
   @inproceedings{philippy-etal-2024-forget,
     author    = {Philippy, Fred and Haddadan, Shohreh and Guo, Siwen},
     title     = {Forget {NLI}, Use a Dictionary: Zero-Shot Topic Classification for Low-Resource Languages with Application to Luxembourgish},
-    booktitle = {Proceedings of the 3rd Annual Meeting of the Special Interest Group on Under-resourced Languages (SIGUL)},
+    booktitle = {Proceedings of the 3rd Annual Meeting of the Special Interest Group on Under-resourced Languages @ LREC-COLING 2024},
     year      = {2024},
+    month     = may,
+    address   = {Torino, Italia},
     pages     = {97--104},
-    publisher = {ELRA Language Resource Association},
+    publisher = {ELRA and ICCL},
     url       = {https://aclanthology.org/2024.sigul-1.13/}
   }

@@ -19,14 +19,16 @@ authors:
 status: maintained
 logo: android
 figure: malloc.png
-figureCaption: The two-phase MalLoc pipeline — Phase 1 localizes the malicious class, Phase 2 the methods and their roles (paper, Figure 4)
+figureCaption: The two-phase MalLoc pipeline — Phase 1 localizes the malicious class, Phase 2 the methods and their roles (ICSME 2025 paper, Figure 4)
 paper:
   title: "MalLoc: Toward Fine-grained Android Malicious Payload Localization via LLMs"
-  venue: Preprint
+  venue: ICSME
   year: 2025
+  doi: 10.1109/ICSME64153.2025.00076
   url: https://jordansamhi.com/static/files/papers/malloc.pdf
 links:
   github: https://github.com/Trustworthy-Software/MalLoc
+  website: https://doi.org/10.1109/ICSME64153.2025.00076
 tags:
   - android
   - malware
@@ -37,18 +39,18 @@ demo:
     MalLoc localizes malicious payloads in Android malware at method level, in
     two LLM phases. Phase 1 identifies which Smali class implements a given
     malicious behavior; Phase 2 pinpoints the exact methods inside it and gives
-    each a plain-language role. Pick a behavior from the real-world RuMMs sample
-    to watch both phases — a decomposition that sharply beats a single-prompt
-    baseline.
+    each a plain-language role. The verified example below follows the
+    real-world RuMMs case study documented in the paper.
   outputLabel: MalLoc localization
   countOutput: false
   note: >-
-    Illustrative two-phase localizations on the RuMMs malware sample (whose
-    classes are obfuscated to names like a, Charge, NeglectDefend) — nothing runs
-    in your browser and no model is called. MalLoc is evaluated with Phi-4 and
-    GPT-4.1 on a controlled app (MalApp, with fine-grained ground truth) and on
-    RuMMs; with GPT-4.1 its two-phase design reaches method-level recall 1.00,
-    where the single-prompt Phi-4 baseline scores 0. Dataset and code are on
+    This display is a shortened rendering of the Privacy Stealing example
+    reported for RuMMs; no confidence value is invented and no model is called
+    in the browser. The method-level recall of 1.00 for GPT-4.1, and the zero
+    result for the single-prompt Phi-4 baseline, concern the controlled MalApp
+    benchmark. On RuMMs, MalLoc reported six classes and 17 methods with 100%
+    precision after manual verification and found four of five annotated
+    behaviors; recall and F1 cannot be computed there. Dataset and code are on
     GitHub.
   scenarios:
     - label: Privacy Stealing
@@ -59,73 +61,24 @@ demo:
         - Class flagged MALICIOUS; forwarding to Phase 2…
         - Phase 2 — prompting the LLM to localize methods + roles…
       output:
-        - "[Phase 1]  malicious class:  Lcom/rumms/a;   (MALICIOUS · 0.94)"
+        - "[Phase 1]  malicious class:  Lcom/rumms/b;"
         - "[Phase 2]  methods & roles:"
-        - "  Lcom/rumms/a;->e()         ·  reads the contact list via READ_CONTACTS"
-        - "  Lcom/rumms/a;->g()         ·  collects the SIM serial and subscriber id"
-        - "  Lcom/rumms/a;->post([B)    ·  exfiltrates the harvested data to the C2 server"
+        - "  Lcom/rumms/b;->f(Context): ArrayList        ·  enumerates the device contacts"
+        - "  Lcom/rumms/b;->a(Context,int,String): void  ·  exfiltrates data through Intent extras and a background service"
       explanation: >-
-        In Phase 1, MalLoc's LLM flags the obfuscated class a (renamed by the
-        malware) as implementing Privacy Stealing. Phase 2 then pinpoints the
-        exact methods and gives each a plain-language role — the contact read,
-        the identifier grab, and the exfiltration. This method-level precision is
-        exactly what a single-prompt baseline fails to reach.
-    - label: SMS/CALL Abuse
-      query: MalLoc — localize "SMS/CALL Abuse" in the RuMMs sample
-      thinking:
-        - Decompiling the APK to Smali (ApkTool)…
-        - Phase 1 — prompting the LLM to find the malicious class…
-        - Class flagged MALICIOUS; forwarding to Phase 2…
-        - Phase 2 — prompting the LLM to localize methods + roles…
-      output:
-        - "[Phase 1]  malicious class:  Lcom/rumms/Charge;   (MALICIOUS · 0.90)"
-        - "[Phase 2]  methods & roles:"
-        - "  Lcom/rumms/Charge;->send(String)                    ·  sends premium-rate SMS via SEND_SMS"
-        - "  Lcom/rumms/Charge;->onReceive(Context,Intent)       ·  intercepts and aborts carrier confirmations"
-      explanation: >-
-        The malware hides its SMS fraud in a class deceptively named Charge.
-        MalLoc localizes both the premium-SMS sender and the receiver that
-        silently swallows the carrier's confirmation messages, so the victim
-        never notices the charges.
-    - label: Remote Control
-      query: MalLoc — localize "Remote Control" in the RuMMs sample
-      thinking:
-        - Decompiling the APK to Smali (ApkTool)…
-        - Phase 1 — prompting the LLM to find the malicious class…
-        - Class flagged MALICIOUS; forwarding to Phase 2…
-        - Phase 2 — prompting the LLM to localize methods + roles…
-      output:
-        - "[Phase 1]  malicious class:  Lcom/rumms/NeglectDefend;   (MALICIOUS · 0.88)"
-        - "[Phase 2]  methods & roles:"
-        - "  Lcom/rumms/NeglectDefend;->poll()          ·  polls the C2 server for commands over HTTP"
-        - "  Lcom/rumms/NeglectDefend;->exec(String)    ·  dispatches remote commands (install / sms / wipe)"
-      explanation: >-
-        Behind the class NeglectDefend sits a command-and-control loop. MalLoc
-        separates the polling method from the command dispatcher and labels each
-        role, reconstructing how an operator drives the infected device.
-    - label: Bank/Financial Stealing
-      query: MalLoc — localize "Bank/Financial Stealing" in the RuMMs sample
-      thinking:
-        - Decompiling the APK to Smali (ApkTool)…
-        - Phase 1 — prompting the LLM to find the malicious class…
-        - Class flagged MALICIOUS; forwarding to Phase 2…
-        - Phase 2 — prompting the LLM to localize methods + roles…
-      output:
-        - "[Phase 1]  malicious class:  Lcom/rumms/b;   (MALICIOUS · 0.86)"
-        - "[Phase 2]  methods & roles:"
-        - "  Lcom/rumms/b;->onAccessibilityEvent(AccessibilityEvent)  ·  detects a target banking app in the foreground"
-        - "  Lcom/rumms/b;->overlay(String)                           ·  draws a fake login screen to capture credentials"
-        - "  Lcom/rumms/b;->send([B)                                  ·  ships the stolen credentials to the operator"
-      explanation: >-
-        Abusing the BIND_ACCESSIBILITY_SERVICE permission, the class b watches
-        for banking apps and overlays a fake login. MalLoc localizes the
-        detection, the overlay and the exfiltration as one behavior — the kind of
-        actionable, explainable output the paper argues is missing from
-        detection-only tools.
+        The paper's RuMMs example identifies obfuscated class b for Privacy
+        Stealing. Its static method f(Context) enumerates contacts, while
+        a(Context,int,String) forwards harvested data via Intent extras to a
+        background service. These are the two method roles documented in the
+        published case study.
 bibtex: |
-  @misc{sun2025malloc,
-    author       = {Sun, Tiezhu and Alecci, Marco and Pilgun, Aleksandr and Song, Yewei and Tang, Xunzhu and Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
-    title        = {{MalLoc}: Toward Fine-grained Android Malicious Payload Localization via LLMs},
-    year         = {2025},
-    howpublished = {\url{https://github.com/Trustworthy-Software/MalLoc}}
+  @inproceedings{10.1109/ICSME64153.2025.00076,
+    author    = {Sun, Tiezhu and Alecci, Marco and Pilgun, Aleksandr and Song, Yewei and Tang, Xunzhu and Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
+    title     = {{MalLoc}: Toward Fine-grained Android Malicious Payload Localization via LLMs},
+    booktitle = {2025 IEEE International Conference on Software Maintenance and Evolution (ICSME)},
+    year      = {2025},
+    pages     = {761--766},
+    publisher = {IEEE},
+    doi       = {10.1109/ICSME64153.2025.00076},
+    url       = {https://doi.org/10.1109/ICSME64153.2025.00076}
   }

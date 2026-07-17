@@ -37,13 +37,11 @@ demo:
   outputLabel: Archer output
   countOutput: false
   note: >-
-    The first example is the real, unmodified Scylla output from the paper; the
-    others are short illustrative runs with made-up apps and constraints.
-    Nothing runs in your browser — run Archer from the repository to analyze
-    your own APKs.
+    This is the real, unmodified Scylla output from the paper. Nothing runs in
+    your browser — run Archer from the repository to analyze your own APKs.
   scenarios:
     - label: Run Archer on Scylla (real malware)
-      query: java -jar Archer.jar -p platforms/ -a 2D46A76C…D6402.apk -t -r -c SPARK
+      query: java -jar Archer/target/Archer-1.0-jar-with-dependencies.jar -p platforms/ -a 2D46A76C94DFF80992615354C713E1552A1F55F3EB0C4D5297D52571180D6402.apk -t -r -c SPARK
       thinking:
         - Building the call graph (SPARK)…
         - Collecting implicit-call methods (executor / executee / helper)…
@@ -173,90 +171,6 @@ demo:
         (onStartJob) kept alive periodically (2000 ms), persistently, and only
         on a given network type — conditional targets a standard call graph
         never reaches.
-    - label: JobScheduler (periodic + network)
-      query: java -jar Archer.jar -p platforms/ -a com.dailydeals.shop.apk -t -r -c SPARK
-      thinking:
-        - Building the call graph (SPARK)…
-        - Collecting implicit-call methods (executor / executee / helper)…
-        - Extracting constraints…
-        - Computing conditional implicit call targets…
-        - Enhancing the call graph…
-      output:
-        - 'Results:'
-        - ' - App name: com.dailydeals.shop-3.2.0'
-        - ' - Analysis elapsed time: 52'
-        - ' - Number of new Edges in call graph: 6'
-        - ' - Number of new Nodes in call graph: 6'
-        - ' - Number of extra statement covered: 143'
-        - ' - Proportion of extra code covered: 0.19%'
-        - ' - Reached timeout: no'
-        - ' - Constraints:'
-        - '   - Method call "schedule" in methods <com.dailydeals.shop.SyncManager: void scheduleSync()>:'
-        - '    - Potential targets:'
-        - '     - com.dailydeals.shop.SyncService.onStartJob'
-        - '    - Potential constraints:'
-        - '     - Periodic: 3600000L'
-        - '     - Network type: 2'
-        - '     - Persistent: 1'
-      explanation: >-
-        A JobScheduler that defers a sync job and re-runs it hourly, only on an
-        unmetered network, persisted across reboots. Standard analysis stops at
-        schedule(); Archer links it to onStartJob() and records those
-        conditions, so the deferred code becomes reachable.
-    - label: Fixed-delay timer
-      query: java -jar Archer.jar -p platforms/ -a com.newsflow.reader.apk -t -r -c SPARK
-      thinking:
-        - Building the call graph (SPARK)…
-        - Collecting implicit-call methods (executor / executee / helper)…
-        - Extracting constraints…
-        - Computing conditional implicit call targets…
-        - Enhancing the call graph…
-      output:
-        - 'Results:'
-        - ' - App name: com.newsflow.reader-2.4.1'
-        - ' - Analysis elapsed time: 38'
-        - ' - Number of new Edges in call graph: 2'
-        - ' - Number of new Nodes in call graph: 2'
-        - ' - Number of extra statement covered: 54'
-        - ' - Proportion of extra code covered: 0.09%'
-        - ' - Reached timeout: no'
-        - ' - Constraints:'
-        - '   - Method call "scheduleWithFixedDelay" in methods <com.newsflow.reader.FeedPoller: void start()>:'
-        - '    - Potential targets:'
-        - '     - com.newsflow.reader.FeedPoller$1.run'
-        - '    - Potential constraints:'
-        - '     - Period after next execution in ms: 5000L'
-        - '     - Delay of execution in ms: 5000L'
-      explanation: >-
-        A ScheduledExecutorService polls a feed every five seconds. Archer
-        resolves the scheduleWithFixedDelay()→run() link and its temporal
-        condition, so the periodically-executed code is no longer invisible.
-    - label: Thread pool (unconstrained)
-      query: java -jar Archer.jar -p platforms/ -a com.pixelchat.messenger.apk -t -r -c SPARK
-      thinking:
-        - Building the call graph (SPARK)…
-        - Collecting implicit-call methods (executor / executee / helper)…
-        - Extracting constraints…
-        - Computing conditional implicit call targets…
-        - Enhancing the call graph…
-      output:
-        - 'Results:'
-        - ' - App name: com.pixelchat.messenger-5.6.1'
-        - ' - Analysis elapsed time: 71'
-        - ' - Number of new Edges in call graph: 4'
-        - ' - Number of new Nodes in call graph: 4'
-        - ' - Number of extra statement covered: 96'
-        - ' - Proportion of extra code covered: 0.14%'
-        - ' - Reached timeout: no'
-        - ' - Constraints:'
-        - '   - Method call "submit" in methods <com.pixelchat.messenger.Uploader: void enqueue()>:'
-        - '    - Potential targets:'
-        - '     - com.pixelchat.messenger.Uploader$UploadTask.call'
-        - '    - No constraints'
-      explanation: >-
-        An unconstrained implicit call: a thread pool runs an upload task with no
-        firing condition. Archer still recovers the submit()→call() edge that
-        common call-graph algorithms silently omit — no constraint attached.
 bibtex: |
   @article{10.1145/3729168,
     author  = {Samhi, Jordan and Just, Ren\'{e} and Ernst, Michael D. and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
@@ -265,7 +179,9 @@ bibtex: |
     year    = {2026},
     volume  = {35},
     number  = {2},
-    pages   = {1--25},
+    articleno = {47},
+    numpages  = {25},
+    pages   = {47:1--47:25},
     publisher = {Association for Computing Machinery},
     doi     = {10.1145/3729168},
     url     = {https://doi.org/10.1145/3729168}

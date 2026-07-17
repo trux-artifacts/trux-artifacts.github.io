@@ -19,6 +19,7 @@ paper:
   doi: 10.1145/3663529.3663806
 links:
   github: https://github.com/JordanSamhi/AndroLog
+  video: https://www.youtube.com/watch?v=NEcYg98k_o4
 tags:
   - android
   - instrumentation
@@ -27,74 +28,38 @@ tags:
 demo:
   style: terminal
   intro: >-
-    Pick an example app. AndroLog instruments it in a black box, then turns the
-    runtime logs into a code coverage report at four granularity levels.
-  outputLabel: AndroLog output
+    Follow AndroLog's documented two-step workflow: instrument an APK, exercise
+    the instrumented app, then process its runtime logs into coverage data.
+  outputLabel: Documented workflow
   countOutput: false
   note: >-
-    Precomputed examples on illustrative apps with made-up numbers — nothing
-    runs in your browser. Run AndroLog from the repository to instrument your
-    own APKs.
+    These are commands from the official repository documentation. They are not
+    executed by this website and no application-specific coverage result is
+    simulated.
   scenarios:
-    - label: Typical app
-      query: java -jar androlog.jar -p ./Androidplatforms/ -o ./out/ -a com.brightnotes.free.apk -c -m -s -cp
+    - label: Instrument an APK
+      query: java -jar AndroLog/target/androlog-0.1-jar-with-dependencies.jar -p ./Androidplatforms/ -l MY_SUPER_LOG -o ./output/ -a my_app.apk -c -m -cp
       thinking:
-        - Transforming Dalvik bytecode to Jimple…
-        - Inserting probes — classes, methods, statements, components…
-        - Repackaging and signing the instrumented APK…
-        - Processing runtime logs (Log Processor)…
+        - Select the Android platform directory, log tag, output directory and APK.
+        - Enable class, method and component instrumentation with the documented flags.
       output:
-        - "AndroLog v0.1 — analysis completed"
-        - "[✓] Instrumented APK written  ·  97.9% of methods probed"
-        - "[✓] Code coverage report:"
-        - "    Classes         124 / 187      66.3%"
-        - "    Methods         512 / 1043     49.1%"
-        - "    Statements     3880 / 9214     42.1%"
-        - "    Components         7 / 11      63.6%"
+        - "Official repository command — not executed by this website."
+        - "The instrumented APK is written under the selected output directory."
       explanation: >-
-        AndroLog inserts probes at four granularity levels in a black-box manner
-        (no source code needed). Running the instrumented app produces logs that
-        the Log Processor turns into this coverage report.
-    - label: Large modern app
-      query: java -jar androlog.jar -p ./Androidplatforms/ -o ./out/ -a com.skytrail.weather.apk -c -m -s -cp
+        Install and exercise the generated APK so that its probes emit runtime
+        logs tagged with MY_SUPER_LOG.
+    - label: Process collected logs
+      query: java -jar AndroLog/target/androlog-0.1-jar-with-dependencies.jar -p ./Androidplatforms/ -l MY_SUPER_LOG -a my_app.apk -c -m -cp -pa logs
       thinking:
-        - Transforming Dalvik bytecode to Jimple…
-        - Inserting probes — classes, methods, statements, components…
-        - Repackaging and signing the instrumented APK…
-        - Processing runtime logs (Log Processor)…
+        - Reuse the same instrumentation configuration.
+        - Point AndroLog at the directory containing the collected runtime logs.
       output:
-        - "AndroLog v0.1 — analysis completed"
-        - "    Baseline tools on this APK:   COSMO — failed    ·    ACVTool — failed"
-        - "[✓] Instrumented APK written  ·  98.4% of methods probed"
-        - "[✓] Code coverage report:"
-        - "    Classes         903 / 1204     75.0%"
-        - "    Methods        4218 / 7650     55.1%"
-        - "    Statements    28160 / 61340    45.9%"
-        - "    Components        14 / 19      73.7%"
+        - "Official repository workflow — not executed by this website."
+        - "Coverage depends on the APK and on the interactions captured in logs."
       explanation: >-
-        This recent, heavily optimized app breaks older coverage tools — COSMO
-        and ACVTool both fail to instrument it. AndroLog still probes 98% of its
-        methods, thanks to its lightweight black-box instrumentation (the paper
-        reports up to 98%, vs 79% for COSMO and 48% for ACVTool).
-    - label: App code only (skip libraries)
-      query: java -jar androlog.jar -p ./Androidplatforms/ -o ./out/ -a com.pixelrun.arcade.apk -c -m -cp -n -pkg com.pixelrun
-      thinking:
-        - Transforming Dalvik bytecode to Jimple…
-        - Resolving app package, excluding third-party libraries…
-        - Inserting probes — classes, methods, components…
-        - Processing runtime logs (Log Processor)…
-      output:
-        - "AndroLog v0.1 — analysis completed"
-        - "[✓] Instrumented APK written  ·  app code only (libraries skipped)"
-        - "[✓] Code coverage report (com.pixelrun.* only):"
-        - "    Classes          86 / 98       87.8%"
-        - "    Methods         402 / 511      78.7%"
-        - "    Components         5 / 6       83.3%"
-      explanation: >-
-        With -pkg and -n, AndroLog instruments only the app's own code and skips
-        third-party libraries — useful when you want coverage of your code, not
-        the SDKs. The percentages are higher because the noisy library code is
-        left out.
+        The -pa option processes the collected logs. AndroLog can then derive
+        coverage at the enabled granularities without this catalog inventing
+        application names, probe rates or percentages.
 bibtex: |
   @inproceedings{10.1145/3663529.3663806,
     author    = {Samhi, Jordan and Zeller, Andreas},

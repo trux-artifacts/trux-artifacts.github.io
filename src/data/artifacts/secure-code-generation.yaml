@@ -25,6 +25,54 @@ tags:
   - secure-code-generation
   - adversarial
   - security
+demo:
+  style: terminal
+  intro: >-
+    Explore the paper's consensus evaluation, where an output counts as secure
+    only when CodeQL, Bandit, GPT-4o, and executable unit tests all agree and
+    the code remains functional.
+  outputLabel: Paper-reported rates
+  countOutput: false
+  note: >-
+    Results explorer only — these aggregate percentages come from Tables 6, 8,
+    and 10 of the preprint and are not recomputed in the browser. No public
+    repository URL is supplied by the paper, so no executable demo is claimed.
+  scenarios:
+    - label: Unified baseline
+      query: "Consensus evaluation · original prompts"
+      thinking:
+        - Reading the consensus rates reported in Table 6.
+      output:
+        - "SVEN — secure & functional: 7.0%; non-functional: 46.0%"
+        - "SafeCoder — secure & functional: 10.2%; non-functional: 37.0%"
+        - "PromSec — secure & functional: 15.5%; non-functional: 60.0%"
+      explanation: >-
+        Static-analysis-only scores substantially overstate security because
+        non-functional programs can avoid vulnerability signatures without
+        correctly implementing the requested behavior.
+    - label: Cue inversion
+      query: "Consensus evaluation · InverseComment attack"
+      thinking:
+        - Reading the consensus rates reported in Table 8.
+      output:
+        - "SVEN — generated: 63.0%; secure & functional: 9.3%; non-functional: 38.4%"
+        - "SafeCoder — generated: 77.8%; secure & functional: 9.4%; non-functional: 41.2%"
+        - "PromSec — generated: 100%; secure & functional: 17.6%; non-functional: 70.8%"
+      explanation: >-
+        Inverting security cues exposes both alignment failures and generation
+        failures; PromSec's apparently higher consensus rate accompanies the
+        largest non-functional rate.
+    - label: Natural phrasing
+      query: "Consensus evaluation · StudentStyle attack"
+      thinking:
+        - Reading the consensus rates reported in Table 10.
+      output:
+        - "SVEN — generated: 55.5%; secure & functional: 3.4%; non-functional: 32.1%"
+        - "SafeCoder — generated: 45.7%; secure & functional: 4.3%; non-functional: 18.7%"
+        - "PromSec — generated: 100%; secure & functional: 15.2%; non-functional: 76.0%"
+      explanation: >-
+        Rewriting instructions in informal, novice-style language sharply
+        reduces robust secure-and-functional generation for SVEN and SafeCoder.
 bibtex: |
   @misc{tessa2026howsecure,
     author  = {Tessa, Melissa and Olatunji, Iyiola E. and War, Aicha and Klein, Jacques and Bissyand\'{e}, Tegawend\'{e} F.},

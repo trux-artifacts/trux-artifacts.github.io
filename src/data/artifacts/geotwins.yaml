@@ -26,6 +26,34 @@ tags:
   - android
   - geographic-disparities
   - empirical-study
+demo:
+  style: terminal
+  intro: >-
+    Set up the environment exactly as documented by the GeoTwins repository,
+    then configure the AndroZoo API key and third-party-library path before
+    running the research-question notebooks in 1_Code/.
+  outputLabel: Documented next steps
+  countOutput: false
+  note: >-
+    Documentation preview only — the command is copied from the official
+    README and is not executed in the browser. Reproducing the analysis also
+    requires AndroZoo access and the data described by the authors.
+  scenarios:
+    - label: Prepare the notebook environment
+      query: |-
+        conda create --name demoEnv python=3.8
+        conda activate demoEnv
+        pip install -r requirements.txt
+      thinking:
+        - Showing the repository's documented environment setup; no command is executed.
+      output:
+        - "Set ANDROZOO_API_KEY in .env."
+        - "Set THIRD_PARTY_LIBS_PATH in .env."
+        - "Run the notebooks under 1_Code/ in research-question order."
+      explanation: >-
+        The repository distributes the analysis primarily as Jupyter notebooks;
+        AppUtils.py extracts APK features and PairwiseAnalysisUtils.py compares
+        regional variants.
 bibtex: |
   @inproceedings{10.1145/3745756.3809191,
     author    = {Alecci, Marco and Ruiz Jim\'{e}nez, Pedro Jes\'{u}s and Samhi, Jordan and Bissyand\'{e}, Tegawend\'{e} F. and Klein, Jacques},
@@ -33,6 +61,10 @@ bibtex: |
     booktitle = {Proceedings of the 24th Annual International Conference on Mobile Systems, Applications and Services},
     year      = {2026},
     pages     = {83--95},
+    series    = {MobiSys '26},
+    month     = {June},
+    location  = {Cambridge, United Kingdom},
+    numpages  = {13},
     publisher = {Association for Computing Machinery},
     address   = {New York, NY, USA},
     doi       = {10.1145/3745756.3809191},

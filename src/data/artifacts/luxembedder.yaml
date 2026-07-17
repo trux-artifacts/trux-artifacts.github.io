@@ -40,9 +40,9 @@ tags:
 dataset:
   stats:
     - value: 25996
-      label: LB–EN parallel pairs (LuxAlign)
+      label: LB–EN parallel pairs (LuxAlign paper/v1)
     - value: 86293
-      label: LB–FR parallel pairs (LuxAlign)
+      label: LB–FR parallel pairs (LuxAlign paper/v1)
     - value: 312
       label: ParaLux benchmark pairs
     - value: 4

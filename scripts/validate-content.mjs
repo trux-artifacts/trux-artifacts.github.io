@@ -56,6 +56,29 @@ function checkUrl(file, label, value) {
   if (value && !isHttpUrl(value)) error(file, `${label} must be an HTTP(S) URL`);
 }
 
+function bibtexField(bibtex, field) {
+  if (typeof bibtex !== 'string') return null;
+  const match = bibtex.match(
+    new RegExp(`^\\s*${field}\\s*=\\s*(?:\\{(.*)\\}|"(.*)")\\s*,?\\s*$`, 'im')
+  );
+  return (match?.[1] ?? match?.[2] ?? '').trim() || null;
+}
+
+function normalizeBibliographicText(value) {
+  return String(value ?? '')
+    .normalize('NFKD')
+    .replace(/\p{M}/gu, '')
+    .replace(/[{}\\]/g, '')
+    .replace(/[‘’'`]/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+function isPreprintVenue(venue) {
+  return /^(arxiv|preprint)$/i.test(String(venue ?? '').trim());
+}
+
 function safeLocalPath(base, relative) {
   const resolvedBase = path.resolve(base);
   const resolved = path.resolve(base, relative);
@@ -129,7 +152,48 @@ for (const file of artifactFiles) {
       error(file, 'paper must provide either doi or url');
     }
     checkUrl(file, 'paper.url', artifact.paper.url);
-    if (!artifact.bibtex) error(file, 'paper is present but bibtex is missing');
+    if (!artifact.bibtex) {
+      error(file, 'paper is present but bibtex is missing');
+    } else {
+      const bibTitle = bibtexField(artifact.bibtex, 'title');
+      const bibYear = bibtexField(artifact.bibtex, 'year');
+      const bibDoi = bibtexField(artifact.bibtex, 'doi');
+
+      if (!bibTitle) {
+        error(file, 'bibtex must provide a title');
+      } else if (
+        normalizeBibliographicText(bibTitle) !==
+        normalizeBibliographicText(artifact.paper.title)
+      ) {
+        error(file, 'paper.title and bibtex title must match');
+      }
+
+      if (!bibYear) {
+        error(file, 'bibtex must provide a year');
+      } else if (String(artifact.paper.year) !== bibYear) {
+        error(file, 'paper.year and bibtex year must match');
+      }
+
+      if (artifact.paper.doi) {
+        if (!/^10\.\d{4,9}\/.+/.test(artifact.paper.doi)) {
+          error(file, 'paper.doi is not a valid DOI');
+        }
+        if (!bibDoi) {
+          error(file, 'paper.doi is present but bibtex doi is missing');
+        } else if (artifact.paper.doi.toLowerCase() !== bibDoi.toLowerCase()) {
+          error(file, 'paper.doi and bibtex doi must match');
+        }
+      } else if (bibDoi) {
+        error(file, 'bibtex doi is present but paper.doi is missing');
+      }
+
+      if (!isPreprintVenue(artifact.paper.venue)) {
+        const citationText = `${artifact.paper.url ?? ''}\n${artifact.bibtex}`;
+        if (/arxiv\.org|10\.48550\/arxiv\./i.test(citationText)) {
+          error(file, 'published papers must link to the final publication, not arXiv');
+        }
+      }
+    }
   }
 
   const links = artifact.links ?? {};
