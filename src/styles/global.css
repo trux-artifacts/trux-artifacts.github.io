@@ -1481,7 +1481,7 @@ a.tag:hover {
   fill: currentColor;
 }
 
-.demo-llm-simulated {
+.demo-llm-preview {
   flex: none;
   padding: 2px 8px;
   border: 1px solid rgba(255, 255, 255, 0.32);
