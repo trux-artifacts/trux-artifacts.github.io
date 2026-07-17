@@ -14,7 +14,7 @@ const artifacts = (await getCollection('artifacts')).sort((a, b) => {
   return yb - ya || a.data.name.localeCompare(b.data.name);
 });
 
-const INITIAL_VISIBLE_PER_AREA = 3;
+const PAGE_SIZE = 12;
 
 const types = ARTIFACT_FILTERS;
 const labels = ARTIFACT_TYPE_LABELS;
@@ -44,11 +44,9 @@ const tagCounts = new Map<string, number>();
 for (const artifact of artifacts) {
   for (const t of artifact.data.tags) tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
 }
-const topTags = [...tagCounts.entries()]
-  .filter(([, n]) => n >= 2)
+const allTags = [...tagCounts.entries()]
   .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-  .slice(0, 10)
-  .map(([t]) => t);
+  .map(([name, count]) => ({ name, count }));
 
 const stats = types
   .filter((t) => counts[t] > 0)
@@ -85,91 +83,202 @@ const stats = types
     </div>
   </div>
 
-  <div class="container">
-    <div class="toolbar">
-      <input
-        type="search"
-        id="search"
-        placeholder="Search artifacts, papers, topics…"
-        aria-label="Search artifacts"
-        aria-controls="artifact-catalog"
-      />
-      <div class="type-filters" role="group" aria-label="Filter by artifact type">
-        {types.map((t) => (
-          <button
-            type="button"
-            class={`chip chip-type${t === 'all' ? ' active' : ''}`}
-            data-filter={t}
-            data-label={labels[t]}
-            aria-pressed={t === 'all' ? 'true' : 'false'}
+  <div class="container catalog-container">
+    <section class="catalog-controls" aria-label="Artifact filters">
+      <div class="toolbar">
+        <label class="search-control" for="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 20-4.35-4.35a8 8 0 1 0-1.41 1.41L19.59 21 21 20ZM5 11a6 6 0 1 1 12 0 6 6 0 0 1-12 0Z"/></svg>
+          <input
+            type="search"
+            id="search"
+            placeholder="Search artifacts, papers, authors…"
+            aria-label="Search artifacts"
             aria-controls="artifact-catalog"
-            hidden={counts[t] === 0 && t !== 'all'}
-          >
-            {labels[t]} ({counts[t]})
-          </button>
-        ))}
-      </div>
-    </div>
+            autocomplete="off"
+          />
+        </label>
 
-    <div class="tags-row" role="group" aria-labelledby="topics-label">
-      <span class="tags-row-label" id="topics-label">Topics</span>
-      {topTags.map((t) => (
-        <button
-          type="button"
-          class="chip chip-tag"
-          data-tag={t}
-          aria-pressed="false"
-          aria-controls="artifact-catalog"
-        >
-          {t}
-        </button>
-      ))}
-    </div>
+        <div class="topic-picker" id="topic-picker">
+          <button
+            class="topic-trigger"
+            id="topic-trigger"
+            type="button"
+            aria-expanded="false"
+            aria-haspopup="dialog"
+            aria-controls="topic-menu"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v2H4V6Zm3 5h10v2H7v-2Zm3 5h4v2h-4v-2Z"/></svg>
+            <span>Topics</span>
+            <span class="topic-trigger-value" id="topic-trigger-value">All topics</span>
+            <span class="topic-selection-count" id="topic-selection-count" hidden>0</span>
+            <svg class="topic-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m5.5 7.5 4.5 4 4.5-4 1 1.1-5.5 5-5.5-5 1-1.1Z"/></svg>
+          </button>
+
+          <div class="topic-menu" id="topic-menu" role="dialog" aria-label="Choose topics" hidden>
+            <div class="topic-menu-heading">
+              <div>
+                <strong>Filter by topic</strong>
+                <span>{allTags.length} topics · match any selected topic</span>
+              </div>
+              <button class="topic-menu-close" id="topic-menu-close" type="button" aria-label="Close topics">×</button>
+            </div>
+            <label class="topic-search-control" for="topic-search">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 20-4.35-4.35a8 8 0 1 0-1.41 1.41L19.59 21 21 20ZM5 11a6 6 0 1 1 12 0 6 6 0 0 1-12 0Z"/></svg>
+              <input id="topic-search" type="search" placeholder="Find a topic…" aria-label="Search topics" autocomplete="off" />
+            </label>
+            <div class="topic-options" id="topic-options" aria-label="Available topics">
+              {allTags.map(({ name, count }) => (
+                <button
+                  class="topic-option"
+                  type="button"
+                  data-tag={name}
+                  aria-pressed="false"
+                  aria-controls="artifact-catalog"
+                >
+                  <span>{name}</span>
+                  <span class="topic-option-count">{count}</span>
+                </button>
+              ))}
+            </div>
+            <p class="topic-menu-empty" id="topic-menu-empty" hidden>No matching topics.</p>
+            <div class="topic-menu-footer">
+              <button class="topic-clear" id="clear-topics" type="button" hidden>Clear topics</button>
+              <button class="topic-done" id="topic-done" type="button">Done</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="type-filter-row">
+        <span class="filter-row-label">Artifact type</span>
+        <div class="type-filters" role="group" aria-label="Filter by artifact type">
+          {types.map((t) => (
+            <button
+              type="button"
+              class={`chip chip-type${t === 'all' ? ' active' : ''}`}
+              data-filter={t}
+              data-label={labels[t]}
+              aria-pressed={t === 'all' ? 'true' : 'false'}
+              aria-controls="artifact-catalog"
+              hidden={counts[t] === 0 && t !== 'all'}
+            >
+              {labels[t]} <span>{counts[t]}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="active-topics-row" id="active-topics-row" hidden>
+        <span class="filter-row-label">Selected topics</span>
+        <div class="active-topics" id="active-topics"></div>
+      </div>
+    </section>
 
     <div class="filter-status-row">
       <p class="result-status" id="result-status" role="status" aria-live="polite" aria-atomic="true">
-        {artifacts.length} {artifacts.length === 1 ? 'artifact' : 'artifacts'} shown
+        {artifacts.length} {artifacts.length === 1 ? 'artifact' : 'artifacts'} · sorted by publication year
       </p>
-      <button class="clear-filters" id="clear-filters" type="button" hidden>Clear filters</button>
+      <button class="clear-filters" id="clear-filters" type="button" hidden>Reset all filters</button>
     </div>
 
-    <div id="artifact-catalog" data-preview-limit={INITIAL_VISIBLE_PER_AREA}>
-      {orderedAreas.map((area, sectionIndex) => (
-        <section class="area-section" data-expanded="false">
-          <h2 class="area-title">
-            {area} <span class="area-count">{byArea.get(area)!.length}</span>
-          </h2>
-          <div class="grid" id={`area-grid-${sectionIndex + 1}`}>
-            {byArea.get(area)!.map((artifact) => <ArtifactCard artifact={artifact} />)}
-          </div>
-          <button
-            class="area-toggle"
-            type="button"
-            aria-controls={`area-grid-${sectionIndex + 1}`}
-            aria-expanded="false"
-            data-area-label={area}
-            hidden
-          >
-            Show all artifacts
+    <div class="catalog-layout">
+      <aside class="area-panel" aria-labelledby="area-panel-title">
+        <div class="area-panel-heading">
+          <span class="catalog-eyebrow">Browse by</span>
+          <h2 id="area-panel-title">Research areas</h2>
+        </div>
+        <div class="area-nav" role="group" aria-label="Filter by research area">
+          <button class="area-filter active" type="button" data-area="" aria-pressed="true">
+            <span>All research areas</span>
+            <span class="area-filter-count">{artifacts.length}</span>
           </button>
-        </section>
-      ))}
-    </div>
+          {orderedAreas.map((area) => (
+            <button class="area-filter" type="button" data-area={area} aria-pressed="false">
+              <span>{area}</span>
+              <span class="area-filter-count">{byArea.get(area)!.length}</span>
+            </button>
+          ))}
+        </div>
 
-    <div class="empty" id="empty" hidden>No artifacts match your search.</div>
+        <label class="area-select-control" for="area-select">
+          <span>Research area</span>
+          <select id="area-select" aria-controls="artifact-catalog">
+            <option value="" data-area-label="All research areas">All research areas ({artifacts.length})</option>
+            {orderedAreas.map((area) => (
+              <option value={area} data-area-label={area}>{area} ({byArea.get(area)!.length})</option>
+            ))}
+          </select>
+        </label>
+      </aside>
+
+      <section class="catalog-results" id="catalog-results" aria-labelledby="catalog-title">
+        <header class="catalog-results-heading">
+          <div>
+            <span class="catalog-eyebrow">Artifact catalog</span>
+            <h2 id="catalog-title" tabindex="-1">All research areas</h2>
+          </div>
+          <span class="sort-note">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 5h8v2H4V5Zm0 4h6v2H4V9Zm0 4h4v2H4v-2Zm10-8h2v7.2l1.6-1.6L19 12l-4 4-4-4 1.4-1.4 1.6 1.6V5Z"/></svg>
+            Publication year ↓
+          </span>
+        </header>
+
+        <div class="grid" id="artifact-catalog" data-page-size={PAGE_SIZE}>
+          {artifacts.map((artifact) => <ArtifactCard artifact={artifact} />)}
+        </div>
+
+        <div class="empty" id="empty" hidden>
+          <strong>No artifacts found</strong>
+          <span>Try another search or remove some filters.</span>
+          <button id="empty-reset" type="button">Reset all filters</button>
+        </div>
+
+        <nav class="pagination" id="pagination" aria-label="Artifact pages" hidden>
+          <button class="pagination-step" id="previous-page" type="button">
+            <span aria-hidden="true">←</span> Previous
+          </button>
+          <div class="page-numbers" id="page-numbers"></div>
+          <span class="mobile-page-status" id="mobile-page-status"></span>
+          <button class="pagination-step" id="next-page" type="button">
+            Next <span aria-hidden="true">→</span>
+          </button>
+        </nav>
+      </section>
+    </div>
   </div>
 
   <script>
     const search = document.getElementById('search') as HTMLInputElement;
     const typeChips = document.querySelectorAll<HTMLButtonElement>('.chip-type');
-    const tagChips = document.querySelectorAll<HTMLButtonElement>('.chip-tag');
+    const areaFilters = document.querySelectorAll<HTMLButtonElement>('.area-filter');
+    const areaSelect = document.getElementById('area-select') as HTMLSelectElement;
+    const topicPicker = document.getElementById('topic-picker')!;
+    const topicTrigger = document.getElementById('topic-trigger') as HTMLButtonElement;
+    const topicTriggerValue = document.getElementById('topic-trigger-value')!;
+    const topicSelectionCount = document.getElementById('topic-selection-count')!;
+    const topicMenu = document.getElementById('topic-menu')!;
+    const topicMenuClose = document.getElementById('topic-menu-close') as HTMLButtonElement;
+    const topicSearch = document.getElementById('topic-search') as HTMLInputElement;
+    const topicOptions = document.querySelectorAll<HTMLButtonElement>('.topic-option');
+    const topicMenuEmpty = document.getElementById('topic-menu-empty')!;
+    const topicDone = document.getElementById('topic-done') as HTMLButtonElement;
+    const clearTopics = document.getElementById('clear-topics') as HTMLButtonElement;
+    const activeTopicsRow = document.getElementById('active-topics-row')!;
+    const activeTopics = document.getElementById('active-topics')!;
     const cards = document.querySelectorAll<HTMLElement>('.card');
     const empty = document.getElementById('empty')!;
-    const sections = document.querySelectorAll<HTMLElement>('.area-section');
+    const emptyReset = document.getElementById('empty-reset') as HTMLButtonElement;
     const catalog = document.getElementById('artifact-catalog')!;
-    const previewLimit = Math.max(1, Number(catalog.dataset.previewLimit ?? '3') || 3);
+    const catalogResults = document.getElementById('catalog-results')!;
+    const catalogTitle = document.getElementById('catalog-title')!;
+    const pageSize = Math.max(1, Number(catalog.dataset.pageSize ?? '12') || 12);
     const resultStatus = document.getElementById('result-status')!;
     const clearFilters = document.getElementById('clear-filters') as HTMLButtonElement;
+    const pagination = document.getElementById('pagination')!;
+    const previousPage = document.getElementById('previous-page') as HTMLButtonElement;
+    const nextPage = document.getElementById('next-page') as HTMLButtonElement;
+    const pageNumbers = document.getElementById('page-numbers')!;
+    const mobilePageStatus = document.getElementById('mobile-page-status')!;
     const cardTags = new Map<HTMLElement, string[]>();
     cards.forEach((card) => {
       try {
@@ -183,8 +292,22 @@ const stats = types
       }
     });
 
+    const validTypes = new Set([...typeChips].map((chip) => chip.dataset.filter ?? 'all'));
+    const validAreas = new Set([...areaFilters].map((filter) => filter.dataset.area ?? ''));
+    const validTags = new Set([...topicOptions].map((option) => option.dataset.tag ?? ''));
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     let activeType = 'all';
-    let activeTag: string | null = null;
+    let activeArea = '';
+    let selectedTopics = new Set<string>();
+    let currentPage = 1;
+
+    function normalize(value: string) {
+      return value
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+    }
 
     function setActiveType(type: string) {
       activeType = type;
@@ -195,134 +318,309 @@ const stats = types
       });
     }
 
-    function setActiveTag(tag: string | null) {
-      activeTag = tag;
-      tagChips.forEach((chip) => {
-        const active = chip.dataset.tag === activeTag;
-        chip.classList.toggle('active', active);
-        chip.setAttribute('aria-pressed', String(active));
+    function setTopicMenu(open: boolean) {
+      topicMenu.hidden = !open;
+      topicTrigger.setAttribute('aria-expanded', String(open));
+      topicPicker.classList.toggle('open', open);
+      if (open) {
+        window.setTimeout(() => topicSearch.focus(), 0);
+      } else {
+        topicSearch.value = '';
+        filterTopicOptions();
+      }
+    }
+
+    function filterTopicOptions() {
+      const query = normalize(topicSearch.value.trim());
+      let visible = 0;
+      topicOptions.forEach((option) => {
+        const matches = !query || normalize(option.dataset.tag ?? '').includes(query);
+        option.hidden = !matches;
+        if (matches) visible++;
+      });
+      topicMenuEmpty.hidden = visible !== 0;
+    }
+
+    function renderActiveTopics() {
+      activeTopics.replaceChildren();
+      const sortedTopics = [...selectedTopics].sort((a, b) => a.localeCompare(b));
+      sortedTopics.slice(0, 4).forEach((tag) => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'active-topic-chip';
+        chip.setAttribute('aria-label', `Remove topic ${tag}`);
+        const label = document.createElement('span');
+        label.textContent = tag;
+        const remove = document.createElement('span');
+        remove.setAttribute('aria-hidden', 'true');
+        remove.textContent = '×';
+        chip.append(label, remove);
+        chip.addEventListener('click', () => {
+          selectedTopics.delete(tag);
+          currentPage = 1;
+          apply('push');
+          topicTrigger.focus();
+        });
+        activeTopics.append(chip);
+      });
+      if (sortedTopics.length > 4) {
+        const more = document.createElement('button');
+        more.type = 'button';
+        more.className = 'active-topic-more';
+        more.textContent = `+${sortedTopics.length - 4} more`;
+        more.setAttribute('aria-label', `Manage ${sortedTopics.length - 4} additional selected topics`);
+        more.addEventListener('click', (event) => {
+          event.stopPropagation();
+          setTopicMenu(true);
+        });
+        activeTopics.append(more);
+      }
+      activeTopicsRow.hidden = sortedTopics.length === 0;
+    }
+
+    function syncControls() {
+      setActiveType(activeType);
+      areaFilters.forEach((filter) => {
+        const active = (filter.dataset.area ?? '') === activeArea;
+        filter.classList.toggle('active', active);
+        filter.setAttribute('aria-pressed', String(active));
+      });
+      areaSelect.value = activeArea;
+      topicOptions.forEach((option) => {
+        const active = selectedTopics.has(option.dataset.tag ?? '');
+        option.classList.toggle('active', active);
+        option.setAttribute('aria-pressed', String(active));
+      });
+      const topicCount = selectedTopics.size;
+      topicSelectionCount.textContent = String(topicCount);
+      topicSelectionCount.hidden = topicCount === 0;
+      clearTopics.hidden = topicCount === 0;
+      topicTriggerValue.textContent = topicCount === 0
+        ? 'All topics'
+        : topicCount === 1
+          ? [...selectedTopics][0]
+          : `${topicCount} selected`;
+      renderActiveTopics();
+    }
+
+    function writeUrl(mode: 'push' | 'replace' | 'none') {
+      if (mode === 'none') return;
+      const params = new URLSearchParams();
+      const query = search.value.trim();
+      if (query) params.set('q', query);
+      if (activeType !== 'all') params.set('type', activeType);
+      if (activeArea) params.set('area', activeArea);
+      [...selectedTopics].sort((a, b) => a.localeCompare(b)).forEach((tag) => params.append('topic', tag));
+      if (currentPage > 1) params.set('page', String(currentPage));
+      const nextUrl = `${window.location.pathname}${params.size ? `?${params.toString()}` : ''}`;
+      window.history[mode === 'push' ? 'pushState' : 'replaceState'](null, '', nextUrl);
+    }
+
+    function pageSequence(pageCount: number) {
+      const pages = new Set([1, pageCount, currentPage - 1, currentPage, currentPage + 1]);
+      const validPages = [...pages].filter((page) => page >= 1 && page <= pageCount).sort((a, b) => a - b);
+      const sequence: Array<number | 'ellipsis'> = [];
+      validPages.forEach((page, index) => {
+        if (index > 0 && page - validPages[index - 1] > 1) sequence.push('ellipsis');
+        sequence.push(page);
+      });
+      return sequence;
+    }
+
+    function goToPage(page: number) {
+      currentPage = page;
+      apply('push');
+      catalogResults.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      window.setTimeout(() => catalogTitle.focus({ preventScroll: true }), reduceMotion ? 0 : 250);
+    }
+
+    function renderPagination(pageCount: number) {
+      pagination.hidden = pageCount <= 1;
+      previousPage.disabled = currentPage <= 1;
+      nextPage.disabled = currentPage >= pageCount;
+      mobilePageStatus.textContent = `Page ${currentPage} of ${Math.max(1, pageCount)}`;
+      pageNumbers.replaceChildren();
+      pageSequence(pageCount).forEach((item) => {
+        if (item === 'ellipsis') {
+          const ellipsis = document.createElement('span');
+          ellipsis.className = 'page-ellipsis';
+          ellipsis.textContent = '…';
+          ellipsis.setAttribute('aria-hidden', 'true');
+          pageNumbers.append(ellipsis);
+          return;
+        }
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'page-number';
+        button.textContent = String(item);
+        button.setAttribute('aria-label', `Go to page ${item}`);
+        if (item === currentPage) button.setAttribute('aria-current', 'page');
+        button.addEventListener('click', () => goToPage(item));
+        pageNumbers.append(button);
       });
     }
 
-    function apply() {
+    function apply(historyMode: 'push' | 'replace' | 'none' = 'replace') {
       const rawQuery = search.value.trim();
-      const q = rawQuery.toLowerCase();
-      const matches = new Map<HTMLElement, boolean>();
-      let matching = 0;
-      let displayed = 0;
+      const q = normalize(rawQuery);
+      const matchingCards: HTMLElement[] = [];
+      const availableByArea = new Map<string, number>();
+      let availableAcrossAreas = 0;
 
       cards.forEach((card) => {
         const typeOk = activeType === 'all' || card.dataset.type === activeType;
         const textOk = !q || (card.dataset.search ?? '').includes(q);
-        const tagOk = !activeTag || (cardTags.get(card) ?? []).includes(activeTag);
-        const match = typeOk && textOk && tagOk;
-        matches.set(card, match);
-        if (match) matching++;
-      });
-
-      sections.forEach((section) => {
-        const sectionCards = [...section.querySelectorAll<HTMLElement>('.card')];
-        const matchingCards = sectionCards.filter((card) => matches.get(card));
-        const expanded = section.dataset.expanded === 'true';
-
-        sectionCards.forEach((card) => (card.hidden = true));
-        matchingCards.forEach((card, index) => {
-          const show = expanded || index < previewLimit;
-          card.hidden = !show;
-          if (show) displayed++;
-        });
-
-        section.hidden = matchingCards.length === 0;
-        const areaCount = section.querySelector<HTMLElement>('.area-count');
-        if (areaCount) areaCount.textContent = String(matchingCards.length);
-
-        const toggle = section.querySelector<HTMLButtonElement>('.area-toggle');
-        if (toggle) {
-          const canExpand = matchingCards.length > previewLimit;
-          const hiddenCount = Math.max(0, matchingCards.length - previewLimit);
-          const areaLabel = toggle.dataset.areaLabel ?? 'this area';
-          toggle.hidden = !canExpand;
-          toggle.setAttribute('aria-expanded', String(expanded));
-          toggle.textContent = expanded
-            ? 'Show fewer'
-            : `Show ${hiddenCount} more ${hiddenCount === 1 ? 'artifact' : 'artifacts'}`;
-          toggle.setAttribute(
-            'aria-label',
-            expanded
-              ? `Show fewer artifacts in ${areaLabel}`
-              : `Show ${hiddenCount} more ${hiddenCount === 1 ? 'artifact' : 'artifacts'} in ${areaLabel}`
-          );
+        const tags = cardTags.get(card) ?? [];
+        const tagOk = selectedTopics.size === 0 || tags.some((tag) => selectedTopics.has(tag));
+        const baseMatch = typeOk && textOk && tagOk;
+        const cardArea = card.dataset.area ?? '';
+        if (baseMatch) {
+          availableAcrossAreas++;
+          availableByArea.set(cardArea, (availableByArea.get(cardArea) ?? 0) + 1);
+          if (!activeArea || cardArea === activeArea) matchingCards.push(card);
         }
       });
 
+      areaFilters.forEach((filter) => {
+        const area = filter.dataset.area ?? '';
+        const count = area ? (availableByArea.get(area) ?? 0) : availableAcrossAreas;
+        const countElement = filter.querySelector<HTMLElement>('.area-filter-count');
+        if (countElement) countElement.textContent = String(count);
+      });
+      [...areaSelect.options].forEach((option) => {
+        const area = option.value;
+        const count = area ? (availableByArea.get(area) ?? 0) : availableAcrossAreas;
+        option.textContent = `${option.dataset.areaLabel ?? area} (${count})`;
+      });
+
+      const matching = matchingCards.length;
+      const pageCount = Math.ceil(matching / pageSize);
+      currentPage = pageCount === 0 ? 1 : Math.min(Math.max(1, currentPage), pageCount);
+      const firstIndex = (currentPage - 1) * pageSize;
+      const visibleCards = new Set(matchingCards.slice(firstIndex, firstIndex + pageSize));
+      cards.forEach((card) => (card.hidden = !visibleCards.has(card)));
+
+      const firstResult = matching === 0 ? 0 : firstIndex + 1;
+      const lastResult = Math.min(firstIndex + pageSize, matching);
       empty.hidden = matching !== 0;
+      catalog.hidden = matching === 0;
+      catalogTitle.textContent = activeArea || 'All research areas';
       const constraints: string[] = [];
       if (activeType !== 'all') {
         const chip = [...typeChips].find((item) => item.dataset.filter === activeType);
         constraints.push(chip?.dataset.label ?? activeType);
       }
-      if (activeTag) constraints.push(`topic: ${activeTag}`);
-      if (rawQuery) constraints.push(`search: “${rawQuery}”`);
+      if (activeArea) constraints.push(activeArea);
+      if (selectedTopics.size) constraints.push(`${selectedTopics.size} ${selectedTopics.size === 1 ? 'topic' : 'topics'}`);
+      if (rawQuery) constraints.push(`“${rawQuery}”`);
       const suffix = constraints.length ? ` · ${constraints.join(' · ')}` : '';
-      resultStatus.textContent = displayed < matching
-        ? `Showing ${displayed} of ${matching} artifacts${suffix} · newest in each area`
-        : `${matching} ${matching === 1 ? 'artifact' : 'artifacts'} shown${suffix}`;
+      resultStatus.textContent = matching === 0
+        ? `No artifacts found${suffix}`
+        : `Showing ${firstResult}–${lastResult} of ${matching} ${matching === 1 ? 'artifact' : 'artifacts'}${suffix}`;
       clearFilters.hidden = constraints.length === 0;
+      syncControls();
+      renderPagination(pageCount);
+      writeUrl(historyMode);
     }
 
-    search.addEventListener('input', apply);
+    function resetFilters() {
+      search.value = '';
+      activeType = 'all';
+      activeArea = '';
+      selectedTopics.clear();
+      currentPage = 1;
+      setTopicMenu(false);
+      apply('push');
+      search.focus();
+    }
+
+    function readUrlState() {
+      const params = new URLSearchParams(window.location.search);
+      const requestedType = params.get('type') ?? 'all';
+      const requestedArea = params.get('area') ?? '';
+      activeType = validTypes.has(requestedType) ? requestedType : 'all';
+      activeArea = validAreas.has(requestedArea) ? requestedArea : '';
+      selectedTopics = new Set(params.getAll('topic').filter((tag) => validTags.has(tag)));
+      search.value = params.get('q') ?? '';
+      const requestedPage = Number.parseInt(params.get('page') ?? '1', 10);
+      currentPage = Number.isFinite(requestedPage) ? Math.max(1, requestedPage) : 1;
+    }
+
+    search.addEventListener('input', () => {
+      currentPage = 1;
+      apply('replace');
+    });
     typeChips.forEach((chip) => {
       chip.addEventListener('click', () => {
-        setActiveType(chip.dataset.filter ?? 'all');
-        apply();
+        activeType = chip.dataset.filter ?? 'all';
+        currentPage = 1;
+        apply('push');
       });
     });
 
-    tagChips.forEach((chip) => {
-      chip.addEventListener('click', () => {
-        const tag = chip.dataset.tag ?? null;
-        setActiveTag(activeTag === tag ? null : tag);
-        apply();
+    areaFilters.forEach((filter) => {
+      filter.addEventListener('click', () => {
+        activeArea = filter.dataset.area ?? '';
+        currentPage = 1;
+        apply('push');
       });
     });
 
-    sections.forEach((section) => {
-      const toggle = section.querySelector<HTMLButtonElement>('.area-toggle');
-      toggle?.addEventListener('click', () => {
-        const expanding = section.dataset.expanded !== 'true';
-        section.dataset.expanded = String(expanding);
-        apply();
-        if (expanding) {
-          const firstRevealedCard = section.querySelectorAll<HTMLAnchorElement>('.card:not([hidden])')[
-            previewLimit
-          ];
-          firstRevealedCard?.focus();
-        }
+    areaSelect.addEventListener('change', () => {
+      activeArea = areaSelect.value;
+      currentPage = 1;
+      apply('push');
+    });
+
+    topicTrigger.addEventListener('click', () => setTopicMenu(topicMenu.hidden));
+    topicMenuClose.addEventListener('click', () => {
+      setTopicMenu(false);
+      topicTrigger.focus();
+    });
+    topicDone.addEventListener('click', () => {
+      setTopicMenu(false);
+      topicTrigger.focus();
+    });
+    topicSearch.addEventListener('input', filterTopicOptions);
+    topicOptions.forEach((option) => {
+      option.addEventListener('click', () => {
+        const tag = option.dataset.tag ?? '';
+        if (selectedTopics.has(tag)) selectedTopics.delete(tag);
+        else selectedTopics.add(tag);
+        currentPage = 1;
+        apply('push');
       });
     });
 
-    clearFilters.addEventListener('click', () => {
-      search.value = '';
-      setActiveType('all');
-      setActiveTag(null);
-      apply();
-      search.focus();
+    clearTopics.addEventListener('click', () => {
+      selectedTopics.clear();
+      currentPage = 1;
+      apply('push');
+      topicSearch.focus();
     });
+    clearFilters.addEventListener('click', resetFilters);
+    emptyReset.addEventListener('click', resetFilters);
+    previousPage.addEventListener('click', () => goToPage(Math.max(1, currentPage - 1)));
+    nextPage.addEventListener('click', () => goToPage(currentPage + 1));
 
-    const topic = new URLSearchParams(window.location.search).get('topic');
-    if (topic) {
-      const chip = [...tagChips].find((c) => c.dataset.tag === topic);
-      if (chip) {
-        setActiveTag(topic);
-      } else {
-        search.value = topic;
-        search.focus();
+    document.addEventListener('click', (event) => {
+      if (!topicMenu.hidden && !topicPicker.contains(event.target as Node)) setTopicMenu(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !topicMenu.hidden) {
+        setTopicMenu(false);
+        topicTrigger.focus();
       }
-    }
-    apply();
+    });
+    window.addEventListener('popstate', () => {
+      readUrlState();
+      apply('none');
+    });
+
+    readUrlState();
+    apply('replace');
 
     const fmt = new Intl.NumberFormat('en-US');
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     function showFinalCount(el: HTMLElement) {
       el.textContent = fmt.format(Number(el.dataset.target ?? '0'));

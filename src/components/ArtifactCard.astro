@@ -22,6 +22,8 @@ const search = [
   paper?.year?.toString() ?? '',
 ]
   .join(' ')
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
   .toLowerCase();
 ---
 
@@ -29,16 +31,18 @@ const search = [
   class="card"
   href={`/artifacts/${artifact.id}/`}
   data-type={type}
+  data-area={area}
   data-search={search}
   data-tags={JSON.stringify(tags)}
 >
+  <span class="card-area">{area}</span>
   <div class="card-head">
     <h3>{name}</h3>
     <span class={`badge ${type}`}>{type}</span>
   </div>
   <p>{description}</p>
   <div class="card-meta">
-    {paper && <span>{paper.venue} {paper.year}</span>}
+    {paper && <span class="venue-badge">{paper.venue} {paper.year}</span>}
     <span class={`status ${status}`}>{status}</span>
   </div>
   {logoSrc && <img class="card-logo" src={logoSrc} width="22" height="22" alt="" loading="lazy" />}
