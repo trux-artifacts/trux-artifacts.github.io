@@ -29,7 +29,11 @@ tags:
   - code-generation
   - benchmarks
 demo:
-  style: patch
+  style: llm
+  engineLabel: Code LLM perturbation audit
+  inputLabel: Prompt under test
+  outputLabel: Perturbation comparison
+  countOutput: false
   intro: >-
     Choose a benchmark task to preview how CodeLLM-Memo can compare a model's
     response before and after a small, meaning-preserving perturbation. The mock
@@ -40,6 +44,7 @@ demo:
     the framework's workflow; they are not measurements reported by the paper.
   scenarios:
     - label: Reword a generation prompt
+      query: Write a Python function to check whether a number is prime.
       file: Code generation · mock CodeLlama run
       pattern: semantic-preserving prompt rewrite
       thinking:
@@ -59,6 +64,7 @@ demo:
         but degrades after a harmless rewrite. The UI presents the kind of
         sensitivity CodeLLM-Memo is designed to quantify, not a paper result.
     - label: Rename repair variables
+      query: 'Repair the off-by-one bug in this Java loop: for (int i = 0; i <= n; i++).'
       file: Program repair · mock CodeLlama run
       pattern: identifier obfuscation
       thinking:
@@ -78,6 +84,7 @@ demo:
         renamed equivalent. This fictional contrast demonstrates how a
         perturbation can expose reliance on surface form.
     - label: Rephrase bubble sort
+      query: Implement bubble sort in Java.
       file: Code generation · mock StarCoder run
       pattern: punctuation and wording change
       thinking:
@@ -97,6 +104,7 @@ demo:
         outcome: behavior consistent with a capability that survives a surface
         perturbation.
     - label: Rename summarization code
+      query: 'Summarize this Java method: public int add(int a, int b) { return a + b; }'
       file: Code summarization · mock CodeLlama run
       pattern: function and parameter renaming
       thinking:

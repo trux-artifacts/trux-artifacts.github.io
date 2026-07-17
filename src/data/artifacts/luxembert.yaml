@@ -70,7 +70,9 @@ dataset:
       tok = AutoTokenizer.from_pretrained("lothritz/LuxemBERT")
       model = AutoModelForMaskedLM.from_pretrained("lothritz/LuxemBERT")
 demo:
-  style: terminal
+  style: llm
+  engineLabel: LuxemBERT
+  inputLabel: Fill-mask prompt
   intro: >-
     Try three Luxembourgish masked-language prompts and preview the top tokens a
     LuxemBERT fill-mask pipeline could return.
@@ -83,7 +85,7 @@ demo:
     measurements.
   scenarios:
     - label: Describe Luxembourg
-      query: pipe("Lëtzebuerg ass e [MASK] Land.", top_k=3)
+      query: Lëtzebuerg ass e [MASK] Land.
       thinking:
         - Loading the LuxemBERT tokenizer…
         - Locating the masked token in the Luxembourgish sentence…
@@ -96,7 +98,7 @@ demo:
         The preview mimics a standard Hugging Face fill-mask response while
         keeping all displayed probabilities explicitly simulated.
     - label: Complete the weather
-      query: pipe("D'Wieder ass haut [MASK].", top_k=3)
+      query: D'Wieder ass haut [MASK].
       thinking:
         - Tokenizing a short everyday Luxembourgish sentence…
         - Scoring adjectives that fit the masked position…
@@ -109,7 +111,7 @@ demo:
         Multiple completions remain linguistically possible; these rankings are
         a plausible illustration rather than an actual inference trace.
     - label: Complete a destination
-      query: pipe("Ech fuere muer mam Zuch op [MASK].", top_k=3)
+      query: Ech fuere muer mam Zuch op [MASK].
       thinking:
         - Encoding the travel context around the mask…
         - Ranking place-like continuations from the model vocabulary…

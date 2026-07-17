@@ -170,7 +170,9 @@ const scenarioSchema = z
 const demoSchema = z
   .object({
     intro: nonBlank.optional(),
-    style: z.enum(['llm', 'terminal', 'patch', 'image']).default('llm'),
+    style: z.enum(['llm', 'terminal', 'patch', 'image']),
+    engineLabel: trimmedNonBlank.max(80).default('AI model'),
+    inputLabel: trimmedNonBlank.max(50).default('Prompt'),
     outputLabel: trimmedNonBlank.default('Output'),
     countOutput: z.boolean().default(true),
     note: nonBlank.default('Precomputed example — no live model is called.'),

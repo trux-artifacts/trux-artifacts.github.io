@@ -35,6 +35,9 @@ tags:
   - privacy
   - compliance
 demo:
+  style: llm
+  engineLabel: AppComplianceLLM · Llama 3.1 8B
+  inputLabel: Compliance prompt
   intro: >-
     AppComplianceLLM checks whether an Android app satisfies a privacy
     requirement straight from its Smali bytecode — no source code, no privacy

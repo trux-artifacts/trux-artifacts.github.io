@@ -31,6 +31,9 @@ tags:
   - deep-learning
   - negative-results
 demo:
+  style: llm
+  engineLabel: CoDoC classifier
+  inputLabel: Classification request
   intro: >-
     CoDoC decides whether an Android framework method is a privacy-sensitive
     SOURCE, a SINK, or NEITHER — by fusing two views of the method: its source

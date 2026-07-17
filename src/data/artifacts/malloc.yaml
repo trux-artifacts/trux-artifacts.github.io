@@ -35,6 +35,9 @@ tags:
   - llm
   - payload-localization
 demo:
+  style: llm
+  engineLabel: MalLoc LLM pipeline
+  inputLabel: Behavior query
   intro: >-
     MalLoc localizes malicious payloads in Android malware at method level, in
     two LLM phases. Phase 1 identifies which Smali class implements a given

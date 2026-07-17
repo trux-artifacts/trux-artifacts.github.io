@@ -286,7 +286,11 @@ for (const file of artifactFiles) {
   }
 
   if (artifact.demo) {
-    const style = artifact.demo.style ?? 'llm';
+    const style = artifact.demo.style;
+    if (!['llm', 'terminal', 'patch', 'image'].includes(style)) {
+      error(file, 'demo.style must explicitly be llm, terminal, patch, or image');
+      continue;
+    }
     if (!Array.isArray(artifact.demo.scenarios) || artifact.demo.scenarios.length < 2) {
       error(file, 'demo must provide at least two scenarios');
       continue;

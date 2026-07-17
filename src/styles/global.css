@@ -1443,13 +1443,6 @@ a.tag:hover {
   margin: 0;
 }
 
-.demo-query {
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 13.5px;
-  color: var(--text-2);
-  margin: 0 0 14px;
-}
-
 .demo-thinking {
   display: flex;
   align-items: center;
@@ -1476,28 +1469,200 @@ a.tag:hover {
   animation: demo-fade 0.4s ease;
 }
 
-.demo-output-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-2);
-  margin: 0 0 10px;
+.demo-llm {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
 }
 
-.demo-output {
+.demo-llm-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 12px;
+  background: var(--venue-bg);
+  color: var(--venue-fg);
+}
+
+.demo-llm-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  font-size: 12.5px;
+  font-weight: 750;
+}
+
+.demo-llm-brand span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.demo-llm-brand svg {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
+}
+
+.demo-llm-simulated {
+  flex: none;
+  padding: 2px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.11);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.demo-llm-conversation {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 12px;
+  padding: 16px;
 }
 
-.demo-method {
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 12.5px;
-  background: var(--gray-bg);
-  border-radius: 6px;
-  padding: 5px 10px;
-  width: fit-content;
-  max-width: 100%;
+.demo-llm-message {
+  padding: 12px 13px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.demo-llm-message.user {
+  margin-left: min(9%, 48px);
+  background: var(--selection-bg);
+}
+
+.demo-llm-message.model {
+  margin-right: min(9%, 48px);
+  background: var(--surface-1);
+}
+
+.demo-llm-message-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+  color: var(--text-2);
+  font-size: 11.5px;
+}
+
+.demo-llm-message-head strong {
   overflow-wrap: anywhere;
+}
+
+.demo-llm-avatar {
+  display: inline-grid;
+  flex: none;
+  width: 27px;
+  height: 27px;
+  border-radius: 8px;
+  place-items: center;
+}
+
+.demo-llm-avatar.user {
+  background: var(--selection-fg);
+  color: var(--surface);
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.demo-llm-avatar.model {
+  background: var(--venue-bg);
+  color: var(--venue-fg);
+}
+
+.demo-llm-avatar svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+}
+
+.demo-llm-prompt {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.demo-llm-context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.demo-llm-context span {
+  padding: 3px 7px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-3);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.demo-llm-processing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-3);
+  font-size: 13px;
+}
+
+.demo-llm-processing > span {
+  display: grid;
+  min-width: 0;
+}
+
+.demo-llm-processing small {
+  margin-bottom: 1px;
+  color: var(--text-3);
+  font-size: 9.5px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.demo-llm-response-head {
+  margin: 0 0 7px;
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.demo-llm-response {
+  max-height: 460px;
+  margin: 0;
+  padding: 12px 13px;
+  overflow: auto;
+  border: 1px solid #30353d;
+  border-radius: 8px;
+  background: #14161b;
+  color: #d8dee9;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.demo-llm-response-line {
   animation: demo-fade 0.35s ease;
 }
 
@@ -2147,6 +2312,16 @@ a.tag:hover {
   .demo-box,
   .figure-box {
     padding: 16px;
+  }
+
+  .demo-llm-conversation {
+    padding: 12px;
+  }
+
+  .demo-llm-message.user,
+  .demo-llm-message.model {
+    margin-right: 0;
+    margin-left: 0;
   }
 
   .not-found {

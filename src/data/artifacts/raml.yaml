@@ -31,6 +31,7 @@ tags:
   - llm
   - retrieval-augmented
 demo:
+  style: terminal
   intro: >-
     Pick a behavior. RAML describes Smali classes, retrieves and re-ranks the
     candidates most related to the behavior, then pinpoints the methods involved

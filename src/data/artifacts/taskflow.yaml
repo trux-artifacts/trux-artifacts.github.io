@@ -29,6 +29,9 @@ tags:
   - llm
   - sources-and-sinks
 demo:
+  style: llm
+  engineLabel: TaskFlow LLM pipeline
+  inputLabel: Analysis task
   intro: >-
     Describe an Android taint-analysis task. TaskFlow filters, embeds, clusters
     and refines framework methods into a focused SOURCE list for that specific

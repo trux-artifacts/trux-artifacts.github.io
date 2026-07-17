@@ -362,16 +362,66 @@ const statNumberFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits:
         '</svg>';
 
       async function playLlm(myRun: number, s: any) {
-        const query = document.createElement('p');
-        query.className = 'demo-query';
-        query.textContent = '❯ ' + s.query;
-        stage.appendChild(query);
+        const session = document.createElement('div');
+        session.className = 'demo-llm';
+        stage.appendChild(session);
 
-        const think = document.createElement('div');
-        think.className = 'demo-thinking';
-        think.innerHTML = brainSvg + '<span class="demo-think-msg"></span>';
-        stage.appendChild(think);
-        const msg = think.querySelector('.demo-think-msg')!;
+        const sessionBar = document.createElement('div');
+        sessionBar.className = 'demo-llm-bar';
+        sessionBar.innerHTML =
+          '<span class="demo-llm-brand"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.7 5.3L19 9l-5.3 1.7L12 16l-1.7-5.3L5 9l5.3-1.7L12 2Zm6 11 .9 2.6 2.6.9-2.6.9L18 20l-.9-2.6-2.6-.9 2.6-.9L18 13Z"/></svg><span class="demo-llm-engine"></span></span>' +
+          '<span class="demo-llm-simulated">Simulated</span>';
+        sessionBar.querySelector('.demo-llm-engine')!.textContent =
+          demoData.engineLabel ?? 'AI model';
+        session.appendChild(sessionBar);
+
+        const conversation = document.createElement('div');
+        conversation.className = 'demo-llm-conversation';
+        session.appendChild(conversation);
+
+        const userMessage = document.createElement('article');
+        userMessage.className = 'demo-llm-message user';
+        const userHead = document.createElement('div');
+        userHead.className = 'demo-llm-message-head';
+        userHead.innerHTML =
+          '<span class="demo-llm-avatar user" aria-hidden="true">You</span><strong></strong>';
+        userHead.querySelector('strong')!.textContent = demoData.inputLabel ?? 'Prompt';
+        userMessage.appendChild(userHead);
+
+        const prompt = document.createElement('div');
+        prompt.className = 'demo-llm-prompt';
+        prompt.textContent = s.query;
+        userMessage.appendChild(prompt);
+
+        if (s.file || s.pattern) {
+          const context = document.createElement('div');
+          context.className = 'demo-llm-context';
+          for (const value of [s.file, s.pattern]) {
+            if (!value) continue;
+            const badge = document.createElement('span');
+            badge.textContent = value;
+            context.appendChild(badge);
+          }
+          userMessage.appendChild(context);
+        }
+        conversation.appendChild(userMessage);
+
+        const modelMessage = document.createElement('article');
+        modelMessage.className = 'demo-llm-message model';
+        const modelHead = document.createElement('div');
+        modelHead.className = 'demo-llm-message-head';
+        modelHead.innerHTML =
+          '<span class="demo-llm-avatar model" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="m10 1 1.4 4.6L16 7l-4.6 1.4L10 13 8.6 8.4 4 7l4.6-1.4L10 1Z"/></svg></span><strong></strong>';
+        modelHead.querySelector('strong')!.textContent = demoData.engineLabel ?? 'AI model';
+        modelMessage.appendChild(modelHead);
+
+        const processing = document.createElement('div');
+        processing.className = 'demo-llm-processing';
+        processing.innerHTML =
+          brainSvg + '<span><small>Simulated pipeline</small><span class="demo-think-msg"></span></span>';
+        modelMessage.appendChild(processing);
+        conversation.appendChild(modelMessage);
+        const msg = processing.querySelector('.demo-think-msg')!;
 
         for (const t of s.thinking) {
           if (run !== myRun) return;
@@ -380,24 +430,25 @@ const statNumberFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits:
         }
         if (run !== myRun) return;
 
-        think.remove();
-        const head = document.createElement('p');
-        head.className = 'demo-output-label';
+        processing.remove();
+        const head = document.createElement('div');
+        head.className = 'demo-llm-response-head';
         const showCount = demoData.countOutput !== false;
         head.textContent = showCount
           ? `${demoData.outputLabel} (${s.output.length})`
           : demoData.outputLabel;
-        stage.appendChild(head);
+        modelMessage.appendChild(head);
 
-        const list = document.createElement('div');
-        list.className = 'demo-output';
-        stage.appendChild(list);
-        for (const m of s.output) {
+        const response = document.createElement('pre');
+        response.className = 'demo-llm-response';
+        modelMessage.appendChild(response);
+        for (const [index, outputLine] of s.output.entries()) {
           if (run !== myRun) return;
           const line = document.createElement('code');
-          line.className = 'demo-method';
-          line.textContent = m;
-          list.appendChild(line);
+          line.className = 'demo-llm-response-line';
+          line.textContent = outputLine || ' ';
+          if (index > 0) response.appendChild(document.createTextNode('\n'));
+          response.appendChild(line);
           await sleep(rand(50, 190));
         }
       }

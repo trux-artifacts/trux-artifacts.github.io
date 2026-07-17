@@ -26,7 +26,9 @@ tags:
   - adversarial
   - security
 demo:
-  style: terminal
+  style: llm
+  engineLabel: Secure-code audit pipeline
+  inputLabel: Developer prompt
   intro: >-
     Choose a fictional secure-code request to preview the audit pipeline. Each
     mock generation is checked by static analyzers, an LLM reviewer, and
