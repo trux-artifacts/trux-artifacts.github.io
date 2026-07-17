@@ -161,6 +161,9 @@ for (const file of artifactFiles) {
   }
 
   if (artifact.paper) {
+    if (isPreprintVenue(artifact.paper.venue)) {
+      error(file, 'only papers published in a venue can have an artifact page');
+    }
     if (!artifact.paper.doi && !artifact.paper.url) {
       error(file, 'paper must provide either doi or url');
     }
@@ -200,11 +203,9 @@ for (const file of artifactFiles) {
         error(file, 'bibtex doi is present but paper.doi is missing');
       }
 
-      if (!isPreprintVenue(artifact.paper.venue)) {
-        const citationText = `${artifact.paper.url ?? ''}\n${artifact.bibtex}`;
-        if (/arxiv\.org|10\.48550\/arxiv\./i.test(citationText)) {
-          error(file, 'published papers must link to the final publication, not arXiv');
-        }
+      const citationText = `${artifact.paper.url ?? ''}\n${artifact.bibtex}`;
+      if (/arxiv\.org|10\.48550\/arxiv\./i.test(citationText)) {
+        error(file, 'published papers must link to the final publication, not arXiv');
       }
     }
   }

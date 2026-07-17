@@ -21,6 +21,14 @@ function isHttpUrl(value: string): boolean {
   }
 }
 
+function isPreprintVenue(value: string): boolean {
+  return /^(?:arxiv|preprint)$/i.test(value.trim());
+}
+
+function isArxivReference(value: string): boolean {
+  return /(?:arxiv\.org|10\.48550\/arxiv\.)/i.test(value);
+}
+
 function isSafePath(value: string, allowRootRelative: boolean): boolean {
   if (
     value.includes('\\') ||
@@ -69,7 +77,9 @@ const resourceSchema = z
 const paperSchema = z
   .object({
     title: trimmedNonBlank,
-    venue: trimmedNonBlank,
+    venue: trimmedNonBlank.refine((value) => !isPreprintVenue(value), {
+      message: 'Only papers published in a venue can have an artifact page',
+    }),
     year: z.number().int().min(1900).max(2100),
     doi: trimmedNonBlank
       .max(255)
@@ -84,6 +94,20 @@ const paperSchema = z
         code: 'custom',
         path: ['doi'],
         message: 'A paper must provide either doi or url',
+      });
+    }
+    if (paper.doi && isArxivReference(paper.doi)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['doi'],
+        message: 'Use the final publication DOI, not an arXiv DOI',
+      });
+    }
+    if (paper.url && isArxivReference(paper.url)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['url'],
+        message: 'Use the final publication URL, not arXiv',
       });
     }
   });
