@@ -5,6 +5,7 @@ description: >-
   A distributed app-collection and analysis pipeline that crawls Google Play
   from seven countries and compares regional app variants (permissions,
   libraries, code, privacy disclosures) to uncover geographic disparities.
+cardDescription: Collects and compares Google Play app variants across seven countries.
 authors:
   - Marco Alecci
   - Pedro Jesús Ruiz Jiménez

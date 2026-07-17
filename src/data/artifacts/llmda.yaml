@@ -6,6 +6,7 @@ description: >-
   LLM-generated explanations, aligns code and text representations
   (PT-Former), and classifies security relevance with a
   similarity-based contrastive layer.
+cardDescription: Detects silent security patches by aligning code changes with LLM-generated explanations.
 authors:
   - Xunzhu Tang
   - Kisub Kim

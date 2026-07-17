@@ -5,6 +5,7 @@ description: >-
   Automatically infects Android apps with logic bombs (trigger-based
   behaviors) to produce ground-truth benchmarks for logic bomb detection —
   the tool behind the TriggerZoo dataset.
+cardDescription: Infects Android apps with logic bombs to benchmark logic-bomb detection tools.
 authors:
   - Jordan Samhi
   - Tegawendé F. Bissyandé

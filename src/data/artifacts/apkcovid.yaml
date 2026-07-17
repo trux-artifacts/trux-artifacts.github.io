@@ -5,6 +5,7 @@ description: >-
   A curated dataset of Android apps related to COVID-19 collected from
   Google Play, supporting the first empirical study of how the pandemic
   was reflected in mobile apps.
+cardDescription: A curated dataset of COVID-19-related Android apps collected from Google Play.
 authors:
   - Jordan Samhi
   - Kevin Allix

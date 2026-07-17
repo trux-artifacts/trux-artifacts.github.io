@@ -7,6 +7,7 @@ description: >-
   natural-language privacy requirement, asks an LLM per method whether that
   method implements the requirement, returning a binary YES/NO answer with an
   explanation.
+cardDescription: Checks Android app methods against natural-language GDPR requirements using an LLM.
 authors:
   - Marco Alecci
   - Nicolas Sannier

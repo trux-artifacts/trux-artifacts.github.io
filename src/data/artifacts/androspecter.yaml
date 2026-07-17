@@ -5,6 +5,7 @@ description: >-
   A Java library that streamlines the static analysis of Java programs and
   Android apps — utilities for Soot/FlowDroid setup, APK handling, and common
   analysis tasks.
+cardDescription: A Java library for configuring Soot and FlowDroid analyses of Android apps.
 authors:
   - Jordan Samhi
 logo: android

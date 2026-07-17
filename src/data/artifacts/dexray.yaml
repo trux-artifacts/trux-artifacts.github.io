@@ -6,6 +6,7 @@ description: >-
   app's DEX bytecode into a grey-scale "vector" image — one pixel per byte — and
   feeds it to a 1-dimensional CNN that predicts malware or goodware, with no
   hand-crafted features.
+cardDescription: Detects Android malware by turning DEX bytecode into grayscale vectors for a 1D CNN.
 authors:
   - Nadia Daoudi
   - Jordan Samhi

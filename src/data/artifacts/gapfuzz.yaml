@@ -8,6 +8,7 @@ description: >-
   contradictory flow rules against a real ONOS cluster and uses a native switch
   oracle to catch divergences, finding them in 81.7% of runs, most of which
   persist well past 30 seconds.
+cardDescription: Fuzzes distributed SDN controllers to detect control-plane and data-plane divergences.
 authors:
   - Moustapha Awwalou Diouf
   - Samuel Ouya

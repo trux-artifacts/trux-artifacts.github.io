@@ -9,6 +9,7 @@ description: >-
   Instead, LETZ builds training data from the Luxembourg Online Dictionary (LOD)
   — synonyms, translations and example sentences — and models trained on it
   outperform the NLI-based approach.
+cardDescription: Provides dictionary-derived data for zero-shot topic classification in Luxembourgish.
 authors:
   - Fred Philippy
   - Shohreh Haddadan

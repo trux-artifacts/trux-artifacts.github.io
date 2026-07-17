@@ -5,6 +5,7 @@ description: >-
   Retrieval-augmented localization of malicious payloads in Android apps —
   combines LLM-generated class descriptions, vector search, and LLM
   re-ranking to pinpoint malicious classes and methods from a behavior query.
+cardDescription: Localizes malicious Android classes and methods through retrieval and LLM re-ranking.
 authors:
   - Tiezhu Sun
   - Marco Alecci

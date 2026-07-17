@@ -5,6 +5,7 @@ description: >-
   A reliable, evolving dataset of 34,813 third-party Android libraries built
   through software dependency analysis, for use in static analysis and
   library-filtering pipelines.
+cardDescription: A dataset of 34,813 third-party Android libraries for static-analysis pipelines.
 authors:
   - Jordan Samhi
   - Tegawendé F. Bissyandé

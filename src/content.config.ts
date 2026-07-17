@@ -245,6 +245,7 @@ const artifactSchema = z
     type: z.enum(ARTIFACT_TYPES),
     area: z.enum(ARTIFACT_AREAS),
     description: nonBlank,
+    cardDescription: trimmedNonBlank.min(40).max(110),
     authors: z.array(trimmedNonBlank).min(1).max(100),
     addedAt: z.iso.date(),
     paper: paperSchema.optional(),

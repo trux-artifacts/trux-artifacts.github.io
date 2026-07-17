@@ -7,6 +7,7 @@ description: >-
   Luxembourgish Wikipedia, aligned RTL news tasks, cross-lingual paraphrasing,
   and dictionary-derived lexical tasks to preserve linguistic and cultural
   nuance while adapting LLMs to Luxembourgish.
+cardDescription: A cross-lingual instruction-tuning dataset for Luxembourgish language models.
 authors:
   - Fred Philippy
   - Laura Bernardy

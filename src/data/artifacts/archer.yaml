@@ -5,6 +5,7 @@ description: >-
   Resolves conditional implicit calls in Android apps (e.g., Thread.start()
   triggering run(), or constraint-guarded JobScheduler executions) to make
   the call graphs of static and dynamic analyzers more sound.
+cardDescription: Resolves conditional implicit calls to improve Android analysis call graphs.
 authors:
   - Jordan Samhi
   - René Just

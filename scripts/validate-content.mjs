@@ -143,6 +143,11 @@ for (const file of artifactFiles) {
     error(file, `area must use the controlled taxonomy: ${artifact.area ?? '(missing)'}`);
   }
 
+  const cardDescription = String(artifact.cardDescription ?? '').trim();
+  if (cardDescription.length < 40 || cardDescription.length > 110) {
+    error(file, 'cardDescription must contain 40–110 characters');
+  }
+
   if ('status' in artifact) {
     error(file, 'status is no longer supported; use the factual addedAt date instead');
   }

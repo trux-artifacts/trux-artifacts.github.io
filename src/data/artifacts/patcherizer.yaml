@@ -8,6 +8,7 @@ description: >-
   embedding powers three downstream tasks: code-change description
   (commit-message) generation, patch correctness assessment, and change-intention
   detection. Trained on a dataset of 90k parsable code changes.
+cardDescription: Learns code-change embeddings for description, correctness, and intention tasks.
 authors:
   - Xunzhu Tang
   - Haoye Tian

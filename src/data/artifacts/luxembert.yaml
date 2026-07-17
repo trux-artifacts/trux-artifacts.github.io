@@ -10,6 +10,7 @@ description: >-
   variants; the paper reports five of six wins over mBERT, with the cased model
   winning all six. The study also creates four annotated downstream datasets,
   available from the authors on request.
+cardDescription: A Luxembourgish BERT model trained with augmented German and Luxembourgish text.
 authors:
   - Cedric Lothritz
   - Bertrand Lebichot

@@ -6,6 +6,7 @@ description: >-
   information-retrieval-based fault localization, generates candidate patches
   from fix patterns, validates them with regression tests, and ranks the
   resulting patches for developers.
+cardDescription: Uses bug reports to localize faults, generate candidate patches, and rank validated repairs.
 authors:
   - Anil Koyuncu
   - Kui Liu

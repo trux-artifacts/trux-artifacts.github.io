@@ -6,6 +6,7 @@ description: >-
   A framework quantifying the memorization advantage of code LLMs via the
   Perturbation Sensitivity Hypothesis — measuring how model performance
   degrades under small, meaning-preserving prompt perturbations.
+cardDescription: Measures how small prompt changes affect memorization in code language models.
 authors:
   - Djiré Albérick Euraste
   - Abdoul Kader Kaboré

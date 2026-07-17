@@ -5,6 +5,7 @@ description: >-
   Improves logic bomb identification in Android apps with context-aware
   anomaly detection, reducing false positives over its predecessor
   Difuzer.
+cardDescription: Identifies Android logic bombs with context-aware anomaly detection to reduce false positives.
 authors:
   - Marco Alecci
   - Jordan Samhi

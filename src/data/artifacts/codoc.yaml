@@ -6,6 +6,7 @@ description: >-
   by fusing two views of each method — its source code (embedded with Code2Vec)
   and its JavaDoc documentation (embedded with Sentence-BERT) — and classifying
   it as SOURCE, SINK, or NEITHER for taint-analysis lists.
+cardDescription: Classifies Android framework methods as privacy sources, sinks, or neither.
 authors:
   - Jordan Samhi
   - Maria Kober

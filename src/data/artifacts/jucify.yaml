@@ -5,6 +5,7 @@ description: >-
   Unifies Android bytecode and native code into a single representation so
   static analyzers can see the whole app — revealing sensitive flows that
   cross the Java/native boundary.
+cardDescription: Unifies Android bytecode and native code to expose cross-boundary flows to static analysis.
 authors:
   - Jordan Samhi
   - Jun Gao

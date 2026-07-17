@@ -5,6 +5,7 @@ description: >-
   Reveals atypical inter-component communication (ICC) in Android apps by
   instrumenting them so that state-of-the-art analyzers such as FlowDroid can
   detect previously missed data leaks.
+cardDescription: Instruments Android apps to reveal atypical ICC and previously missed data leaks.
 authors:
   - Jordan Samhi
   - Alexandre Bartel

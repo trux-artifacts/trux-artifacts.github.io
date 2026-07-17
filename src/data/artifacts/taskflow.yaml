@@ -5,6 +5,7 @@ description: >-
   An LLM-driven framework that generates task-specific lists of SOURCE
   methods for Android taint analysis, replacing static generic lists with
   specifications tailored to the analysis goal.
+cardDescription: Generates task-specific Android taint sources from natural-language analysis goals.
 authors:
   - Marco Alecci
   - Jordan Samhi

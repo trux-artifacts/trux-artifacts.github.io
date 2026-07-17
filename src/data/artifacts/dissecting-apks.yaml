@@ -7,6 +7,7 @@ description: >-
   25 SDK versions (2010–2023), studying how file types and sizes evolve, and
   measuring how disguised and discrepant files (wrong extensions, APKs embedded
   in other APKs) hint at maliciousness.
+cardDescription: Catalogues file types in 410,125 Google Play APKs to study trends and security anomalies.
 authors:
   - Pedro Jesús Ruiz Jiménez
   - Jordan Samhi

@@ -6,6 +6,7 @@ description: >-
   trigger-based behavior using AndroBomb: 240 contain logic bombs and 166
   contain benign trigger-based behavior, providing ground truth for evaluating
   logic bomb detectors.
+cardDescription: A labeled Android dataset for evaluating trigger-based logic bomb detectors.
 authors:
   - Jordan Samhi
   - Tegawendé F. Bissyandé

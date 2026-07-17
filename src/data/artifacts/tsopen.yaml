@@ -4,6 +4,7 @@ area: Android Security & Malware
 description: >-
   Open-source implementation of trigger-based behavior detection (logic bombs)
   in Android apps, built on top of Soot and FlowDroid.
+cardDescription: Detects trigger-based behaviors and logic bombs in Android apps with static analysis.
 authors:
   - Jordan Samhi
   - Alexandre Bartel

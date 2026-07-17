@@ -4,6 +4,7 @@ area: Android Security & Malware
 description: >-
   Uncovers suspicious hidden sensitive operations in Android apps by combining
   static taint analysis with anomaly detection on inter-procedural triggers.
+cardDescription: Finds suspicious hidden operations in Android apps using taint and anomaly analysis.
 authors:
   - Jordan Samhi
   - Li Li

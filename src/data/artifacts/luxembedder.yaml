@@ -8,6 +8,7 @@ description: >-
   models on all four evaluation tasks and even proprietary models on three of
   four. The work also releases LuxAlign (an LB–EN / LB–FR parallel corpus) and
   ParaLux (a Luxembourgish paraphrase-detection benchmark).
+cardDescription: Luxembourgish sentence embeddings trained on a verified cross-lingual parallel corpus.
 authors:
   - Fred Philippy
   - Siwen Guo

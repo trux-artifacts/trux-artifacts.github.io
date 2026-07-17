@@ -7,6 +7,7 @@ description: >-
   given malicious behavior, then Phase 2 pinpoints the exact methods inside it
   and gives each a plain-language role — going beyond coarse malware detection
   and family classification to actionable, method-level explanations.
+cardDescription: Locates malicious Android classes and methods with LLM-generated explanations.
 authors:
   - Tiezhu Sun
   - Marco Alecci

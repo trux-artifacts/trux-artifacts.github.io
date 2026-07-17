@@ -6,7 +6,7 @@ interface Props {
 }
 
 const { artifact } = Astro.props;
-const { name, type, area, description, authors, paper, tags, badges, logo, links, dataset, demo, license } = artifact.data;
+const { name, type, area, description, cardDescription, authors, paper, tags, badges, logo, links, dataset, demo, license } = artifact.data;
 const logoSrc = logo ? (/^https?:\/\//i.test(logo) ? logo : `/logos/${logo}.svg`) : null;
 
 type ResourceKind =
@@ -43,6 +43,7 @@ if (license) resources.push({ kind: 'license', label: 'License' });
 if (paper) resources.push({ kind: 'paper', label: 'Paper' });
 const search = [
   name,
+  cardDescription,
   description,
   type,
   area,
@@ -75,7 +76,7 @@ const search = [
     <h3>{name}</h3>
     <span class={`badge ${type}`}>{type}</span>
   </div>
-  <p>{description}</p>
+  <p>{cardDescription}</p>
   {paper && (
     <div class="card-meta">
       <span class="venue-badge">{paper.venue} {paper.year}</span>

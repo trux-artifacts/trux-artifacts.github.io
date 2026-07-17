@@ -5,6 +5,7 @@ description: >-
   Prevents a flood of irrelevant data flows in Android taint analysis by
   scoring the semantic relevance of each reported flow, keeping analysts
   focused on the flows that matter.
+cardDescription: Scores Android taint-analysis flows by semantic relevance to reduce noise.
 authors:
   - Marco Alecci
   - Jordan Samhi

@@ -4,6 +4,7 @@ area: Patches & Program Repair
 description: >-
   A template-based automated program repair tool that revisits and unifies
   fix patterns from the literature, a widely used baseline in APR research.
+cardDescription: Repairs Java programs with reusable fix patterns mined from prior research.
 authors:
   - Kui Liu
   - Anil Koyuncu

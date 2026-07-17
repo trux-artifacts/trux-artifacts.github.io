@@ -5,6 +5,7 @@ description: >-
   Instruments Android apps in a black-box manner (on top of Soot) to compute
   fine-grained code coverage at class, method, statement, and component
   levels — instrumenting up to 98% of recent apps where prior tools stall.
+cardDescription: Instruments Android apps to measure code coverage from classes to components.
 authors:
   - Jordan Samhi
   - Andreas Zeller

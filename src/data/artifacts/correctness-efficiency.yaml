@@ -6,6 +6,7 @@ description: >-
   A profiling pipeline and metrics (DMPD over memory-usage profiles) showing
   that functionally correct LLM-generated solutions can diverge widely in
   runtime memory behavior — correctness does not imply efficiency.
+cardDescription: Profiles memory divergence among functionally correct LLM-generated solutions.
 authors:
   - Prateek Kumar Rajput
   - Yewei Song

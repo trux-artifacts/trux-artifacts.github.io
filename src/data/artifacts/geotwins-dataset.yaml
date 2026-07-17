@@ -6,6 +6,7 @@ description: >-
   contains two functionally similar, same-branding Android app variants released
   under different package names across countries, for research on geographic app
   disparities.
+cardDescription: Provides 81,963 pairs of comparable Android app variants released across countries.
 authors:
   - Marco Alecci
   - Pedro Jesús Ruiz Jiménez
