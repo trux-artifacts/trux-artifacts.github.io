@@ -293,8 +293,8 @@ for (const file of artifactFiles) {
 
   if (artifact.demo) {
     const style = artifact.demo.style;
-    if (!['llm', 'terminal', 'patch', 'image'].includes(style)) {
-      error(file, 'demo.style must explicitly be llm, terminal, patch, or image');
+    if (!['llm', 'terminal', 'patch', 'image', 'dashboard'].includes(style)) {
+      error(file, 'demo.style must explicitly be llm, terminal, patch, image, or dashboard');
       continue;
     }
     if (!Array.isArray(artifact.demo.scenarios) || artifact.demo.scenarios.length < 2) {
@@ -305,11 +305,19 @@ for (const file of artifactFiles) {
       error(file, 'demo.note must disclose that the interactive output is not a live execution');
     }
     for (const [index, scenario] of artifact.demo.scenarios.entries()) {
-      if ((style === 'llm' || style === 'terminal') && !scenario.query) {
+      if ((style === 'llm' || style === 'terminal' || style === 'dashboard') && !scenario.query) {
         error(file, `demo.scenarios[${index}] requires query for ${style} style`);
       }
-      if (style !== 'image' && !Array.isArray(scenario.output)) {
+      if (style !== 'image' && style !== 'dashboard' && !Array.isArray(scenario.output)) {
         error(file, `demo.scenarios[${index}] requires output for ${style} style`);
+      }
+      if (
+        style === 'dashboard' &&
+        !Array.isArray(scenario.metrics) &&
+        !Array.isArray(scenario.nodes) &&
+        !Array.isArray(scenario.items)
+      ) {
+        error(file, `demo.scenarios[${index}] requires metrics, nodes, or items for dashboard style`);
       }
     }
   }

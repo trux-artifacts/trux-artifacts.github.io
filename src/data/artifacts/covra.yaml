@@ -1,0 +1,153 @@
+name: CovRA
+type: tool
+area: Android Static & Dynamic Analysis
+description: >-
+  A live Android code coverage analyzer for manual testing. CovRA continuously
+  reports coverage across seven granularities, updates a simplified Window
+  Transition Graph, and identifies reached and unreached code elements. With
+  optional JADX integration, testers can inspect decompiled Java source
+  directly in the interface.
+cardDescription: Tracks live Android code coverage and guides testers toward unexplored application states.
+authors:
+  - Pedro Jesús Ruiz Jiménez
+  - Huynh Tuan Khoi Nguyen
+  - Jordan Samhi
+  - Tegawendé F. Bissyandé
+  - Jacques Klein
+addedAt: '2026-10-24'
+logo: android
+figure: covra.png
+figureCaption: >-
+  CovRA workflow from AndroLog instrumentation and device logging to APK
+  analysis, WTG construction, and continuously updated coverage feedback.
+links:
+  github: https://github.com/Trustworthy-Software/CovRA
+  download: https://raw.githubusercontent.com/Trustworthy-Software/CovRA/main/artifacts/covra-1.0.0.jar
+  video: https://www.youtube.com/watch?v=ikExB22oEOI
+  resources:
+    - label: Android Studio plugin
+      url: https://raw.githubusercontent.com/Trustworthy-Software/CovRA/main/artifacts/covra-android-studio-plugin-1.0.0.zip
+    - label: Sample session
+      url: https://github.com/Trustworthy-Software/CovRA/tree/main/samples
+tags:
+  - android
+  - code-coverage
+  - dynamic-analysis
+  - manual-testing
+  - wtg
+demo:
+  style: dashboard
+  engineLabel: CovRA · coverage session
+  intro: >-
+    Explore the three views that guide a CovRA testing session: the live
+    coverage overview, the evolving Window Transition Graph, and the explorer
+    for reached and unreached code elements.
+  note: >-
+    Precomputed interface preview reconstructed from CovRA's documented
+    workflow and the author-provided dashboard; no APK, Android device, or live
+    analyzer is connected in the browser. Use the repository or demonstration
+    video to run a real session.
+  scenarios:
+    - label: Live coverage dashboard
+      query: com.jss.partialvolume · active testing session
+      thinking:
+        - Reading coverage events from the current session log…
+        - Aggregating hits across all seven supported granularities…
+        - Refreshing the coverage overview and progress history…
+      metrics:
+        - label: Statements
+          value: 7.9%
+          detail: Current statement coverage
+          progress: 7.9
+          tone: blue
+        - label: Methods
+          value: 16.9%
+          detail: Current method coverage
+          progress: 16.9
+          tone: orange
+        - label: Classes
+          value: 27.1%
+          detail: Current class coverage
+          progress: 27.1
+          tone: green
+        - label: Activities
+          value: 100%
+          detail: 8 of 8 covered
+          progress: 100
+          tone: yellow
+        - label: Services
+          value: —
+          detail: Nothing to cover
+          tone: pink
+        - label: Broadcast receivers
+          value: 0%
+          detail: 0 of 1 covered
+          progress: 0
+          tone: green
+        - label: Content providers
+          value: 100%
+          detail: 1 of 1 covered
+          progress: 100
+          tone: purple
+      items:
+        - label: Session status
+          value: Watching the current coverage log
+          detail: The dashboard refreshes as the testing session produces coverage events.
+          tone: success
+      explanation: >-
+        This view reproduces the seven percentages visible in the supplied
+        CovRA dashboard. Services are marked as not applicable because the app
+        has no service to cover.
+    - label: Transition graph
+      query: Identify application states that have not yet been visited
+      thinking:
+        - Loading activities and inferred navigation transitions…
+        - Matching runtime visits to the simplified WTG…
+        - Highlighting unexplored states for the next manual action…
+      nodes:
+        - label: MainActivity
+          visited: true
+        - label: CatalogActivity
+          visited: true
+        - label: CartActivity
+          visited: true
+        - label: DetailActivity
+          visited: true
+        - label: SettingsActivity
+          visited: false
+        - label: CheckoutActivity
+          visited: false
+        - label: AboutActivity
+          visited: false
+      items:
+        - label: Unexplored branch
+          value: SettingsActivity → AboutActivity
+          detail: AboutActivity remains unvisited in the documented example graph.
+          tone: warning
+      explanation: >-
+        CovRA updates visited and unvisited activities throughout the session,
+        giving the tester a compact navigation map without claiming that any
+        particular next action is automatically executed.
+    - label: Reached and unreached code
+      query: Inspect code elements for the active testing session
+      thinking:
+        - Mapping runtime events back to classes, methods, and statements…
+        - Separating reached elements from code without an observed probe…
+        - Preparing the optional JADX source view…
+      items:
+        - label: Reached elements
+          value: Inspect observed classes, methods, and statements
+          detail: CovRA links coverage events to the concrete code elements reached during testing.
+          tone: success
+        - label: Unreached elements
+          value: Focus the next manual-testing steps
+          detail: The explorer lists code elements for which no runtime event has been observed.
+          tone: warning
+        - label: JADX integration
+          value: Open the corresponding decompiled Java source
+          detail: Source inspection is available when optional JADX integration is enabled.
+          tone: info
+      explanation: >-
+        The source explorer connects aggregate coverage to concrete code. It
+        distinguishes observed from unobserved elements and can display the
+        corresponding decompiled source when JADX is configured.

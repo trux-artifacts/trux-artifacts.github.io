@@ -158,6 +158,34 @@ const datasetSchema = z
   })
   .strict();
 
+const dashboardMetricSchema = z
+  .object({
+    label: trimmedNonBlank,
+    value: trimmedNonBlank,
+    detail: trimmedNonBlank.optional(),
+    progress: z.number().min(0).max(100).optional(),
+    tone: z
+      .enum(['blue', 'orange', 'green', 'yellow', 'pink', 'purple', 'neutral'])
+      .default('neutral'),
+  })
+  .strict();
+
+const dashboardNodeSchema = z
+  .object({
+    label: trimmedNonBlank,
+    visited: z.boolean(),
+  })
+  .strict();
+
+const dashboardItemSchema = z
+  .object({
+    label: trimmedNonBlank,
+    value: trimmedNonBlank,
+    detail: trimmedNonBlank.optional(),
+    tone: z.enum(['success', 'warning', 'info', 'muted']).default('info'),
+  })
+  .strict();
+
 const scenarioSchema = z
   .object({
     label: trimmedNonBlank,
@@ -168,6 +196,9 @@ const scenarioSchema = z
     file: trimmedNonBlank.optional(),
     pattern: trimmedNonBlank.optional(),
     seed: z.number().int().min(0).max(0xffff_ffff).optional(),
+    metrics: z.array(dashboardMetricSchema).min(1).max(12).optional(),
+    nodes: z.array(dashboardNodeSchema).min(2).max(30).optional(),
+    items: z.array(dashboardItemSchema).min(1).max(30).optional(),
     verdictAnswer: trimmedNonBlank.optional(),
     verdictLabel: trimmedNonBlank.optional(),
     verdictKind: z
@@ -194,7 +225,7 @@ const scenarioSchema = z
 const demoSchema = z
   .object({
     intro: nonBlank.optional(),
-    style: z.enum(['llm', 'terminal', 'patch', 'image']),
+    style: z.enum(['llm', 'terminal', 'patch', 'image', 'dashboard']),
     engineLabel: trimmedNonBlank.max(80).default('AI model'),
     inputLabel: trimmedNonBlank.max(50).default('Prompt'),
     outputLabel: trimmedNonBlank.default('Output'),
@@ -205,8 +236,9 @@ const demoSchema = z
   .strict()
   .superRefine((demo, ctx) => {
     demo.scenarios.forEach((scenario, index) => {
-      const needsQuery = demo.style === 'llm' || demo.style === 'terminal';
-      const needsOutput = demo.style !== 'image';
+      const needsQuery =
+        demo.style === 'llm' || demo.style === 'terminal' || demo.style === 'dashboard';
+      const needsOutput = demo.style !== 'image' && demo.style !== 'dashboard';
 
       if (needsQuery && scenario.query === undefined) {
         ctx.addIssue({
@@ -234,6 +266,18 @@ const demoSchema = z
           code: 'custom',
           path: ['scenarios', index, 'seed'],
           message: 'seed is required for image demos',
+        });
+      }
+      if (
+        demo.style === 'dashboard' &&
+        scenario.metrics === undefined &&
+        scenario.nodes === undefined &&
+        scenario.items === undefined
+      ) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['scenarios', index],
+          message: 'dashboard demos require metrics, nodes, or items',
         });
       }
     });

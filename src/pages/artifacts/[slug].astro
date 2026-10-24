@@ -550,6 +550,162 @@ const statNumberFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits:
         }
       }
 
+      async function playDashboard(myRun: number, s: any) {
+        const dashboard = document.createElement('div');
+        dashboard.className = 'demo-dashboard';
+
+        const bar = document.createElement('div');
+        bar.className = 'demo-dashboard-bar';
+        bar.innerHTML =
+          '<span class="demo-dashboard-brand"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2h6v2l-1 1v3.2a6.5 6.5 0 1 1-4 0V5L9 4V2Zm1.5 9.1a4.5 4.5 0 1 0 3 0V10h-3v1.1Z"/></svg><span></span></span>' +
+          '<span class="demo-dashboard-preview">Preview</span>';
+        bar.querySelector('.demo-dashboard-brand span')!.textContent =
+          demoData.engineLabel ?? 'Coverage dashboard';
+        dashboard.appendChild(bar);
+
+        const body = document.createElement('div');
+        body.className = 'demo-dashboard-body';
+        dashboard.appendChild(body);
+
+        const context = document.createElement('div');
+        context.className = 'demo-dashboard-context';
+        const contextTitle = document.createElement('strong');
+        contextTitle.textContent = s.label;
+        const contextDetail = document.createElement('span');
+        contextDetail.textContent = s.query;
+        context.appendChild(contextTitle);
+        context.appendChild(contextDetail);
+        body.appendChild(context);
+        stage.appendChild(dashboard);
+
+        const working = document.createElement('div');
+        working.className = 'demo-dashboard-working';
+        working.innerHTML =
+          '<span class="demo-dashboard-pulse" aria-hidden="true"></span><span class="demo-think-msg"></span>';
+        body.appendChild(working);
+        const msg = working.querySelector('.demo-think-msg')!;
+        for (const t of s.thinking) {
+          if (run !== myRun) return;
+          msg.textContent = t;
+          await sleep(rand(420, 850));
+        }
+        if (run !== myRun) return;
+        working.remove();
+
+        if (s.metrics?.length) {
+          const heading = document.createElement('div');
+          heading.className = 'demo-dashboard-section-title';
+          heading.textContent = 'Coverage overview';
+          body.appendChild(heading);
+
+          const metrics = document.createElement('div');
+          metrics.className = 'demo-dashboard-metrics';
+          body.appendChild(metrics);
+          for (const metric of s.metrics) {
+            const card = document.createElement('article');
+            card.className = `demo-dashboard-metric ${metric.tone ?? 'neutral'}`;
+
+            const label = document.createElement('div');
+            label.className = 'demo-dashboard-metric-label';
+            label.textContent = metric.label;
+            card.appendChild(label);
+
+            const value = document.createElement('strong');
+            value.className = 'demo-dashboard-metric-value';
+            value.textContent = metric.value;
+            card.appendChild(value);
+
+            if (metric.detail) {
+              const detail = document.createElement('span');
+              detail.className = 'demo-dashboard-metric-detail';
+              detail.textContent = metric.detail;
+              card.appendChild(detail);
+            }
+
+            const track = document.createElement('div');
+            track.className = 'demo-dashboard-track';
+            if (typeof metric.progress === 'number') {
+              track.setAttribute('role', 'progressbar');
+              track.setAttribute('aria-label', metric.label);
+              track.setAttribute('aria-valuemin', '0');
+              track.setAttribute('aria-valuemax', '100');
+              track.setAttribute('aria-valuenow', String(metric.progress));
+              const fill = document.createElement('span');
+              fill.style.width = prefersReducedMotion ? `${metric.progress}%` : '0%';
+              track.appendChild(fill);
+              if (!prefersReducedMotion) {
+                requestAnimationFrame(() => {
+                  fill.style.width = `${metric.progress}%`;
+                });
+              }
+            } else {
+              track.classList.add('empty');
+            }
+            card.appendChild(track);
+            metrics.appendChild(card);
+          }
+        }
+
+        if (s.nodes?.length) {
+          const heading = document.createElement('div');
+          heading.className = 'demo-dashboard-section-title';
+          heading.textContent = 'Simplified Window Transition Graph';
+          body.appendChild(heading);
+
+          const graph = document.createElement('div');
+          graph.className = 'demo-dashboard-graph';
+          graph.setAttribute('role', 'img');
+          graph.setAttribute(
+            'aria-label',
+            s.nodes
+              .map((node: any) => `${node.label}, ${node.visited ? 'visited' : 'not visited'}`)
+              .join('; ')
+          );
+          body.appendChild(graph);
+          for (const node of s.nodes) {
+            if (run !== myRun) return;
+            const item = document.createElement('div');
+            item.className = `demo-dashboard-node ${node.visited ? 'visited' : 'unvisited'}`;
+            item.innerHTML = '<span aria-hidden="true"></span><strong></strong><small></small>';
+            item.querySelector('strong')!.textContent = node.label;
+            item.querySelector('small')!.textContent = node.visited ? 'Visited' : 'Not visited';
+            graph.appendChild(item);
+            await sleep(rand(45, 110));
+          }
+        }
+
+        if (s.items?.length) {
+          const items = document.createElement('div');
+          items.className = 'demo-dashboard-items';
+          body.appendChild(items);
+          for (const dashboardItem of s.items) {
+            if (run !== myRun) return;
+            const item = document.createElement('article');
+            item.className = `demo-dashboard-item ${dashboardItem.tone ?? 'info'}`;
+            const dot = document.createElement('span');
+            dot.className = 'demo-dashboard-item-dot';
+            dot.setAttribute('aria-hidden', 'true');
+            const copy = document.createElement('div');
+            const label = document.createElement('span');
+            label.className = 'demo-dashboard-item-label';
+            label.textContent = dashboardItem.label;
+            const value = document.createElement('strong');
+            value.textContent = dashboardItem.value;
+            copy.appendChild(label);
+            copy.appendChild(value);
+            if (dashboardItem.detail) {
+              const detail = document.createElement('small');
+              detail.textContent = dashboardItem.detail;
+              copy.appendChild(detail);
+            }
+            item.appendChild(dot);
+            item.appendChild(copy);
+            items.appendChild(item);
+            await sleep(rand(60, 140));
+          }
+        }
+      }
+
       const pixelSvg =
         '<svg class="demo-brain" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
         '<rect x="3" y="3" width="5" height="5" rx="1"/><rect x="10" y="3" width="5" height="5" rx="1" opacity="0.55"/><rect x="17" y="3" width="4" height="5" rx="1"/>' +
@@ -669,6 +825,8 @@ const statNumberFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits:
           await playTerminal(myRun, s);
         } else if (demoData.style === 'patch') {
           await playPatch(myRun, s);
+        } else if (demoData.style === 'dashboard') {
+          await playDashboard(myRun, s);
         } else if (demoData.style === 'image') {
           await playImage(myRun, s);
         } else {
