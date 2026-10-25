@@ -1637,6 +1637,182 @@ a.tag:hover {
   animation: demo-fade 0.35s ease;
 }
 
+/* Light code walkthrough — for reusable libraries and SDK-style artifacts. */
+.demo-code {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #f8fafc;
+  box-shadow: 0 10px 26px rgba(34, 53, 74, 0.08);
+}
+
+.demo-code-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 46px;
+  padding: 9px 13px;
+  border-bottom: 1px solid #d9e3eb;
+  background: #eef4f7;
+  color: var(--navy);
+}
+
+.demo-code-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+.demo-code-brand span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.demo-code-brand svg {
+  width: 19px;
+  height: 19px;
+  flex: none;
+  color: #07884f;
+}
+
+.demo-code-preview,
+.demo-code-language {
+  flex: none;
+  padding: 3px 8px;
+  border: 1px solid #cbd8e1;
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--text-2);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.demo-code-body {
+  padding: 16px;
+}
+
+.demo-code-summary {
+  display: grid;
+  gap: 3px;
+  margin-bottom: 11px;
+}
+
+.demo-code-summary span {
+  color: #718394;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.demo-code-summary strong {
+  color: #25384a;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
+.demo-code-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  min-height: 29px;
+  margin-bottom: 13px;
+}
+
+.demo-code-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  border: 1px solid #cfe4d9;
+  border-radius: 7px;
+  background: #edf8f2;
+  color: #315948;
+  font-size: 10.5px;
+  font-weight: 650;
+  animation: demo-fade 0.25s ease;
+}
+
+.demo-code-step svg {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  color: #07884f;
+}
+
+.demo-code-editor {
+  overflow: hidden;
+  border: 1px solid #d7e0e7;
+  border-radius: 9px;
+  background: #ffffff;
+}
+
+.demo-code-editor-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 39px;
+  padding: 7px 11px 7px 13px;
+  border-bottom: 1px solid #e0e6eb;
+  background: #f4f6f8;
+}
+
+.demo-code-file {
+  min-width: 0;
+  overflow: hidden;
+  color: #34495d;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 11.5px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.demo-code-language {
+  border-color: #cfe4d9;
+  background: #edf8f2;
+  color: #167044;
+}
+
+.demo-code-source {
+  max-height: 470px;
+  overflow: auto;
+  padding: 10px 0;
+  color: #25384a;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.demo-code-line {
+  display: grid;
+  grid-template-columns: 40px max-content;
+  min-width: max-content;
+  padding-right: 16px;
+  animation: demo-fade 0.2s ease;
+}
+
+.demo-code-line-number {
+  padding-right: 11px;
+  color: #a2aeb9;
+  text-align: right;
+  user-select: none;
+}
+
+.demo-code-line code {
+  color: inherit;
+  font: inherit;
+  white-space: pre;
+}
+
 /* GUI dashboard demo style — used by live analysis and monitoring tools. */
 .demo-dashboard {
   --dash-bg: #11151b;
@@ -2652,6 +2828,14 @@ a.tag:hover {
 
   .demo-dashboard-metrics {
     grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  }
+
+  .demo-code-body {
+    padding: 12px;
+  }
+
+  .demo-code-preview {
+    display: none;
   }
 
   .not-found {

@@ -2,87 +2,133 @@ name: AndroSpecter
 type: library
 area: Android Static & Dynamic Analysis
 description: >-
-  A Java library that streamlines the static analysis of Java programs and
-  Android apps — utilities for Soot/FlowDroid setup, APK handling, and common
-  analysis tasks.
-cardDescription: A Java library for configuring Soot and FlowDroid analyses of Android apps.
+  Android static analysis as a Java library or command-line tool. AndroSpecter
+  wraps Soot and FlowDroid to read APK metadata, build and query call graphs,
+  run source-to-sink taint analyses, export graphs, and compose instrumentation.
+cardDescription: A Java library and CLI for Android call graphs, taint analysis, inspection, and instrumentation.
 authors:
   - Jordan Samhi
 logo: android
 addedAt: '2026-07-06'
 links:
   github: https://github.com/JordanSamhi/AndroSpecter
-  website: https://central.sonatype.com/artifact/com.jordansamhi/androspecter
-  download: https://repo1.maven.org/maven2/com/jordansamhi/androspecter/1.1.8/androspecter-1.1.8.jar
+  website: https://github.com/JordanSamhi/AndroSpecter/wiki
+  resources:
+    - label: Getting started
+      url: https://github.com/JordanSamhi/AndroSpecter/wiki/Getting-started
+    - label: Runnable examples
+      url: https://github.com/JordanSamhi/AndroSpecter/tree/main/examples
+    - label: Live call-graph report
+      url: https://jordansamhi.com/static/demos/androspecter/callgraph.html
+    - label: Maven Central · 1.1.8
+      url: https://central.sonatype.com/artifact/com.jordansamhi/androspecter/1.1.8
 tags:
   - android
-  - java
   - static-analysis
-  - soot
+  - call-graph
+  - taint-analysis
+  - instrumentation
+figure: androspecter.svg
+figureCaption: >-
+  AndroSpecter offers the same Android-analysis building blocks through a managed
+  Java API and a standalone CLI, with detached results that remain usable after
+  the underlying Soot session closes.
 demo:
-  style: terminal
+  style: code
+  engineLabel: AndroSpecter Java API
   intro: >-
-    Add AndroSpecter from Maven Central, then explore three common integration
-    tasks: APK inspection, Soot call-graph setup and FlowDroid-backed data-flow
-    analysis.
-  outputLabel: Client output
-  countOutput: false
+    Explore three workflows adapted from AndroSpecter's official runnable
+    examples: inspect an APK without Soot, build a managed call graph, and obtain
+    structured FlowDroid taint results.
   note: >-
-    Simulated preview using representative fictional client inputs and outputs;
-    nothing runs in the browser. The Maven coordinates are official, while the
-    APK names, counts, call-graph entries and flow below are illustrative API
-    integration results, not measurements reported by a paper.
+    Precomputed code walkthrough adapted from the official repository examples;
+    no Java or Android analysis runs in the browser. The snippets follow the
+    current source tree; Maven Central separately lists the latest published
+    library release.
   scenarios:
-    - label: Inspect an APK
-      query: Java client → load lab.weather.apk and enumerate its manifest components
+    - label: Read APK metadata
+      query: Read package, SDK, permission, and component declarations directly from an APK.
+      file: PrintApkInfo.java
+      pattern: Java
       thinking:
-        - Resolving com.jordansamhi:androspecter:1.1.8 from Maven Central…
-        - Opening the APK and decoding AndroidManifest.xml…
-        - Normalizing component names against the application package…
-        - Building a compact inventory for the client application…
+        - No Android SDK required
+        - No Soot session initialized
+        - Detached manifest metadata
       output:
-        - "APK: lab.weather.apk"
-        - "package: lab.weather · minSdk=24 · targetSdk=35"
-        - "activities: 4 · services: 2 · receivers: 3 · providers: 1"
-        - "permissions: ACCESS_FINE_LOCATION, INTERNET, POST_NOTIFICATIONS"
-        - "[✓] Manifest inventory exported to analysis/components.json"
+        - 'import com.jordansamhi.androspecter.metadata.ApkInfo;'
+        - 'import java.nio.file.Path;'
+        - ''
+        - 'ApkInfo info = ApkInfo.read(Path.of("app.apk"));'
+        - ''
+        - 'System.out.println(info.packageName());'
+        - 'System.out.println(info.minSdkVersion());'
+        - 'System.out.println(info.targetSdkVersion());'
+        - 'System.out.println(info.permissions());'
+        - ''
+        - 'info.components().forEach(component ->'
+        - '    System.out.printf("%s  %s%n",'
+        - '        component.kind(), component.name()));'
       explanation: >-
-        This fictional client task previews the APK-handling utilities that save
-        analysis projects from repeatedly rebuilding manifest and package-name
-        plumbing.
-    - label: Configure Soot and build a call graph
-      query: Java client → initialize Soot for lab.reader.apk with SPARK
+        ApkInfo parses the binary manifest without initializing Soot. The returned
+        package, SDK, permission, and component records are ordinary detached data.
+    - label: Build a call graph
+      query: Open one managed analysis session, build the Android call graph, then query its detached snapshot.
+      file: QuickStart.java
+      pattern: Java
       thinking:
-        - Selecting the Android platform matching the APK target SDK…
-        - Registering application and library classes…
-        - Creating lifecycle-aware dummy entry points…
-        - Running SPARK and indexing reachable methods…
+        - Managed Soot lifecycle
+        - Android entry points included
+        - Snapshot survives session close
       output:
-        - "Soot configuration: android-35 · whole-program=true · cg.spark=on"
-        - "application classes: 286"
-        - "reachable methods: 3,914"
-        - "call-graph edges: 18,607"
-        - "sample edge: ReaderActivity.onCreate → FeedRepository.refresh"
-        - "[✓] Graph written to analysis/callgraph.graphml"
+        - 'import com.jordansamhi.androspecter.analysis.AndroidAnalysis;'
+        - 'import com.jordansamhi.androspecter.graph.CallGraphSnapshot;'
+        - 'import java.nio.file.Path;'
+        - ''
+        - 'CallGraphSnapshot graph;'
+        - 'try (AndroidAnalysis analysis = AndroidAnalysis.open('
+        - '        Path.of("app.apk"),'
+        - '        Path.of("/android-sdk/platforms"))) {'
+        - '    System.out.println(analysis.packageName());'
+        - '    graph = analysis.callGraph();'
+        - '}'
+        - ''
+        - 'System.out.println(graph.edges().size());'
+        - 'graph.methods().stream().limit(5).forEach(method -> {'
+        - '    System.out.println(method);'
+        - '    System.out.println(graph.calleesOf(method));'
+        - '});'
       explanation: >-
-        The simulated output illustrates how AndroSpecter can centralize a
-        reproducible Soot setup before a project applies its own analysis.
-    - label: Run a FlowDroid client analysis
-      query: Java client → trace location sources to network sinks in lab.tracker.apk
+        AndroidAnalysis owns the Soot and FlowDroid lifecycle. CallGraphSnapshot
+        stores detached method signatures and indexed edges, so callers can query
+        reachability and shortest paths after the managed session closes.
+    - label: Run taint analysis
+      query: Load explicit source and sink definitions and retain a structured result after FlowDroid finishes.
+      file: AnalyzeTaint.java
+      pattern: Java
       thinking:
-        - Bootstrapping FlowDroid with the selected source/sink specification…
-        - Resolving Android lifecycle and callback edges…
-        - Propagating taint through application methods…
-        - Formatting the discovered path for the client report…
+        - Explicit source/sink definitions
+        - Completion status preserved
+        - Findings and paths detached
       output:
-        - "Sources loaded: 18 · sinks loaded: 11"
-        - "Data-flow result #1"
-        - "  source  LocationManager.getLastKnownLocation(String)"
-        - "  via     TrackerService.uploadLastFix()"
-        - "  sink    HttpURLConnection.getOutputStream()"
-        - "  path length: 7 statements"
+        - 'SourceSinkConfiguration definitions ='
+        - '    SourceSinkConfiguration.fromFile(Path.of("SourcesAndSinks.txt"));'
+        - ''
+        - 'TaintAnalysisResult result;'
+        - 'try (AndroidAnalysis analysis = AndroidAnalysis.builder('
+        - '        Path.of("app.apk"), Path.of("/android-sdk/platforms"))'
+        - '        .sourcesAndSinks(definitions)'
+        - '        .open()) {'
+        - '    result = analysis.analyzeTaint();'
+        - '}'
+        - ''
+        - 'System.out.println(result.status());'
+        - 'for (TaintFinding finding : result.findings()) {'
+        - '    System.out.println(finding.source().description());'
+        - '    System.out.println(finding.sink().description());'
+        - '    System.out.println(finding.path());'
+        - '}'
       explanation: >-
-        This representative fictional flow shows the kind of common FlowDroid
-        setup and result-handling code that a reusable analysis library can
-        streamline.
-license: LGPL-2.1-only
+        TaintAnalysisResult preserves both findings and completion status. Clients
+        can distinguish success, failure, timeout, and cancellation instead of
+        interpreting an empty finding list as proof that no flow exists.
+license: LGPL-2.1-or-later

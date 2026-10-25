@@ -308,7 +308,7 @@ const scenarioSchema = z
 const demoSchema = z
   .object({
     intro: nonBlank.optional(),
-    style: z.enum(['llm', 'terminal', 'patch', 'image', 'dashboard']),
+    style: z.enum(['llm', 'terminal', 'patch', 'image', 'dashboard', 'code']),
     engineLabel: trimmedNonBlank.max(80).default('AI model'),
     inputLabel: trimmedNonBlank.max(50).default('Prompt'),
     outputLabel: trimmedNonBlank.default('Output'),
@@ -320,7 +320,10 @@ const demoSchema = z
   .superRefine((demo, ctx) => {
     demo.scenarios.forEach((scenario, index) => {
       const needsQuery =
-        demo.style === 'llm' || demo.style === 'terminal' || demo.style === 'dashboard';
+        demo.style === 'llm' ||
+        demo.style === 'terminal' ||
+        demo.style === 'dashboard' ||
+        demo.style === 'code';
       const needsOutput = demo.style !== 'image' && demo.style !== 'dashboard';
 
       if (needsQuery && scenario.query === undefined) {
@@ -342,6 +345,13 @@ const demoSchema = z
           code: 'custom',
           path: ['scenarios', index, 'file'],
           message: 'file is required for patch demos',
+        });
+      }
+      if (demo.style === 'code' && scenario.file === undefined) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['scenarios', index, 'file'],
+          message: 'file is required for code demos',
         });
       }
       if (demo.style === 'image' && scenario.seed === undefined) {

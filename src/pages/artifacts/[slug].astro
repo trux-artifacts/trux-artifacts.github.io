@@ -551,6 +551,91 @@ const statNumberFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits:
         }
       }
 
+      async function playCode(myRun: number, s: any) {
+        const walkthrough = document.createElement('div');
+        walkthrough.className = 'demo-code';
+
+        const bar = document.createElement('div');
+        bar.className = 'demo-code-bar';
+        bar.innerHTML =
+          '<span class="demo-code-brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 7-5 5 5 5"/><path d="m16 7 5 5-5 5"/><path d="m14 4-4 16"/></svg><span></span></span>' +
+          '<span class="demo-code-preview">API walkthrough</span>';
+        bar.querySelector('.demo-code-brand span')!.textContent =
+          demoData.engineLabel ?? 'Java API';
+        walkthrough.appendChild(bar);
+
+        const body = document.createElement('div');
+        body.className = 'demo-code-body';
+        walkthrough.appendChild(body);
+
+        const summary = document.createElement('div');
+        summary.className = 'demo-code-summary';
+        const summaryLabel = document.createElement('span');
+        summaryLabel.textContent = 'Workflow';
+        const summaryText = document.createElement('strong');
+        summaryText.textContent = s.query;
+        summary.appendChild(summaryLabel);
+        summary.appendChild(summaryText);
+        body.appendChild(summary);
+
+        const steps = document.createElement('div');
+        steps.className = 'demo-code-steps';
+        steps.setAttribute('aria-label', 'Workflow properties');
+        body.appendChild(steps);
+        stage.appendChild(walkthrough);
+
+        for (const text of s.thinking) {
+          if (run !== myRun) return;
+          const step = document.createElement('span');
+          step.className = 'demo-code-step';
+          step.innerHTML =
+            '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 10 3 3 7-7"/></svg><span></span>';
+          step.querySelector('span')!.textContent = text;
+          steps.appendChild(step);
+          await sleep(rand(180, 420));
+        }
+        if (run !== myRun) return;
+
+        const editor = document.createElement('div');
+        editor.className = 'demo-code-editor';
+
+        const editorBar = document.createElement('div');
+        editorBar.className = 'demo-code-editor-bar';
+        const fileName = document.createElement('span');
+        fileName.className = 'demo-code-file';
+        fileName.textContent = s.file;
+        const language = document.createElement('span');
+        language.className = 'demo-code-language';
+        language.textContent = s.pattern ?? 'Java';
+        editorBar.appendChild(fileName);
+        editorBar.appendChild(language);
+        editor.appendChild(editorBar);
+
+        const source = document.createElement('div');
+        source.className = 'demo-code-source';
+        source.setAttribute('role', 'region');
+        source.setAttribute('aria-label', `${s.file} source code`);
+        editor.appendChild(source);
+        body.appendChild(editor);
+
+        const [lo, hi] = s.output.length > 24 ? [10, 28] : [28, 70];
+        for (const [index, raw] of s.output.entries()) {
+          if (run !== myRun) return;
+          const line = document.createElement('div');
+          line.className = 'demo-code-line';
+          const number = document.createElement('span');
+          number.className = 'demo-code-line-number';
+          number.textContent = String(index + 1);
+          number.setAttribute('aria-hidden', 'true');
+          const code = document.createElement('code');
+          code.textContent = raw || ' ';
+          line.appendChild(number);
+          line.appendChild(code);
+          source.appendChild(line);
+          await sleep(rand(lo, hi));
+        }
+      }
+
       async function playDashboard(myRun: number, s: any) {
         const dashboard = document.createElement('div');
         dashboard.className = 'demo-dashboard';
@@ -970,6 +1055,8 @@ const statNumberFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits:
           await playPatch(myRun, s);
         } else if (demoData.style === 'dashboard') {
           await playDashboard(myRun, s);
+        } else if (demoData.style === 'code') {
+          await playCode(myRun, s);
         } else if (demoData.style === 'image') {
           await playImage(myRun, s);
         } else {

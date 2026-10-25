@@ -293,8 +293,8 @@ for (const file of artifactFiles) {
 
   if (artifact.demo) {
     const style = artifact.demo.style;
-    if (!['llm', 'terminal', 'patch', 'image', 'dashboard'].includes(style)) {
-      error(file, 'demo.style must explicitly be llm, terminal, patch, image, or dashboard');
+    if (!['llm', 'terminal', 'patch', 'image', 'dashboard', 'code'].includes(style)) {
+      error(file, 'demo.style must explicitly be llm, terminal, patch, image, dashboard, or code');
       continue;
     }
     if (!Array.isArray(artifact.demo.scenarios) || artifact.demo.scenarios.length < 2) {
@@ -305,7 +305,10 @@ for (const file of artifactFiles) {
       error(file, 'demo.note must disclose that the interactive output is not a live execution');
     }
     for (const [index, scenario] of artifact.demo.scenarios.entries()) {
-      if ((style === 'llm' || style === 'terminal' || style === 'dashboard') && !scenario.query) {
+      if (
+        (style === 'llm' || style === 'terminal' || style === 'dashboard' || style === 'code') &&
+        !scenario.query
+      ) {
         error(file, `demo.scenarios[${index}] requires query for ${style} style`);
       }
       if (style !== 'image' && style !== 'dashboard' && !Array.isArray(scenario.output)) {
@@ -318,6 +321,9 @@ for (const file of artifactFiles) {
         !Array.isArray(scenario.items)
       ) {
         error(file, `demo.scenarios[${index}] requires metrics, nodes, or items for dashboard style`);
+      }
+      if (style === 'code' && !scenario.file) {
+        error(file, `demo.scenarios[${index}] requires file for code style`);
       }
       if (Array.isArray(scenario.nodes)) {
         const labels = new Set();
