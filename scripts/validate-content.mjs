@@ -319,6 +319,43 @@ for (const file of artifactFiles) {
       ) {
         error(file, `demo.scenarios[${index}] requires metrics, nodes, or items for dashboard style`);
       }
+      if (Array.isArray(scenario.nodes)) {
+        const labels = new Set();
+        const positions = new Set();
+        for (const [nodeIndex, node] of scenario.nodes.entries()) {
+          if (labels.has(node.label)) {
+            error(file, `demo.scenarios[${index}].nodes[${nodeIndex}] duplicates ${node.label}`);
+          }
+          labels.add(node.label);
+
+          const position = `${node.row}:${node.column}`;
+          if (positions.has(position)) {
+            error(file, `demo.scenarios[${index}].nodes[${nodeIndex}] reuses position ${position}`);
+          }
+          positions.add(position);
+        }
+
+        if (!Array.isArray(scenario.edges) || scenario.edges.length === 0) {
+          error(file, `demo.scenarios[${index}] dashboard nodes require directed edges`);
+        } else {
+          const edgeKeys = new Set();
+          for (const [edgeIndex, edge] of scenario.edges.entries()) {
+            const key = `${edge.from}\0${edge.to}`;
+            if (!labels.has(edge.from) || !labels.has(edge.to)) {
+              error(file, `demo.scenarios[${index}].edges[${edgeIndex}] references an unknown node`);
+            }
+            if (edge.from === edge.to) {
+              error(file, `demo.scenarios[${index}].edges[${edgeIndex}] must not be a self-edge`);
+            }
+            if (edgeKeys.has(key)) {
+              error(file, `demo.scenarios[${index}].edges[${edgeIndex}] duplicates ${edge.from} → ${edge.to}`);
+            }
+            edgeKeys.add(key);
+          }
+        }
+      } else if (Array.isArray(scenario.edges)) {
+        error(file, `demo.scenarios[${index}] dashboard edges require nodes`);
+      }
     }
   }
 

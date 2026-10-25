@@ -174,6 +174,15 @@ const dashboardNodeSchema = z
   .object({
     label: trimmedNonBlank,
     visited: z.boolean(),
+    row: z.number().int().min(1).max(12),
+    column: z.number().int().min(1).max(12),
+  })
+  .strict();
+
+const dashboardEdgeSchema = z
+  .object({
+    from: trimmedNonBlank,
+    to: trimmedNonBlank,
   })
   .strict();
 
@@ -198,6 +207,7 @@ const scenarioSchema = z
     seed: z.number().int().min(0).max(0xffff_ffff).optional(),
     metrics: z.array(dashboardMetricSchema).min(1).max(12).optional(),
     nodes: z.array(dashboardNodeSchema).min(2).max(30).optional(),
+    edges: z.array(dashboardEdgeSchema).min(1).max(100).optional(),
     items: z.array(dashboardItemSchema).min(1).max(30).optional(),
     verdictAnswer: trimmedNonBlank.optional(),
     verdictLabel: trimmedNonBlank.optional(),
@@ -218,6 +228,79 @@ const scenarioSchema = z
         code: 'custom',
         path: ['verdictAnswer'],
         message: 'verdictAnswer, verdictLabel, and verdictKind must be provided together',
+      });
+    }
+
+    if (scenario.nodes) {
+      const labels = new Set<string>();
+      const positions = new Set<string>();
+      scenario.nodes.forEach((node, index) => {
+        if (labels.has(node.label)) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['nodes', index, 'label'],
+            message: `duplicate dashboard node label: ${node.label}`,
+          });
+        }
+        labels.add(node.label);
+
+        const position = `${node.row}:${node.column}`;
+        if (positions.has(position)) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['nodes', index],
+            message: `dashboard node position ${position} is already occupied`,
+          });
+        }
+        positions.add(position);
+      });
+
+      if (!scenario.edges) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['edges'],
+          message: 'dashboard nodes require directed edges',
+        });
+      } else {
+        const edges = new Set<string>();
+        scenario.edges.forEach((edge, index) => {
+          const key = `${edge.from}\0${edge.to}`;
+          if (!labels.has(edge.from)) {
+            ctx.addIssue({
+              code: 'custom',
+              path: ['edges', index, 'from'],
+              message: `unknown dashboard edge source: ${edge.from}`,
+            });
+          }
+          if (!labels.has(edge.to)) {
+            ctx.addIssue({
+              code: 'custom',
+              path: ['edges', index, 'to'],
+              message: `unknown dashboard edge target: ${edge.to}`,
+            });
+          }
+          if (edge.from === edge.to) {
+            ctx.addIssue({
+              code: 'custom',
+              path: ['edges', index],
+              message: 'dashboard edges must connect two different nodes',
+            });
+          }
+          if (edges.has(key)) {
+            ctx.addIssue({
+              code: 'custom',
+              path: ['edges', index],
+              message: `duplicate dashboard edge: ${edge.from} → ${edge.to}`,
+            });
+          }
+          edges.add(key);
+        });
+      }
+    } else if (scenario.edges) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['edges'],
+        message: 'dashboard edges require nodes',
       });
     }
   });

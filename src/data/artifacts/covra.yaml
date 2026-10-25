@@ -76,7 +76,7 @@ demo:
           progress: 100
           tone: yellow
         - label: Services
-          value: —
+          value: 0%
           detail: Nothing to cover
           tone: pink
         - label: Broadcast receivers
@@ -96,8 +96,8 @@ demo:
           tone: success
       explanation: >-
         This view reproduces the seven percentages visible in the supplied
-        CovRA dashboard. Services are marked as not applicable because the app
-        has no service to cover.
+        CovRA dashboard. The Services card retains the dashboard's 0% display
+        while noting that this app has no service to cover.
     - label: Transition graph
       query: Identify application states that have not yet been visited
       thinking:
@@ -107,18 +107,51 @@ demo:
       nodes:
         - label: MainActivity
           visited: true
+          row: 2
+          column: 1
         - label: CatalogActivity
           visited: true
+          row: 1
+          column: 2
         - label: CartActivity
           visited: true
+          row: 2
+          column: 2
         - label: DetailActivity
           visited: true
+          row: 1
+          column: 3
         - label: SettingsActivity
           visited: false
+          row: 3
+          column: 2
         - label: CheckoutActivity
           visited: false
+          row: 2
+          column: 3
         - label: AboutActivity
           visited: false
+          row: 3
+          column: 3
+      edges:
+        - from: MainActivity
+          to: CatalogActivity
+        - from: MainActivity
+          to: CartActivity
+        - from: MainActivity
+          to: SettingsActivity
+        - from: CatalogActivity
+          to: DetailActivity
+        - from: DetailActivity
+          to: CartActivity
+        - from: CartActivity
+          to: CheckoutActivity
+        - from: CartActivity
+          to: CatalogActivity
+        - from: SettingsActivity
+          to: AboutActivity
+        - from: CheckoutActivity
+          to: MainActivity
       items:
         - label: Unexplored branch
           value: SettingsActivity → AboutActivity

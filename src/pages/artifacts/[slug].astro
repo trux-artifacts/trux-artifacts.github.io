@@ -347,6 +347,7 @@ const statNumberFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits:
       const stage = document.getElementById('demo-stage')!;
       const taskBtns = demoBox.querySelectorAll<HTMLButtonElement>('.demo-task');
       let run = 0;
+      let demoCleanup: (() => void) | null = null;
 
       const brainSvg =
         '<svg class="demo-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
@@ -639,7 +640,7 @@ const statNumberFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits:
                 });
               }
             } else {
-              track.classList.add('empty');
+              track.classList.add('is-empty');
             }
             card.appendChild(track);
             metrics.appendChild(card);
@@ -652,25 +653,165 @@ const statNumberFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits:
           heading.textContent = 'Simplified Window Transition Graph';
           body.appendChild(heading);
 
+          const graphViewport = document.createElement('div');
+          graphViewport.className = 'demo-dashboard-graph-viewport';
+
           const graph = document.createElement('div');
           graph.className = 'demo-dashboard-graph';
           graph.setAttribute('role', 'img');
+          const edgeSummary = (s.edges ?? [])
+            .map((edge: any) => `${edge.from} to ${edge.to}`)
+            .join('; ');
           graph.setAttribute(
             'aria-label',
             s.nodes
               .map((node: any) => `${node.label}, ${node.visited ? 'visited' : 'not visited'}`)
-              .join('; ')
+              .join('; ') + (edgeSummary ? `. Directed paths: ${edgeSummary}` : '')
           );
-          body.appendChild(graph);
+
+          const svgNamespace = 'http://www.w3.org/2000/svg';
+          const edgesSvg = document.createElementNS(svgNamespace, 'svg');
+          edgesSvg.classList.add('demo-dashboard-edges');
+          edgesSvg.setAttribute('aria-hidden', 'true');
+          edgesSvg.setAttribute('focusable', 'false');
+
+          const defs = document.createElementNS(svgNamespace, 'defs');
+          const reachedMarkerId = `dashboard-arrow-reached-${myRun}`;
+          const unreachedMarkerId = `dashboard-arrow-unreached-${myRun}`;
+          const addMarker = (id: string, color: string) => {
+            const marker = document.createElementNS(svgNamespace, 'marker');
+            marker.setAttribute('id', id);
+            marker.setAttribute('viewBox', '0 0 7 7');
+            marker.setAttribute('refX', '6.2');
+            marker.setAttribute('refY', '3.5');
+            marker.setAttribute('markerWidth', '7');
+            marker.setAttribute('markerHeight', '7');
+            marker.setAttribute('orient', 'auto-start-reverse');
+            marker.setAttribute('markerUnits', 'strokeWidth');
+            const tip = document.createElementNS(svgNamespace, 'path');
+            tip.setAttribute('d', 'M0 0L7 3.5L0 7Z');
+            tip.setAttribute('fill', color);
+            marker.appendChild(tip);
+            defs.appendChild(marker);
+          };
+          addMarker(reachedMarkerId, '#36d786');
+          addMarker(unreachedMarkerId, '#788391');
+          edgesSvg.appendChild(defs);
+
+          const edgeLayer = document.createElementNS(svgNamespace, 'g');
+          edgesSvg.appendChild(edgeLayer);
+          graph.appendChild(edgesSvg);
+          graphViewport.appendChild(graph);
+          body.appendChild(graphViewport);
+
+          const nodeElements = new Map<string, HTMLElement>();
+          const nodeData = new Map<string, any>();
           for (const node of s.nodes) {
             if (run !== myRun) return;
             const item = document.createElement('div');
             item.className = `demo-dashboard-node ${node.visited ? 'visited' : 'unvisited'}`;
+            item.style.gridRow = String(node.row);
+            item.style.gridColumn = String(node.column);
             item.innerHTML = '<span aria-hidden="true"></span><strong></strong><small></small>';
             item.querySelector('strong')!.textContent = node.label;
             item.querySelector('small')!.textContent = node.visited ? 'Visited' : 'Not visited';
             graph.appendChild(item);
+            nodeElements.set(node.label, item);
+            nodeData.set(node.label, node);
             await sleep(rand(45, 110));
+          }
+
+          const drawEdges = () => {
+            if (run !== myRun || !graph.isConnected) return;
+            const graphRect = graph.getBoundingClientRect();
+            if (graphRect.width <= 0 || graphRect.height <= 0) return;
+
+            edgesSvg.setAttribute('viewBox', `0 0 ${graphRect.width} ${graphRect.height}`);
+            edgeLayer.replaceChildren();
+
+            for (const edge of s.edges ?? []) {
+              const source = nodeElements.get(edge.from);
+              const target = nodeElements.get(edge.to);
+              const sourceData = nodeData.get(edge.from);
+              const targetData = nodeData.get(edge.to);
+              if (!source || !target || !sourceData || !targetData) continue;
+
+              const sourceRect = source.getBoundingClientRect();
+              const targetRect = target.getBoundingClientRect();
+              const sourceCenter = {
+                x: sourceRect.left - graphRect.left + sourceRect.width / 2,
+                y: sourceRect.top - graphRect.top + sourceRect.height / 2,
+              };
+              const targetCenter = {
+                x: targetRect.left - graphRect.left + targetRect.width / 2,
+                y: targetRect.top - graphRect.top + targetRect.height / 2,
+              };
+              const deltaX = targetCenter.x - sourceCenter.x;
+              const deltaY = targetCenter.y - sourceCenter.y;
+              let pathData: string;
+
+              if (Math.abs(deltaX) >= Math.abs(deltaY)) {
+                const direction = deltaX >= 0 ? 1 : -1;
+                const startX =
+                  (direction > 0 ? sourceRect.right : sourceRect.left) - graphRect.left;
+                const startY = sourceCenter.y;
+                const endX =
+                  (direction > 0 ? targetRect.left : targetRect.right) - graphRect.left;
+                const endY = targetCenter.y;
+                const distance = Math.abs(endX - startX);
+                const bend = Math.max(26, distance * 0.42);
+                const crossesMiddleColumn =
+                  sourceData.row === targetData.row &&
+                  Math.abs(sourceData.column - targetData.column) > 1;
+
+                if (crossesMiddleColumn) {
+                  const laneY = startY - Math.min(56, graphRect.height * 0.18);
+                  pathData =
+                    `M ${startX} ${startY} ` +
+                    `C ${startX + direction * bend} ${laneY}, ` +
+                    `${endX - direction * bend} ${laneY}, ${endX} ${endY}`;
+                } else {
+                  pathData =
+                    `M ${startX} ${startY} ` +
+                    `C ${startX + direction * bend} ${startY}, ` +
+                    `${endX - direction * bend} ${endY}, ${endX} ${endY}`;
+                }
+              } else {
+                const direction = deltaY >= 0 ? 1 : -1;
+                const startX = sourceCenter.x;
+                const startY =
+                  (direction > 0 ? sourceRect.bottom : sourceRect.top) - graphRect.top;
+                const endX = targetCenter.x;
+                const endY =
+                  (direction > 0 ? targetRect.top : targetRect.bottom) - graphRect.top;
+                const distance = Math.abs(endY - startY);
+                const bend = Math.max(22, distance * 0.42);
+                pathData =
+                  `M ${startX} ${startY} ` +
+                  `C ${startX} ${startY + direction * bend}, ` +
+                  `${endX} ${endY - direction * bend}, ${endX} ${endY}`;
+              }
+
+              const reached = Boolean(sourceData.visited && targetData.visited);
+              const path = document.createElementNS(svgNamespace, 'path');
+              path.setAttribute('d', pathData);
+              path.setAttribute(
+                'class',
+                `demo-dashboard-edge ${reached ? 'reached' : 'unreached'}`
+              );
+              path.setAttribute(
+                'marker-end',
+                `url(#${reached ? reachedMarkerId : unreachedMarkerId})`
+              );
+              edgeLayer.appendChild(path);
+            }
+          };
+
+          requestAnimationFrame(drawEdges);
+          if ('ResizeObserver' in window) {
+            const observer = new ResizeObserver(drawEdges);
+            observer.observe(graph);
+            demoCleanup = () => observer.disconnect();
           }
         }
 
@@ -812,6 +953,8 @@ const statNumberFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits:
 
       async function play(i: number) {
         const myRun = ++run;
+        demoCleanup?.();
+        demoCleanup = null;
         const s = demoData.scenarios[i];
         taskBtns.forEach((button, index) => {
           const selected = index === i;
